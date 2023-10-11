@@ -1,6 +1,9 @@
 server:
   port: 8090
 spring:
+  thymeleaf:
+    cache: false
+    prefix: file:src/main/resources/templates/
   h2:
     console:
       enabled: true
