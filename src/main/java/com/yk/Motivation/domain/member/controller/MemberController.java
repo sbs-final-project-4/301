@@ -25,7 +25,7 @@ public class MemberController {
 
     @Getter
     @AllArgsConstructor
-    public static class JoinForm {
+    public static class JoinForm { // 회원가입 폼
 
         @NotBlank
         private String username;
@@ -35,7 +35,7 @@ public class MemberController {
     }
 
     @PostMapping("/join")
-    public String join(@Valid JoinForm joinForm) {
+    public String join(@Valid JoinForm joinForm) { // 회원가입 로직
         memberService.join(joinForm.getUsername(), joinForm.getPassword(), joinForm.getUsername());
 
         return "redirect:/";
