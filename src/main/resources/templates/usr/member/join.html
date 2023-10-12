@@ -2,6 +2,8 @@
 
 <head>
     <title>회원가입</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
 </head>
 
 <body>
@@ -13,8 +15,117 @@
             회원가입
         </h1>
 
+        <form th:action name="join-form" method="POST" onsubmit="submitJoinForm(this); return false;"
+              class="flex flex-col gap-6">
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">아이디</span>
+                </label>
+                <input type="text" name="username" placeholder="아이디" class="input input-bordered" autofocus
+                       maxlength="30" onchange="$(this).keyup();" onpaste="setTimeoutZero(() => $(this).keyup());"
+                       onkeyup="checkUsernameDupDebounce();">
+                <div class="mt-2 text-sm">
+                </div>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">비밀번호</span>
+                </label>
+                <input type="password" name="password" placeholder="비밀번호" class="input input-bordered" maxlength="30">
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">비밀번호 확인</span>
+                </label>
+                <input type="password" name="passwordConfirm" placeholder="비밀번호 확인" class="input input-bordered"
+                       maxlength="30">
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">별명</span>
+                </label>
+                <input type="text" name="nickname" placeholder="별명" class="input input-bordered"
+                       maxlength="30">
+            </div>
+
+            <div>
+                <button class="btn btn-block btn-primary gap-1">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>회원가입</span>
+                </button>
+
+                <div class="text-center">
+                    <button class="btn btn-link">로그인</button>
+                    <button class="btn btn-link">아이디 찾기</button>
+                    <button class="btn btn-link">비밀번호 찾기</button>
+                </div>
+            </div>
+        </form>
+
         <script>
+
+
+            function checkUsernameDup(form) {
+
+                form.username.value = form.username.value.trim();
+
+                if ( form.username.value.length == 0 ) {
+                    clearUsernameInputMsg();
+                    return;
+                }
+
+                if ( form.username.value.length < 4 ) {
+                    clearUsernameInputMsg();
+                    return;
+                }
+
+                if ( validUsername == form.username.value ) return;
+
+                if ( lastCheckedUsername == form.username.value ) return;
+
+                lastCheckedUsername = form.username.value;
+
+                clearUsernameInputMsg();
+
+                fetch(
+                    'checkUsernameDup?username=' + form.username.value
+                )
+                    .then(res => res.json())
+                    .then((rsData) => {
+                        if ( rsData.success ) {
+                            validUsername = form.username.value;
+                        }
+
+                        setUsernameInputMsg(rsData.success, rsData.msg);
+                    });
+            }
+
+            const joinForm = document['join-form'];
+
+            const checkUsernameDupDebounce = _.debounce(() => checkUsernameDup(joinForm), 500);
+
+            function clearUsernameInputMsg() {
+                $(joinForm.username).removeClass('input-accent input-error');
+                $(joinForm.username).next().removeClass('text-green-400 text-red-400');
+                $(joinForm.username).next().empty();
+            }
+
+            function setUsernameInputMsg(isSuccess, msg) {
+                if ( isSuccess ) $(joinForm.username).addClass('input-accent');
+                if ( !isSuccess ) $(joinForm.username).addClass('input-error');
+
+                $(joinForm.username).next().addClass(isSuccess ? 'text-green-400' : 'text-red-400');
+
+                $(joinForm.username).next().text(msg);
+            }
+
+            let validUsername = '';
+            let lastCheckedUsername = '';
             let submitJoinFormDone = false;
+
             function submitJoinForm(form) {
                 if ( submitJoinFormDone ) return;
 
@@ -74,56 +185,17 @@
                     return;
                 }
 
+                 if ( validUsername != form.username.value ) {
+                    $(form.username).next().focus();
+                    toastWarning('아이디 중복체크를 해주세요.');
+                    return;
+                }
+
                 form.submit();
                 submitJoinFormDone = true;
             }
         </script>
 
-        <form th:action method="POST" onsubmit="submitJoinForm(this); return false;" class="flex flex-col gap-6">
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">아이디</span>
-                </label>
-                <input type="text" name="username" placeholder="아이디" class="input input-bordered" autofocus
-                       maxlength="30">
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">비밀번호</span>
-                </label>
-                <input type="password" name="password" placeholder="비밀번호" class="input input-bordered" maxlength="30">
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">비밀번호 확인</span>
-                </label>
-                <input type="password" name="passwordConfirm" placeholder="비밀번호 확인" class="input input-bordered"
-                       maxlength="30">
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">별명</span>
-                </label>
-                <input type="text" name="nickname" placeholder="별명" class="input input-bordered"
-                       maxlength="30">
-            </div>
-
-            <div>
-                <button class="btn btn-block btn-primary gap-1">
-                    <i class="fa-solid fa-user-plus"></i>
-                    <span>회원가입</span>
-                </button>
-
-                <div class="text-center">
-                    <button class="btn btn-link">로그인</button>
-                    <button class="btn btn-link">아이디 찾기</button>
-                    <button class="btn btn-link">비밀번호 찾기</button>
-                </div>
-            </div>
-        </form>
     </div>
 </div>
 
