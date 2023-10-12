@@ -4,18 +4,18 @@ spring:
   thymeleaf:
     cache: false
     prefix: file:src/main/resources/templates/
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+#  h2:
+#    console:
+#      enabled: true
+#      path: /h2-console
   output:
     ansi:
       enabled: always
   datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/motivation?useUnicode=true&serverTimezone=Asia/Seoul
+    username: root
+    password: qkqh134679258
   security:
     user:
       name: user

@@ -9,20 +9,20 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/usr/member")
 @RequiredArgsConstructor
 public class MemberController {
-
-    private final MemberService memberService;
     private final Rq rq;
-
+    private final MemberService memberService;
 
     @GetMapping("/join")
     public String showJoin() {
@@ -31,7 +31,8 @@ public class MemberController {
 
     @Getter
     @AllArgsConstructor
-    public static class JoinForm { // 회원가입 폼
+    @ToString
+    public static class JoinForm {
 
         @NotBlank
         private String username;
@@ -42,12 +43,13 @@ public class MemberController {
         @NotBlank
         private String password;
 
+        private MultipartFile profileImg;
     }
 
     @PostMapping("/join")
     public String join(@Valid JoinForm joinForm) {
-
-        RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword(), joinForm.getNickname());
+        System.out.println("joinForm : " + joinForm);
+        RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword(), joinForm.getNickname(), joinForm.getProfileImg());
 
         if (joinRs.isFail()) {
             return rq.historyBack(joinRs.getMsg());

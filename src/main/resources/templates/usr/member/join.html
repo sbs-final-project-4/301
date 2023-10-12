@@ -15,7 +15,7 @@
             회원가입
         </h1>
 
-        <form th:action name="join-form" method="POST" onsubmit="submitJoinForm(this); return false;"
+        <form enctype="multipart/form-data" th:action name="join-form" method="POST" onsubmit="submitJoinForm(this); return false;"
               class="flex flex-col gap-6">
             <div class="form-control">
                 <label class="label">
@@ -51,6 +51,14 @@
                        maxlength="30">
             </div>
 
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">프로필 이미지</span>
+                </label>
+                <input type="file" name="profileImg" class="file-input file-input-bordered"
+                       accept="image/jpeg, image/png, image/gif">
+            </div>
+
             <div>
                 <button class="btn btn-block btn-primary gap-1">
                     <i class="fa-solid fa-user-plus"></i>
@@ -66,7 +74,6 @@
         </form>
 
         <script>
-
 
             function checkUsernameDup(form) {
 

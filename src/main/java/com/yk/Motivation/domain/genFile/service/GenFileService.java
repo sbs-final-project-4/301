@@ -1,0 +1,49 @@
+package com.yk.Motivation.domain.genFile.service;
+
+import com.yk.Motivation.domain.genFile.entity.GenFile;
+import com.yk.Motivation.domain.genFile.repository.GenFileRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import com.yk.Motivation.standard.util.Ut;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class GenFileService {
+    private final GenFileRepository genFileRepository;
+
+    @Transactional
+    public GenFile save(String relTypeCode, Long relId, String typeCode, String type2Code, int fileNo, MultipartFile multipartFile) {
+
+        String originFileName = multipartFile.getOriginalFilename(); // 확장자 포함한 원본 파일의 이름
+        String fileExt = Ut.file.getExt(originFileName); // 파일의 확장자
+        String fileExtTypeCode = Ut.file.getFileExtTypeCodeFromFileExt(fileExt); // img, video, audio 등...
+        String fileExtType2Code = Ut.file.getFileExtType2CodeFromFileExt(fileExt); // 파일의 확장자?
+        int fileSize = (int) multipartFile.getSize(); // 파일의 크기를 바이트 단위로
+        String fileDir = getCurrentDirName(relTypeCode); // relTypeCode/2023_10_11 ...
+
+        GenFile genFile = GenFile.builder()
+                .relTypeCode(relTypeCode) // 관련 엔티티 이름
+                .relId(relId) // 관련 엔티티 id
+                .typeCode(typeCode) // common...
+                .type2Code(type2Code) // profileImg...
+                .fileExtTypeCode(fileExtTypeCode)
+                .fileExtType2Code(fileExtType2Code)
+                .originFileName(originFileName)
+                .fileSize(fileSize)
+                .fileNo(fileNo)
+                .fileExt(fileExt)
+                .fileDir(fileDir)
+                .build();
+
+        genFileRepository.save(genFile);
+
+        return genFile;
+    }
+
+    private String getCurrentDirName(String relTypeCode) { // relTypeCode/2023_10_11 ...
+        return relTypeCode + "/" + Ut.date.getCurrentDateFormatted("yyyy_MM_dd");
+    }
+}
