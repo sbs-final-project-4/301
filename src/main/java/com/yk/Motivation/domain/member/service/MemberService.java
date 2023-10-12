@@ -20,6 +20,9 @@ public class MemberService {
     @Transactional
     public RsData<Member> join(String username, String password, String nickname) { // 회원가입
 
+        if (findByUsername(username).isPresent())  // username(Id) 중복 검사
+            return RsData.of("F-1", "%s(은)는 사용중인 아이디입니다.".formatted(username));
+
         Member member = Member
                 .builder()
                 .username(username)

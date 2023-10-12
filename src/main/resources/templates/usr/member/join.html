@@ -22,7 +22,13 @@
 
                 if ( form.username.value.length == 0 ) {
                     form.username.focus();
-                    alert('아이디를 입력해주세요.');
+                    toastWarning('아이디를 입력해주세요.');
+                    return;
+                }
+
+                 if ( form.username.value.length < 4 ) {
+                    form.username.focus();
+                    toastWarning('아이디를 4자 이상 입력해주세요.');
                     return;
                 }
 
@@ -30,7 +36,13 @@
 
                 if ( form.password.value.length == 0 ) {
                     form.password.focus();
-                    alert('비밀번호를 입력해주세요.');
+                    toastWarning('비밀번호를 입력해주세요.');
+                    return;
+                }
+
+                 if ( form.password.value.length < 4 ) {
+                    form.password.focus();
+                    toastWarning('비밀번호를 4자 이상 입력해주세요.');
                     return;
                 }
 
@@ -38,13 +50,27 @@
 
                 if ( form.passwordConfirm.value.length == 0 ) {
                     form.passwordConfirm.focus();
-                    alert('비밀번호를 확인을 입력해주세요.');
+                    toastWarning('비밀번호를 확인을 입력해주세요.');
                     return;
                 }
 
                 if ( form.password.value != form.passwordConfirm.value ) {
                     form.passwordConfirm.focus();
-                    alert('비밀번호를 확인이 일치하지 않습니다.');
+                    toastWarning('비밀번호를 확인이 일치하지 않습니다.');
+                    return;
+                }
+
+                form.nickname.value = form.nickname.value.trim();
+
+                if ( form.nickname.value.length == 0 ) {
+                    form.nickname.focus();
+                    toastWarning('별명을 입력해주세요.');
+                    return;
+                }
+
+                if ( form.nickname.value.length < 4 ) {
+                    form.nickname.focus();
+                    toastWarning('별명을 4자 이상 입력해주세요.');
                     return;
                 }
 
@@ -74,6 +100,14 @@
                     <span class="label-text">비밀번호 확인</span>
                 </label>
                 <input type="password" name="passwordConfirm" placeholder="비밀번호 확인" class="input input-bordered"
+                       maxlength="30">
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">별명</span>
+                </label>
+                <input type="text" name="nickname" placeholder="별명" class="input input-bordered"
                        maxlength="30">
             </div>
 

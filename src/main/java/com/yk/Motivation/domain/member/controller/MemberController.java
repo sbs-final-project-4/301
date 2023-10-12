@@ -1,5 +1,8 @@
 package com.yk.Motivation.domain.member.controller;
 
+import com.yk.Motivation.base.rq.Rq;
+import com.yk.Motivation.base.rsData.RsData;
+import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.service.MemberService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class MemberController {
 
     private final MemberService memberService;
+    private final Rq rq;
+
 
     @GetMapping("/join")
     public String showJoin() {
@@ -31,13 +36,22 @@ public class MemberController {
         private String username;
 
         @NotBlank
+        private String nickname;
+
+        @NotBlank
         private String password;
+
     }
 
     @PostMapping("/join")
-    public String join(@Valid JoinForm joinForm) { // 회원가입 로직
-        memberService.join(joinForm.getUsername(), joinForm.getPassword(), joinForm.getUsername());
+    public String join(@Valid JoinForm joinForm) {
 
-        return "redirect:/";
+        RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword(), joinForm.getNickname());
+
+        if (joinRs.isFail()) {
+            return rq.historyBack(joinRs.getMsg());
+        }
+
+        return rq.redirect("/", joinRs.getMsg());
     }
 }
