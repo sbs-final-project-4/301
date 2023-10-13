@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,11 +25,19 @@ public class MemberController {
     private final Rq rq;
     private final MemberService memberService;
 
+    @PreAuthorize("isAnonymous()")
+    @GetMapping("/login")
+    public String showLogin() {
+        return "usr/member/login";
+    }
+
+    @PreAuthorize("isAnonymous()")
     @GetMapping("/join")
     public String showJoin() {
         return "usr/member/join";
     }
 
+    @PreAuthorize("isAnonymous()")
     @Getter
     @AllArgsConstructor
     @ToString

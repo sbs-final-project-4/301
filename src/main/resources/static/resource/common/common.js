@@ -16,7 +16,7 @@ toastr.options = {   // toastr 라이브러리 설정
     hideMethod: "fadeOut"
 };
 
-function parseMsg(msg) {  // msg 유효기간 만들기 ( ;ttl= )
+function parseMsg(msg) {  // msg 유효기간 5초 ( ;ttl= )
     const [pureMsg, ttl] = msg.split(";ttl=");
 
     const currentJsUnixTimestamp = new Date().getTime();

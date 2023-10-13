@@ -24,6 +24,15 @@ public class SecurityConfig {
                 .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
+                .formLogin((formLogin) -> formLogin
+                        .loginPage("/usr/member/login")
+                        .successHandler(new CustomSimpleUrlAuthenticationSuccessHandler())
+                        .failureHandler(new CustomSimpleUrlAuthenticationFailureHandler())
+                )
+                .logout((logout) -> logout
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/usr/member/logout"))
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true)) // 로그아웃 후 세션 정리
         ;
         return http.build();
     }

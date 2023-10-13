@@ -1,6 +1,7 @@
 package com.yk.Motivation.domain.member.service;
 
 import com.yk.Motivation.base.rsData.RsData;
+import com.yk.Motivation.domain.genFile.entity.GenFile;
 import com.yk.Motivation.domain.genFile.service.GenFileService;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.repository.MemberRepository;
@@ -56,6 +57,13 @@ public class MemberService {
         if (findByUsername(username).isPresent()) return RsData.of("F-1", "%s(은)는 사용중인 아이디입니다.".formatted(username));
 
         return RsData.of("S-1", "%s(은)는 사용 가능한 아이디입니다.".formatted(username));
+    }
+
+    public Optional<String> findProfileImgUrl(Member member) {
+        return genFileService.findGenFileBy(
+                        member.getModelName(), member.getId(), "common", "profileImg", 0
+                )
+                .map(GenFile::getUrl);
     }
 
 }

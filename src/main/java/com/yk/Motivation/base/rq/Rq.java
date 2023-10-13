@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
+import java.util.Optional;
+
 @Component
 @RequestScope
 public class Rq {
@@ -169,7 +171,7 @@ public class Rq {
         String referer = req.getHeader("referer");
         String key = "historyBackFailMsg___" + referer;
         req.setAttribute("localStorageKeyAboutHistoryBackFailMsg", key);
-        req.setAttribute("historyBackFailMsg", msg);
+        req.setAttribute("historyBackFailMsg", Ut.url.withTtl(msg));
 
         // 200 이 아니라 400 으로 응답코드가 지정되도록
         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -178,6 +180,12 @@ public class Rq {
     }
 
     public String redirect(String url, String msg) {
-        return "redirect:" + Ut.url.modifyQueryParam(url, "msg", Ut.url.encode(msg));
+        return "redirect:" + Ut.url.modifyQueryParam(url, "msg", Ut.url.encodeWithTtl(msg));
+    }
+
+    public String getProfileImgUrl() {
+        return Optional.ofNullable(getMember())
+                .flatMap(memberService::findProfileImgUrl)
+                .orElse("https://placehold.co/30x30?text=UU");
     }
 }
