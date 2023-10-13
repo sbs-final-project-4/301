@@ -8,6 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import com.yk.Motivation.standard.util.Ut;
 
+import java.io.File;
+import java.io.IOException;
+
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -39,6 +42,16 @@ public class GenFileService {
                 .build();
 
         genFileRepository.save(genFile);
+
+        File file = new File(genFile.getFilePath()); // directory 핸들링
+
+        file.getParentFile().mkdirs(); // 없으면 생성
+
+        try {
+            multipartFile.transferTo(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
         return genFile;
     }

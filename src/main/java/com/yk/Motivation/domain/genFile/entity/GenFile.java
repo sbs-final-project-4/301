@@ -1,5 +1,6 @@
 package com.yk.Motivation.domain.genFile.entity;
 
+import com.yk.Motivation.base.app.AppConfig;
 import com.yk.Motivation.base.jpa.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
@@ -22,15 +23,32 @@ import static lombok.AccessLevel.PROTECTED;
         @Index(name = "idx1", columnList = "relId,relTypeCode,typeCode,type2Code")
 })
 public class GenFile extends BaseEntity {
-    private String relTypeCode;
-    private long relId;
-    private String typeCode;
-    private String type2Code;
-    private String fileExtTypeCode;
-    private String fileExtType2Code;
-    private int fileSize;
-    private int fileNo;
-    private String fileExt;
-    private String fileDir;
-    private String originFileName;
+    private String relTypeCode; // 관련 Entity 이름
+    private long relId; // 관련 Entity Id
+    private String typeCode; // common ...
+    private String type2Code; // profileImg ...
+    private String fileExtTypeCode; // img, video, mp4 ...
+    private String fileExtType2Code; // 파일 확장자?
+    private int fileSize; // file 의 크기 (바이트)
+    private int fileNo; // file Number
+    private String fileExt; // 파일 확장자?
+    private String fileDir; // relTypeCode/2023_10_11 ...
+    private String originFileName; // 원본 file 이름 (확장자 포함)
+
+    public String getFileName() {
+        return getId() + "." + getFileExt();
+    }
+
+    public String getUrl() {
+        return "/gen/" + getFileDir() + "/" + getFileName();
+    }
+
+    public String getDownloadUrl() {
+        return "/download/gen/" + getId();
+    }
+
+    public String getFilePath() {
+        return AppConfig.getGenFileDirPath() + "/" + getFileDir() + "/" + getFileName();
+    }
+
 }
