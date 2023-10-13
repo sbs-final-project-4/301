@@ -69,5 +69,44 @@ public class Ut {
 
         }
 
+        public static String modifyQueryParam(String url, String paramName, String paramValue) { // url 에 parameter 갱신 추가
+
+            url = deleteQueryParam(url, paramName);
+            url = addQueryParam(url, paramName, paramValue);
+
+            return url;
+        }
+
+        public static String addQueryParam(String url, String paramName, String paramValue) { // url 에 parameter 추가
+
+            if (!url.contains("?")) {
+                url += "?";
+            }
+
+            if (!url.endsWith("?") && !url.endsWith("&")) {
+                url += "&";
+            }
+
+            url += paramName + "=" + paramValue;
+
+            return url;
+        }
+
+        private static String deleteQueryParam(String url, String paramName) { // url 에서 parameter 제거
+
+            int startPoint = url.indexOf(paramName + "=");
+            if (startPoint == -1) return url;
+
+            int endPoint = url.substring(startPoint).indexOf("&");
+
+            if (endPoint == -1) {
+                return url.substring(0, startPoint - 1);
+            }
+
+            String urlAfter = url.substring(startPoint + endPoint + 1);
+
+            return url.substring(0, startPoint) + urlAfter;
+        }
+
     }
 }
