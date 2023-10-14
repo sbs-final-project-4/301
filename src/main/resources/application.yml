@@ -1,6 +1,19 @@
 server:
   port: 8090
 spring:
+  profiles:
+    include: secret
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: alsdudrb123@gmail.com
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   thymeleaf:
     cache: false
     prefix: file:src/main/resources/templates/
@@ -15,7 +28,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/motivation?useUnicode=true&serverTimezone=Asia/Seoul
     username: root
-    password:
+    password: qkqh134679258
   security:
     user:
       name: user
@@ -36,5 +49,8 @@ logging:
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
 custom:
+  site:
+    name: 모티베이션
+    baseUrl: "http://localhost:8090"
   genFile:
     dirPath: c:/temp/demo5
