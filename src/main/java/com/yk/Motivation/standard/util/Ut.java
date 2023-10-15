@@ -4,20 +4,19 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 public class Ut {
-
     public static class date {
-        public static String getCurrentDateFormatted(String pattern) { // 현재 날짜와 시간을 pattern 대로 format 해서 return
+        public static String getCurrentDateFormatted(String pattern) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
             return simpleDateFormat.format(new Date());
         }
-
     }
 
     public static class file {
-        public static String getExt(String filename) {  // filename 에서 확장자 lowercase 로 추출
+        public static String getExt(String filename) {
             return Optional.ofNullable(filename)
                     .filter(f -> f.contains("."))
                     .map(f -> f.substring(filename.lastIndexOf(".") + 1).toLowerCase())
@@ -25,7 +24,6 @@ public class Ut {
         }
 
         public static String getFileExtTypeCodeFromFileExt(String ext) {
-
             switch (ext) {
                 case "jpeg":
                 case "jpg":
@@ -59,26 +57,22 @@ public class Ut {
 
     public static class url {
 
-        public static String encode(String message) { // 문자열을 UTF-8 형식 으로 URL 인코딩
-
+        public static String encode(String message) {
             try {
                 return URLEncoder.encode(message, "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 return null;
             }
-
         }
 
-        public static String modifyQueryParam(String url, String paramName, String paramValue) { // url 에 parameter 갱신 추가
-
+        public static String modifyQueryParam(String url, String paramName, String paramValue) {
             url = deleteQueryParam(url, paramName);
             url = addQueryParam(url, paramName, paramValue);
 
             return url;
         }
 
-        public static String addQueryParam(String url, String paramName, String paramValue) { // url 에 parameter 추가
-
+        public static String addQueryParam(String url, String paramName, String paramValue) {
             if (!url.contains("?")) {
                 url += "?";
             }
@@ -92,8 +86,7 @@ public class Ut {
             return url;
         }
 
-        private static String deleteQueryParam(String url, String paramName) { // url 에서 parameter 제거
-
+        private static String deleteQueryParam(String url, String paramName) {
             int startPoint = url.indexOf(paramName + "=");
             if (startPoint == -1) return url;
 
@@ -114,6 +107,41 @@ public class Ut {
 
         public static String withTtl(String msg) {
             return msg + ";ttl=" + new Date().getTime();
+        }
+    }
+
+    public static class str {
+        public static boolean hasLength(String string) {
+            return string != null && string.length() > 0;
+        }
+
+        public static String tempPassword(int i) {
+            String passwordSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+            StringBuilder password = new StringBuilder();
+
+            for (int x = 0; x < i; x++) {
+                int random = (int) (Math.random() * passwordSet.length());
+                password.append(passwordSet.charAt(random));
+            }
+
+            return password.toString();
+        }
+    }
+
+    public static class thy {
+        private static String getFirstStrOrEmpty(List<String> requestParameterValues) {
+            return Optional.ofNullable(requestParameterValues)
+                    .filter(values -> !values.isEmpty())
+                    .map(values -> values.get(0).replaceAll("%20", "").trim())
+                    .orElse("");
+        }
+
+        public static boolean inputAttributeAutofocus(List<String> requestParameterValues) {
+            return !str.hasLength(getFirstStrOrEmpty(requestParameterValues));
+        }
+
+        public static String value(List<String> requestParameterValues) {
+            return getFirstStrOrEmpty(requestParameterValues);
         }
     }
 }

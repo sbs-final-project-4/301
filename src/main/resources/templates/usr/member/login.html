@@ -19,15 +19,17 @@
                 <label class="label">
                     <span class="label-text">아이디</span>
                 </label>
-                <input autofocus class="input input-bordered" maxlength="30" name="username" placeholder="아이디"
-                       type="text">
+                <input class="input input-bordered" maxlength="30"
+                       name="username" placeholder="아이디" th:autofocus="${UtThy.inputAttributeAutofocus(param.lastUsername)}"
+                       th:value="${UtThy.value(param.lastUsername)}" type="text">
             </div>
 
             <div class="form-control">
                 <label class="label">
                     <span class="label-text">비밀번호</span>
                 </label>
-                <input class="input input-bordered" maxlength="30" name="password" placeholder="비밀번호" type="password">
+                <input class="input input-bordered" maxlength="30"
+                       name="password" placeholder="비밀번호" th:autofocus="${!UtThy.inputAttributeAutofocus(param.lastUsername)}" type="password">
             </div>
 
             <div>

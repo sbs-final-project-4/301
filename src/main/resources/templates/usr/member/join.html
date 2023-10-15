@@ -57,7 +57,7 @@
                 <label class="label">
                     <span class="label-text">이메일</span>
                 </label>
-                <input class="input input-bordered" maxlength="30" name="email" onchange="$(this).keyup();"
+                <input class="input input-bordered" maxlength="80" name="email" onchange="$(this).keyup();"
                        onkeyup="checkEmailDupDebounce();" onpaste="setTimeoutZero(() => $(this).keyup());"
                        placeholder="이메일"
                        type="email">
