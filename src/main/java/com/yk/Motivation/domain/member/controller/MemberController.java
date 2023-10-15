@@ -5,12 +5,14 @@ import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.exception.EmailNotVerifiedAccessDeniedException;
 import com.yk.Motivation.domain.member.service.MemberService;
+import com.yk.Motivation.standard.util.Ut;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -118,6 +120,69 @@ public class MemberController {
                         }).orElseGet(() -> rq.historyBack("일치하는 회원이 존재하지 않습니다."));
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/me")
+    public String showMe() {
+        return "usr/member/me";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/modify")
+    public String showModify(String checkPasswordAuthCode) {
+
+//        if (!rq.getRefererUrlPath("").startsWith("/usr/member/checkPassword"))
+//            throw new AccessDeniedException("올바르지 않은 접근입니다.");
+
+        memberService
+                .checkCheckPasswordAuthCode(rq.getMember(), checkPasswordAuthCode)
+                .optional()
+                .filter(RsData::isFail)
+                .ifPresent((rsData) -> {
+                    throw new AccessDeniedException("올바르지 않은 접근입니다.");
+                });
+
+        return "usr/member/modify";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/modify")
+    public String modify(@Valid ModifyForm modifyForm, String checkPasswordAuthCode) {
+        memberService
+                .checkCheckPasswordAuthCode(rq.getMember(), checkPasswordAuthCode)
+                .optional()
+                .filter(RsData::isFail)
+                .ifPresent((rsData) -> {
+                    throw new AccessDeniedException("올바르지 않은 접근입니다.");
+                });
+
+        RsData<Member> modifyRs = memberService.modify(
+                rq.getMember().getId(),
+                modifyForm.getPassword(),
+                modifyForm.getNickname(),
+                modifyForm.getProfileImg()
+        );
+
+        return rq.redirectOrBack("/usr/member/me", modifyRs);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/checkPassword")
+    public String showCheckPassword() {
+        return "usr/member/checkPassword";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/checkPassword")
+    public String checkPassword(String password, String redirectUrl) {
+        if (!memberService.isSamePassword(rq.getMember(), password))
+            return rq.historyBack("비밀번호가 일치하지 않습니다.");
+
+        String code = memberService.genCheckPasswordAuthCode(rq.getMember());
+
+        redirectUrl = Ut.url.modifyQueryParam(redirectUrl, "checkPasswordAuthCode", code);
+
+        return rq.redirect(redirectUrl);
+    }
 
     @Getter
     @AllArgsConstructor
@@ -131,6 +196,16 @@ public class MemberController {
         private String password;
         @NotBlank
         private String email;
+        private MultipartFile profileImg;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @ToString
+    public static class ModifyForm {
+        @NotBlank
+        private String nickname;
+        private String password;
         private MultipartFile profileImg;
     }
 

@@ -184,11 +184,17 @@ public class Rq {
         return "common/js";
     }
 
+    public String redirect(String url) {
+        return redirect(url, "");
+    }
+
     public String redirect(String url, RsData rs) {
         return redirect(url, rs.getMsg());
     }
 
     public String redirect(String url, String msg) {
+        if (Ut.str.isBlank(msg)) return "redirect:" + url;
+
         return "redirect:" + Ut.url.modifyQueryParam(url, "msg", Ut.url.encodeWithTtl(msg));
     }
 
@@ -202,5 +208,17 @@ public class Rq {
         return Optional.ofNullable(getMember())
                 .flatMap(memberService::findProfileImgUrl)
                 .orElse("https://placehold.co/30x30?text=UU");
+    }
+
+    public String getRefererUrl(String defaultValue) {
+        String referer = req.getHeader("referer");
+
+        if (Ut.str.isBlank(referer)) return defaultValue;
+
+        return referer;
+    }
+
+    public String getRefererUrlPath(String defaultValue) {
+        return Ut.url.getPath(getRefererUrl(defaultValue), defaultValue);
     }
 }

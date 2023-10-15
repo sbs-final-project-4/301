@@ -3,6 +3,8 @@ package com.yk.Motivation.base.rsData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Optional;
+
 @Getter
 @AllArgsConstructor
 public class RsData<T> {
@@ -24,5 +26,9 @@ public class RsData<T> {
 
     public boolean isFail() {
         return !isSuccess();
+    }
+
+    public Optional<RsData<T>> optional() {
+        return Optional.of(this);
     }
 }

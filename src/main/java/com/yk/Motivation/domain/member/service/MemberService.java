@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -49,7 +51,7 @@ public class MemberService {
 
     public Optional<String> findProfileImgUrl(Member member) {
         return genFileService.findGenFileBy(
-                        member.getModelName(), member.getId(), "common", "profileImg", 0
+                        member.getModelName(), member.getId(), "common", "profileImg", 1
                 )
                 .map(GenFile::getUrl);
     }
@@ -94,8 +96,9 @@ public class MemberService {
     }
 
     private void saveProfileImg(Member member, MultipartFile profileImg) {
-        genFileService.save(member.getModelName(), member.getId(), "common", "profileImg", 0, profileImg);
-    }
+        if (profileImg.isEmpty()) return;
+
+        genFileService.save(member.getModelName(), member.getId(), "common", "profileImg", 1, profileImg);    }
 
     private void sendJoinCompleteEmail(Member member) {
         final String email = member.getEmail();
@@ -118,6 +121,41 @@ public class MemberService {
         });
     }
 
+    @Transactional
+    public RsData<Member> modify(long memberId, String password, String nickname, MultipartFile profileImg) {
+        Member member = findById(memberId).get();
+
+        if (!password.isBlank()) member.setPassword(passwordEncoder.encode(password));
+
+        if (nickname != null) member.setNickname(nickname);
+
+        if (profileImg != null) saveProfileImg(member, profileImg);
+
+        return RsData.of("S-1", "회원정보가 수정되었습니다.", member);
+    }
+
+    public boolean isSamePassword(Member member, String oldPassword) {
+        return passwordEncoder.matches(oldPassword, member.getPassword());
+    }
+
+    @Transactional
+    public String genCheckPasswordAuthCode(Member member) {
+        String code = UUID.randomUUID().toString();
+
+        attrService.set("member__%d__extra__checkPasswordAuthCode".formatted(member.getId()), code, LocalDateTime.now().plusSeconds(60 * 30));
+
+        return code;
+    }
+
+    public RsData<?> checkCheckPasswordAuthCode(Member member, String checkPasswordAuthCode) {
+        if (checkPasswordAuthCode == null) return RsData.of("F-1", "checkPasswordAuthCode를 입력해주세요.");
+
+        if (attrService.get("member__%d__extra__checkPasswordAuthCode".formatted(member.getId()), "").equals(checkPasswordAuthCode))
+            return RsData.of("S-1", "유효한 코드입니다.");
+
+        return RsData.of("F-2", "유효하지 않은 코드입니다.");
+    }
+
     private void sendEmailVerificationEmail(Member member) {
         emailVerificationService.send(member);
     }
@@ -125,6 +163,11 @@ public class MemberService {
     @Transactional
     public void setEmailVerified(Long memberId) {
         attrService.set("member__%d__extra__emailVerified".formatted(memberId), true);
+    }
+
+    @Transactional
+    public void setEmailVerified(Member member) {
+        setEmailVerified(member.getId());
     }
 
     public boolean isEmailVerified(Member member) {
