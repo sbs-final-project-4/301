@@ -18,6 +18,12 @@ import java.util.Optional;
 public class GenFileService {
     private final GenFileRepository genFileRepository;
 
+    // 조회
+    public Optional<GenFile> findGenFileBy(String relTypeCode, Long relId, String typeCode, String type2Code, int fileNo) {
+        return genFileRepository.findByRelTypeCodeAndRelIdAndTypeCodeAndType2CodeAndFileNo(relTypeCode, relId, typeCode, type2Code, fileNo);
+    }
+
+    // 명령
     @Transactional
     public GenFile save(String relTypeCode, Long relId, String typeCode, String type2Code, int fileNo, MultipartFile multipartFile) {
 
@@ -61,7 +67,4 @@ public class GenFileService {
         return relTypeCode + "/" + Ut.date.getCurrentDateFormatted("yyyy_MM_dd");
     }
 
-    public Optional<GenFile> findGenFileBy(String relTypeCode, Long relId, String typeCode, String type2Code, int fileNo) {
-        return genFileRepository.findByRelTypeCodeAndRelIdAndTypeCodeAndType2CodeAndFileNo(relTypeCode, relId, typeCode, type2Code, fileNo);
-    }
 }

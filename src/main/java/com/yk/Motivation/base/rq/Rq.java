@@ -1,5 +1,6 @@
 package com.yk.Motivation.base.rq;
 
+import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.service.MemberService;
 import com.yk.Motivation.standard.util.Ut;
@@ -166,6 +167,10 @@ public class Rq {
         return sb.toString();
     }
 
+    public String historyBack(RsData rs) {
+        return historyBack(rs.getMsg());
+    }
+
     public String historyBack(String msg) {
 
         String referer = req.getHeader("referer");
@@ -179,8 +184,18 @@ public class Rq {
         return "common/js";
     }
 
+    public String redirect(String url, RsData rs) {
+        return redirect(url, rs.getMsg());
+    }
+
     public String redirect(String url, String msg) {
         return "redirect:" + Ut.url.modifyQueryParam(url, "msg", Ut.url.encodeWithTtl(msg));
+    }
+
+    public String redirectOrBack(String url, RsData rs) {
+        if ( rs.isFail() ) return historyBack(rs);
+
+        return redirect(url, rs);
     }
 
     public String getProfileImgUrl() {

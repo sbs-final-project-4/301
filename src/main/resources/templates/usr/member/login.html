@@ -6,28 +6,28 @@
 
 <body>
 
-<div layout:fragment="content" class="flex-1 flex items-center justify-center">
+<div class="flex-1 flex items-center justify-center" layout:fragment="content">
     <div class="max-w-2xl w-full px-4">
         <h1 class="mb-4">
             <i class="fa-solid fa-arrow-right-to-bracket"></i>
             로그인
         </h1>
 
-        <form th:action method="POST" onsubmit="submitLoginForm(this); return false;"
-              class="flex flex-col gap-6">
+        <form class="flex flex-col gap-6" method="POST" onsubmit="submitLoginForm(this); return false;"
+              th:action>
             <div class="form-control">
                 <label class="label">
                     <span class="label-text">아이디</span>
                 </label>
-                <input type="text" name="username" placeholder="아이디" class="input input-bordered" autofocus
-                       maxlength="30">
+                <input autofocus class="input input-bordered" maxlength="30" name="username" placeholder="아이디"
+                       type="text">
             </div>
 
             <div class="form-control">
                 <label class="label">
                     <span class="label-text">비밀번호</span>
                 </label>
-                <input type="password" name="password" placeholder="비밀번호" class="input input-bordered" maxlength="30">
+                <input class="input input-bordered" maxlength="30" name="password" placeholder="비밀번호" type="password">
             </div>
 
             <div>
@@ -37,9 +37,9 @@
                 </button>
 
                 <div class="text-center">
-                    <a href="/usr/member/join" class="btn btn-link">회원가입</a>
-                    <a href="/usr/member/findUsername" class="btn btn-link">아이디 찾기</a>
-                    <a href="/usr/member/findPassword" class="btn btn-link">비밀번호 찾기</a>
+                    <a class="btn btn-link" href="/usr/member/join">회원가입</a>
+                    <a class="btn btn-link" href="/usr/member/findUsername">아이디 찾기</a>
+                    <a class="btn btn-link" href="/usr/member/findPassword">비밀번호 찾기</a>
                 </div>
             </div>
         </form>

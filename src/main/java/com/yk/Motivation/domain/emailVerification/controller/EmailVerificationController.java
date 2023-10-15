@@ -2,7 +2,7 @@ package com.yk.Motivation.domain.emailVerification.controller;
 
 import com.yk.Motivation.base.rq.Rq;
 import com.yk.Motivation.base.rsData.RsData;
-import com.yk.Motivation.domain.member.service.MemberService;
+import com.yk.Motivation.domain.emailVerification.service.EmailVerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,23 +12,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 @RequestMapping("/emailVerification")
 public class EmailVerificationController {
-    private final MemberService memberService;
+    private final EmailVerificationService emailVerificationService;
     private final Rq rq;
 
     @GetMapping("/verify")
     public String verify(long memberId, String code) {
-        RsData verifyEmailRsData = memberService.verifyEmail(memberId, code);
+        RsData verifyEmailRs = emailVerificationService.verify(memberId, code);
 
-        if (verifyEmailRsData.isFail()) {
-            return rq.redirect("/", verifyEmailRsData.getMsg());
-        }
+        // 각 상황별 이동해야 하는 URL
+        String afterFailUrl = "/";
+        String afterSuccessButLogoutUrl = "/usr/member/login";
+        String afterSuccessUrl = "/";
 
-        String successMsg = verifyEmailRsData.getMsg();
+        // 인증실패한 상황
+        if (verifyEmailRs.isFail()) return rq.redirect(afterFailUrl, verifyEmailRs);
 
-        if (rq.isLogout()) {
-            return rq.redirect("/usr/member/login", successMsg);
-        }
+        // 인증성공했지만 로그아웃인 상황
+        if (rq.isLogout()) return rq.redirect(afterSuccessButLogoutUrl, verifyEmailRs);
 
-        return rq.redirect("/", successMsg);
+        // 인증성공했고 로그인인 상황
+        return rq.redirect(afterSuccessUrl, verifyEmailRs);
+
     }
 }

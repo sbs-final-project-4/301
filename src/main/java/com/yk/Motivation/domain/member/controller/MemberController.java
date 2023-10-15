@@ -3,6 +3,7 @@ package com.yk.Motivation.domain.member.controller;
 import com.yk.Motivation.base.rq.Rq;
 import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.member.entity.Member;
+import com.yk.Motivation.domain.member.exception.EmailNotVerifiedAccessDeniedException;
 import com.yk.Motivation.domain.member.service.MemberService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -22,8 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/usr/member")
 @RequiredArgsConstructor
 public class MemberController {
-    private final Rq rq;
     private final MemberService memberService;
+    private final Rq rq;
 
     @PreAuthorize("isAnonymous()")
     @GetMapping("/login")
@@ -38,47 +39,58 @@ public class MemberController {
     }
 
     @PreAuthorize("isAnonymous()")
-    @Getter
-    @AllArgsConstructor
-    @ToString
-    public static class JoinForm {
-
-        @NotBlank
-        private String username;
-
-        @NotBlank
-        private String nickname;
-
-        @NotBlank
-        private String password;
-
-        @NotBlank
-        private String email;
-
-        private MultipartFile profileImg;
-    }
-
     @PostMapping("/join")
     public String join(@Valid JoinForm joinForm) {
-        System.out.println("joinForm : " + joinForm);
-        RsData<Member> joinRs = memberService.join(joinForm.getUsername(), joinForm.getPassword(), joinForm.getNickname(), joinForm.getEmail(), joinForm.getProfileImg());
+        RsData<Member> joinRs = memberService.join(
+                joinForm.getUsername(),
+                joinForm.getPassword(),
+                joinForm.getNickname(),
+                joinForm.getEmail(),
+                joinForm.getProfileImg()
+        );
 
-        if (joinRs.isFail()) {
-            return rq.historyBack(joinRs.getMsg());
-        }
-
-        return rq.redirect("/", joinRs.getMsg());
+        return rq.redirectOrBack("/", joinRs);
     }
 
+    @PreAuthorize("isAnonymous()")
     @GetMapping("/checkUsernameDup")
     @ResponseBody
     public RsData<String> checkUsernameDup(String username) {
         return memberService.checkUsernameDup(username);
     }
 
+    @PreAuthorize("isAnonymous()")
     @GetMapping("/checkEmailDup")
     @ResponseBody
     public RsData<String> checkEmailDup(String email) {
         return memberService.checkEmailDup(email);
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @ToString
+    public static class JoinForm {
+        @NotBlank
+        private String username;
+        @NotBlank
+        private String nickname;
+        @NotBlank
+        private String password;
+        @NotBlank
+        private String email;
+        private MultipartFile profileImg;
+    }
+
+    public boolean assertCurrentMemberVerified() {
+        if (!memberService.isEmailVerified(rq.getMember()))
+            throw new EmailNotVerifiedAccessDeniedException("이메일 인증 후 이용해주세요");
+
+        return true;
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/notVerified")
+    public String showNotVerified() {
+        return "usr/member/notVerified";
     }
 }

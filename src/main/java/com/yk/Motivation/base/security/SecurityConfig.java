@@ -19,6 +19,22 @@ public class SecurityConfig {
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .authorizeRequests(
+                        authorizeRequests -> authorizeRequests
+                                .requestMatchers(
+                                        new AntPathRequestMatcher("/usr/member/notVerified")
+                                )
+                                .permitAll()
+                                .requestMatchers(
+                                        new AntPathRequestMatcher("/"),
+                                        new AntPathRequestMatcher("/usr/**")
+                                ).access("!isAuthenticated() or @memberController.assertCurrentMemberVerified()")
+                                .anyRequest().permitAll()
+                )
+                .exceptionHandling(
+                        exceptionHandling -> exceptionHandling
+                                .accessDeniedHandler(new CustomAccessDeniedHandler())
+                )
                 .csrf((csrf) -> csrf
                         .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
                 .headers((headers) -> headers

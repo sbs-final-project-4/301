@@ -2,66 +2,70 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title layout:title-pattern="$CONTENT_TITLE | $LAYOUT_TITLE" th:text="모티베이션"></title>
+    <meta content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+          name="viewport">
+    <meta content="ie=edge" http-equiv="X-UA-Compatible">
+    <title layout:title-pattern="$CONTENT_TITLE | $LAYOUT_TITLE" th:text="바로잡다"></title>
 
     <!-- 제이쿼리 불러오기 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     <!-- toastr 불러오기 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.4/toastr.min.js"></script>
-    <link rel="stylesheet" href="https://jhs512.github.io/toastr/toastr.css">
+    <link href="https://jhs512.github.io/toastr/toastr.css" rel="stylesheet">
 
     <!-- 폰트어썸 아이콘 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
     <!-- 아이콘 목록 : https://fontawesome.com/search?o=r&m=free -->
-
 </head>
 <body>
 <link href="https://cdn.jsdelivr.net/npm/daisyui@3.7.7/dist/full.css" rel="stylesheet" type="text/css"/>
 <script src="https://cdn.tailwindcss.com"></script>
 
-<link rel="stylesheet" href="/resource/common/common.css">
+<link href="/resource/common/common.css" rel="stylesheet">
 <script src="/resource/common/common.js"></script>
 
 <div class="min-h-screen flex flex-col">
     <header>
         <div class="navbar bg-base-100">
             <div class="navbar-start">
-                <a href="/usr/member/me" class="btn btn-ghost btn-circle">
-                    <img th:if="${@rq.login}" class="w-[30px] h-[30px] rounded-full object-cover" th:src="${@rq.profileImgUrl}" alt="">
+                <a class="btn btn-ghost btn-circle" href="/usr/member/me">
+                    <img alt="" class="w-[30px] h-[30px] rounded-full object-cover"
+                         th:if="${@rq.login}" th:src="${@rq.profileImgUrl}">
                 </a>
                 <button class="btn btn-ghost btn-circle" th:if="${@rq.login}">
                     <div class="indicator">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                                  stroke-linecap="round" stroke-linejoin="round"
+                                  stroke-width="2"/>
                         </svg>
                         <span class="badge badge-xs badge-primary indicator-item"></span>
                     </div>
                 </button>
             </div>
             <div class="navbar-center">
-                <a class="btn btn-ghost normal-case text-xl">모티베이션</a>
+                <a class="btn btn-ghost normal-case text-xl">바로잡다</a>
             </div>
             <div class="navbar-end">
                 <div class="dropdown relative">
-                    <label tabindex="0" class="btn btn-ghost btn-circle">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M4 6h16M4 12h16M4 18h7"/>
+                    <label class="btn btn-ghost btn-circle" tabindex="0">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M4 6h16M4 12h16M4 18h7" stroke-linecap="round" stroke-linejoin="round"
+                                  stroke-width="2"/>
                         </svg>
                     </label>
-                    <ul tabindex="0"
-                        class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 absolute top-full right-0">
-                        <li th:if="${@rq.logout}"><a href="/usr/member/login"><i class="fa-solid fa-arrow-right-to-bracket"></i> 로그인</a></li>
-                        <li th:if="${@rq.logout}"><a href="/usr/member/join"><i class="fa-solid fa-user-plus"></i> 회원가입</a></li>
+                    <ul class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 right-0"
+                        tabindex="0">
+                        <li th:if="${@rq.logout}"><a href="/usr/member/login"><i
+                                class="fa-solid fa-arrow-right-to-bracket"></i> 로그인</a></li>
+                        <li th:if="${@rq.logout}"><a href="/usr/member/join"><i class="fa-solid fa-user-plus"></i> 회원가입</a>
+                        </li>
                         <li th:if="${@rq.login}"><a href="/usr/member/me"><i class="fa-solid fa-user"></i> 내 정보</a></li>
-                        <li th:if="${@rq.login}"><a href="/usr/member/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> 로그아웃</a></li>
+                        <li th:if="${@rq.login}"><a href="/usr/member/logout"><i
+                                class="fa-solid fa-arrow-right-from-bracket"></i> 로그아웃</a></li>
                     </ul>
                 </div>
             </div>
@@ -93,6 +97,7 @@
 
     const failMsg = getFailMsgFromURL();
 
+    // msg 파라미터의 값이 있으면 toastr로 알림을 표시
     if (failMsg) {
         toastWarning(decodeURIComponent(failMsg));
     }
@@ -116,4 +121,3 @@
 
 </body>
 </html>
-
