@@ -13,13 +13,11 @@
             내 정보
         </h1>
 
-        <div class="card shadow-xl">
+        <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
                 <h2 class="card-title mb-4">개인정보</h2>
-            </div>
 
-            <div class="card-body">
-                <div class="flex flex-col gap-6">
+                <div class="detail flex flex-col gap-3">
                     <div class="form-control">
                         <div class="flex justify-center">
                             <img class="w-40 h-40 rounded-full" th:src="${@rq.profileImgUrl}">
@@ -30,29 +28,28 @@
                         <label class="label">
                             <span class="label-text">가입일</span>
                         </label>
-                        <div class="badge badge-primary"
-                             th:text="${#temporals.format(@rq.member.createDate, 'yy.MM.dd')}"></div>
+                        <div th:text="${#temporals.format(@rq.member.createDate, 'yy.MM.dd')}"></div>
                     </div>
 
-                    <div>
+                    <div class="form-control">
                         <label class="label">
                             <span class="label-text">아이디</span>
                         </label>
-                        <div class="badge badge-primary" th:text="${@rq.member.username}"></div>
+                        <div th:text="${@rq.member.username}"></div>
                     </div>
 
-                    <div>
+                    <div class="form-control">
                         <label class="label">
                             <span class="label-text">별명</span>
                         </label>
-                        <div class="badge badge-primary" th:text="${@rq.member.nickname}"></div>
+                        <div th:text="${@rq.member.nickname}"></div>
                     </div>
 
-                    <div>
+                    <div class="form-control">
                         <label class="label">
                             <span class="label-text">EMAIL</span>
                         </label>
-                        <div class="badge badge-primary" th:text="${@rq.member.email}"></div>
+                        <div th:text="${@rq.member.email}"></div>
                     </div>
                 </div>
             </div>

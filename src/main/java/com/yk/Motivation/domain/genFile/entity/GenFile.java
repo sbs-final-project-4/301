@@ -1,7 +1,7 @@
 package com.yk.Motivation.domain.genFile.entity;
 
 import com.yk.Motivation.base.app.AppConfig;
-import com.yk.Motivation.base.jpa.BaseEntity;
+import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;

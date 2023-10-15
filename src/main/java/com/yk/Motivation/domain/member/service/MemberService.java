@@ -12,6 +12,8 @@ import com.yk.Motivation.domain.member.repository.MemberRepository;
 import com.yk.Motivation.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,10 +127,8 @@ public class MemberService {
     public RsData<Member> modify(long memberId, String password, String nickname, MultipartFile profileImg) {
         Member member = findById(memberId).get();
 
-        if (!password.isBlank()) member.setPassword(passwordEncoder.encode(password));
-
-        if (nickname != null) member.setNickname(nickname);
-
+        if (Ut.str.hasLength(password)) member.setPassword(passwordEncoder.encode(password));
+        if (Ut.str.hasLength(nickname)) member.setNickname(nickname);
         if (profileImg != null) saveProfileImg(member, profileImg);
 
         return RsData.of("S-1", "회원정보가 수정되었습니다.", member);
@@ -154,6 +154,16 @@ public class MemberService {
             return RsData.of("S-1", "유효한 코드입니다.");
 
         return RsData.of("F-2", "유효하지 않은 코드입니다.");
+    }
+
+    public Page<Member> findByKw(String kwType, String kw, Pageable pageable) {
+        return memberRepository.findByKw(kwType, kw, pageable);
+    }
+
+    public String getProfileImgUrl(Member member) {
+        return Optional.ofNullable(member)
+                .flatMap(this::findProfileImgUrl)
+                .orElse("https://placehold.co/30x30?text=UU");
     }
 
     private void sendEmailVerificationEmail(Member member) {

@@ -1,6 +1,6 @@
 package com.yk.Motivation.domain.member.entity;
 
-import com.yk.Motivation.base.jpa.BaseEntity;
+import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.*;

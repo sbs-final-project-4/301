@@ -7,6 +7,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
+import java.util.stream.IntStream;
+
 @Configuration
 @Profile("!prod")
 public class NotProd {
@@ -22,6 +24,8 @@ public class NotProd {
             memberService.setEmailVerified(member1);
             memberService.setEmailVerified(member2);
             memberService.setEmailVerified(member3);
+
+            IntStream.rangeClosed(4, 50).forEach(i -> memberService.join("user" + i, "1234", "nickname" + i, "user" + i + "@test.com", null));
         };
     }
 

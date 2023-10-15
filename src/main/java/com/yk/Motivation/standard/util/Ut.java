@@ -165,6 +165,14 @@ public class Ut {
             return !str.hasLength(getFirstStrOrEmpty(requestParameterValues));
         }
 
+        public static boolean isBlank(List<String> requestParameterValues) {
+            return !hasText(requestParameterValues);
+        }
+
+        public static boolean hasText(List<String> requestParameterValues) {
+            return str.hasLength(getFirstStrOrEmpty(requestParameterValues));
+        }
+
         public static String value(List<String> requestParameterValues) {
             return getFirstStrOrEmpty(requestParameterValues);
         }

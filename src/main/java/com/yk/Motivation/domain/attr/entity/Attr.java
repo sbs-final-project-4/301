@@ -1,6 +1,6 @@
 package com.yk.Motivation.domain.attr.entity;
 
-import com.yk.Motivation.base.jpa.BaseEntity;
+import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;

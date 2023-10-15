@@ -1,6 +1,6 @@
 package com.yk.Motivation.domain.email.entity;
 
-import com.yk.Motivation.base.jpa.BaseEntity;
+import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
 import com.yk.Motivation.base.rsData.RsData;
 import jakarta.persistence.Entity;
 import lombok.*;

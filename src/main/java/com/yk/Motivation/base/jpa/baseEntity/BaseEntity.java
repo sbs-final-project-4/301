@@ -1,4 +1,4 @@
-package com.yk.Motivation.base.jpa;
+package com.yk.Motivation.base.jpa.baseEntity;
 
 import jakarta.persistence.*;
 import lombok.*;

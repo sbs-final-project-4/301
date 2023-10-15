@@ -29,6 +29,10 @@ public class SecurityConfig {
                                         new AntPathRequestMatcher("/"),
                                         new AntPathRequestMatcher("/usr/**")
                                 ).access("isAnonymous() or @memberController.assertCurrentMemberVerified()")
+                                .requestMatchers(
+                                        new AntPathRequestMatcher("/adm/**")
+                                )
+                                .hasAuthority("admin")
                                 .anyRequest().permitAll()
                 )
                 .exceptionHandling(
