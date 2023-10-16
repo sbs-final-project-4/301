@@ -72,7 +72,7 @@ public class MemberService {
 
     // 명령
     @Transactional
-    public RsData<Member> join(String username, String password, String nickname, String email, MultipartFile profileImg) {
+    public RsData<Member> join(String username, String password, String nickname, String email, String profileImgFilePath) {
         if (findByUsername(username).isPresent())
             return RsData.of("F-1", "%s(은)는 사용중인 아이디 입니다.".formatted(username));
 
@@ -89,7 +89,7 @@ public class MemberService {
 
         memberRepository.save(member);
 
-        if (profileImg != null) saveProfileImg(member, profileImg);
+        if (profileImgFilePath != null) saveProfileImg(member, profileImgFilePath);
 
         sendJoinCompleteEmail(member);
         sendEmailVerificationEmail(member);
@@ -97,10 +97,27 @@ public class MemberService {
         return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
     }
 
+    @Transactional
+    public RsData<Member> join(String username, String password, String nickname, String email, MultipartFile profileImg) {
+        String profileImgFilePath = Ut.file.toFile(profileImg, AppConfig.getTempDirPath());
+        return join(username, password, nickname, email, profileImgFilePath);
+    }
+
+
     private void saveProfileImg(Member member, MultipartFile profileImg) {
+        if (profileImg == null) return;
         if (profileImg.isEmpty()) return;
 
-        genFileService.save(member.getModelName(), member.getId(), "common", "profileImg", 1, profileImg);    }
+        String profileImgFilePath = Ut.file.toFile(profileImg, AppConfig.getTempDirPath());
+
+        saveProfileImg(member, profileImgFilePath);
+    }
+
+    private void saveProfileImg(Member member, String profileImgFilePath) {
+        if (Ut.str.isBlank(profileImgFilePath)) return;
+
+        genFileService.save(member.getModelName(), member.getId(), "common", "profileImg", 1, profileImgFilePath);
+    }
 
     private void sendJoinCompleteEmail(Member member) {
         final String email = member.getEmail();
@@ -181,6 +198,8 @@ public class MemberService {
     }
 
     public boolean isEmailVerified(Member member) {
+        if (member.isSocialMember()) return true;
+
         return attrService.getAsBoolean("member__%d__extra__emailVerified".formatted(member.getId()), false);
     }
 
@@ -211,6 +230,17 @@ public class MemberService {
 
             log.info("sendTempPasswordToEmail, 메일 발송 성공 : " + email);
         });
+    }
+
+    @Transactional
+    public Member whenSocialLogin(String providerTypeCode, String username, String nickname, String profileImgUrl) {
+        Optional<Member> opMember = findByUsername(username);
+
+        if (opMember.isPresent()) return opMember.get();
+
+        String filePath = Ut.str.hasLength(profileImgUrl) ? Ut.file.downloadFileByHttp(profileImgUrl, AppConfig.getTempDirPath()) : "";
+
+        return join(username, "", nickname, "", filePath).getData();
     }
 
 }

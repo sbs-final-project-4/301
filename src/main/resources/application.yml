@@ -34,9 +34,21 @@ spring:
     username: root
     password:
   security:
-    user:
-      name: user
-      password: 1234
+    oauth2:
+      client:
+        registration:
+          kakao:
+            clientId: 61f551ef34c13cdb5bf18c6fa42e4d20
+            scope: profile_nickname, profile_image
+            client-name: Kakao
+            authorization-grant-type: authorization_code
+            redirect-uri: '${custom.site.baseUrl}/{action}/oauth2/code/{registrationId}'
+        provider:
+          kakao:
+            authorization-uri: https://kauth.kakao.com/oauth/authorize
+            token-uri: https://kauth.kakao.com/oauth/token
+            user-info-uri: https://kapi.kakao.com/v2/user/me
+            user-name-attribute: id
   jpa:
     hibernate:
       ddl-auto: create
@@ -53,6 +65,7 @@ logging:
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
 custom:
+  tempDirPath: c:/temp/motivation/temp
   site:
     name: 모티베이션
     baseUrl: "http://localhost:8090"

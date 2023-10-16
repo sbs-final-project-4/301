@@ -32,11 +32,16 @@
                        name="password" placeholder="비밀번호" th:autofocus="${!UtThy.inputAttributeAutofocus(param.lastUsername)}" type="password">
             </div>
 
-            <div>
+            <div class="flex flex-col gap-2">
                 <button class="btn btn-block btn-primary gap-1">
                     <i class="fa-solid fa-arrow-right-to-bracket"></i>
                     <span>로그인</span>
                 </button>
+
+                <a href="/oauth2/authorization/kakao" class="btn btn-block btn-outline gap-1">
+                    <i class="fa-solid fa-comment text-[color:#ffe812]"></i>
+                    <span class="normal-case" th:text="|카카오 로그인|"></span>
+                </a>
 
                 <div class="text-center">
                     <a class="btn btn-link" href="/usr/member/join">회원가입</a>

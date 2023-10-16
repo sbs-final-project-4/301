@@ -25,17 +25,17 @@ public class GenFileService {
 
     // 명령
     @Transactional
-    public GenFile save(String relTypeCode, Long relId, String typeCode, String type2Code, int fileNo, MultipartFile multipartFile) {
+    public GenFile save(String relTypeCode, Long relId, String typeCode, String type2Code, int fileNo, String sourceFile) {
         findGenFileBy(relTypeCode, relId, typeCode, type2Code, fileNo).ifPresent(genFile -> {
             Ut.file.remove(genFile.getFilePath());
             genFileRepository.delete(genFile);
         });
 
-        String originFileName = multipartFile.getOriginalFilename(); // 확장자 포함한 원본 파일의 이름
+        String originFileName = Ut.file.getOriginFileName(sourceFile); // 확장자 포함한 원본 파일의 이름
         String fileExt = Ut.file.getExt(originFileName); // 파일의 확장자
         String fileExtTypeCode = Ut.file.getFileExtTypeCodeFromFileExt(fileExt); // img, video, audio 등...
         String fileExtType2Code = Ut.file.getFileExtType2CodeFromFileExt(fileExt); // 파일의 확장자?
-        int fileSize = (int) multipartFile.getSize(); // 파일의 크기를 바이트 단위로
+        long fileSize = new File(sourceFile).length(); // 파일의 크기를 바이트 단위로
         String fileDir = getCurrentDirName(relTypeCode); // relTypeCode/2023_10_11 ...
 
         GenFile genFile = GenFile.builder()
@@ -58,11 +58,8 @@ public class GenFileService {
 
         file.getParentFile().mkdirs(); // 없으면 생성
 
-        try {
-            multipartFile.transferTo(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Ut.file.moveFile(sourceFile, file);
+        Ut.file.remove(sourceFile);
 
         return genFile;
     }

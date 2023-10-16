@@ -1,14 +1,26 @@
 package com.yk.Motivation.standard.util;
 
+import org.apache.tika.Tika;
+import org.springframework.web.multipart.MultipartFile;
+
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.net.*;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 public class Ut {
     public static class date {
@@ -19,6 +31,128 @@ public class Ut {
     }
 
     public static class file {
+        private static final String ORIGIN_FILE_NAME_SEPARATOR = "--originFileName_";
+
+        public static String getOriginFileName(String sourceFile) {
+            if (sourceFile.contains(ORIGIN_FILE_NAME_SEPARATOR)) {
+                String[] fileInfos = sourceFile.split(ORIGIN_FILE_NAME_SEPARATOR);
+                return fileInfos[fileInfos.length - 1];
+            }
+
+            return Paths.get(sourceFile).getFileName().toString();
+        }
+
+        public static String toFile(MultipartFile multipartFile, String tempDirPath) {
+            if (multipartFile == null) return "";
+            if (multipartFile.isEmpty()) return "";
+
+            String filePath = tempDirPath + "/" + UUID.randomUUID() + ORIGIN_FILE_NAME_SEPARATOR + multipartFile.getOriginalFilename();
+
+            try {
+                multipartFile.transferTo(new File(filePath));
+            } catch (IOException e) {
+                return "";
+            }
+
+            return filePath;
+        }
+
+        public static void moveFile(String filePath, File file) {
+            moveFile(filePath, file.getAbsolutePath());
+        }
+
+        public static class DownloadFileFailException extends RuntimeException {
+
+        }
+
+        private static String getFileExt(File file) {
+            Tika tika = new Tika();
+            String mimeType = "";
+
+            try {
+                mimeType = tika.detect(file);
+            } catch (IOException e) {
+                return null;
+            }
+
+            String ext = mimeType.replaceAll("image/", "");
+            ext = ext.replaceAll("jpeg", "jpg");
+
+            return ext.toLowerCase();
+        }
+
+        public static String getFileExt(String fileName) {
+            int pos = fileName.lastIndexOf(".");
+
+            if (pos == -1) {
+                return "";
+            }
+
+            return fileName.substring(pos + 1).trim();
+        }
+
+        public static String getFileNameFromUrl(String fileUrl) {
+            try {
+                return Paths.get(new URI(fileUrl).getPath()).getFileName().toString();
+            } catch (URISyntaxException e) {
+                return "";
+            }
+        }
+
+        public static String downloadFileByHttp(String fileUrl, String outputDir) {
+            String originFileName = getFileNameFromUrl(fileUrl);
+            String fileExt = getFileExt(originFileName);
+
+            if (fileExt.isEmpty()) {
+                fileExt = "tmp";
+            }
+
+            new File(outputDir).mkdirs();
+
+            String tempFileName = UUID.randomUUID() + ORIGIN_FILE_NAME_SEPARATOR + originFileName + "." + fileExt;
+            String filePath = outputDir + "/" + tempFileName;
+
+            try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
+                ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(fileUrl).openStream());
+                FileChannel fileChannel = fileOutputStream.getChannel();
+                fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+            } catch (Exception e) {
+                throw new DownloadFileFailException();
+            }
+
+            File file = new File(filePath);
+
+            if (file.length() == 0) {
+                throw new DownloadFileFailException();
+            }
+
+            if (fileExt.equals("tmp")) {
+                String ext = getFileExt(file);
+
+                if (ext == null || ext.isEmpty()) {
+                    throw new DownloadFileFailException();
+                }
+
+                String newFilePath = filePath.replaceAll("\\.tmp", "\\." + ext);
+                moveFile(filePath, newFilePath);
+                filePath = newFilePath;
+            }
+
+            return filePath;
+        }
+
+        public static void moveFile(String filePath, String destFilePath) {
+            Path file = Paths.get(filePath);
+            Path destFile = Paths.get(destFilePath);
+
+            try {
+                Files.move(file, destFile, StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException ignored) {
+
+            }
+        }
+
+
         public static String getExt(String filename) {
             return Optional.ofNullable(filename)
                     .filter(f -> f.contains("."))
@@ -27,34 +161,23 @@ public class Ut {
         }
 
         public static String getFileExtTypeCodeFromFileExt(String ext) {
-            switch (ext) {
-                case "jpeg":
-                case "jpg":
-                case "gif":
-                case "png":
-                    return "img";
-                case "mp4":
-                case "avi":
-                case "mov":
-                    return "video";
-                case "mp3":
-                    return "audio";
-            }
+            return switch (ext) {
+                case "jpeg", "jpg", "gif", "png" -> "img";
+                case "mp4", "avi", "mov" -> "video";
+                case "mp3" -> "audio";
+                default -> "etc";
+            };
 
-            return "etc";
         }
 
         public static String getFileExtType2CodeFromFileExt(String ext) {
 
-            switch (ext) {
-                case "jpeg":
-                case "jpg":
-                    return "jpg";
-                case "gif", "png", "mp4", "mov", "avi", "mp3":
-                    return ext;
-            }
+            return switch (ext) {
+                case "jpeg", "jpg" -> "jpg";
+                case "gif", "png", "mp4", "mov", "avi", "mp3" -> ext;
+                default -> "etc";
+            };
 
-            return "etc";
         }
 
         public static void remove(String filePath) {
@@ -68,11 +191,7 @@ public class Ut {
     public static class url {
 
         public static String encode(String message) {
-            try {
-                return URLEncoder.encode(message, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                return null;
-            }
+            return URLEncoder.encode(message, StandardCharsets.UTF_8);
         }
 
         public static String modifyQueryParam(String url, String paramName, String paramValue) {
@@ -123,8 +242,8 @@ public class Ut {
 
         public static String getPath(String refererUrl, String defaultValue) {
             try {
-                return new URL(refererUrl).getPath();
-            } catch (MalformedURLException e) {
+                return new URI(refererUrl).getPath();
+            } catch (URISyntaxException e) {
                 return defaultValue;
             }
         }
@@ -132,7 +251,7 @@ public class Ut {
 
     public static class str {
         public static boolean hasLength(String string) {
-            return string != null && string.length() > 0;
+            return string != null && !string.isEmpty();
         }
 
         public static boolean isBlank(String string) {

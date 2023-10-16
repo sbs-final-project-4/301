@@ -31,6 +31,7 @@ public class AdmMemberController {
             @RequestParam(defaultValue = "") String kw,
             @RequestParam(defaultValue = "all") String kwType
     ) {
+
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));

@@ -48,4 +48,17 @@ public class Member extends BaseEntity {
 
         return grantedAuthorities;
     }
+
+    public boolean isSocialMember() {
+        return username.startsWith("KAKAO_");
+    }
+
+    public boolean isModifyAvailable() {
+        return !isSocialMember();
+    }
+
+    public String getEmailForPrint() {
+        if (isSocialMember()) return "-";
+        return email;
+    }
 }

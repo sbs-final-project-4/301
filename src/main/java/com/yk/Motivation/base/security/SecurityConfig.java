@@ -8,9 +8,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import java.io.IOException;
 
 @Configuration
 @EnableWebSecurity
@@ -39,6 +43,10 @@ public class SecurityConfig {
                         exceptionHandling -> exceptionHandling
                                 .accessDeniedHandler(new CustomAccessDeniedHandler())
                 )
+                .oauth2Login(
+                        oauth2Login -> oauth2Login
+                                .loginPage("/usr/member/login")
+                )
                 .csrf((csrf) -> csrf
                         .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
                 .headers((headers) -> headers
@@ -51,8 +59,9 @@ public class SecurityConfig {
                 )
                 .logout((logout) -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/usr/member/logout"))
-                        .logoutSuccessUrl("/")
-                        .invalidateHttpSession(true)) // 로그아웃 후 세션 정리
+                        .invalidateHttpSession(true) // 로그아웃 후 세션 정리
+                        .logoutSuccessUrl("/"))
+//                        .addLogoutHandler(oAuth2LogoutHandler()))
         ;
         return http.build();
     }
@@ -61,4 +70,17 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+//    public LogoutHandler oAuth2LogoutHandler() {
+//        return (request, response, authentication) -> {
+//            if (authentication instanceof OAuth2AuthenticationToken) {
+//                String kakaoLogoutURL = "https://kauth.kakao.com/oauth/logout?client_id=61f551ef34c13cdb5bf18c6fa42e4d20&logout_redirect_uri=https://localhost:8090/usr/member/logout";
+//                try {
+//                    response.sendRedirect(kakaoLogoutURL);
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
+//            }
+//        };
+//    }
 }

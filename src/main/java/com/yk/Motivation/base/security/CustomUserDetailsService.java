@@ -21,6 +21,8 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Member member = memberRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("username(%s) not found".formatted(username)));
 
+        if (member.isSocialMember()) throw new UsernameNotFoundException("social login user");
+
         return new User(member.getUsername(), member.getPassword(), member.getGrantedAuthorities());
     }
 }

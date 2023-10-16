@@ -49,7 +49,7 @@
                         <label class="label">
                             <span class="label-text">EMAIL</span>
                         </label>
-                        <div th:text="${@rq.member.email}"></div>
+                        <div th:text="${@rq.member.emailForPrint}"></div>
                     </div>
                 </div>
             </div>
@@ -58,7 +58,7 @@
         <div class="mt-6">
             <div class="text-center">
                 <a class="btn btn-link" href="/usr/member/logout">로그아웃</a>
-                <a class="btn btn-link" href="/usr/member/checkPassword?redirectUrl=/usr/member/modify">회원정보수정</a>
+                <a th:if="${@rq.member.modifyAvailable}" class="btn btn-link" href="/usr/member/checkPassword?redirectUrl=/usr/member/modify">회원정보수정</a>
                 <a class="btn btn-link" href="/usr/member/withdrawal">회원탈퇴</a>
             </div>
         </div>

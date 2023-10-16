@@ -112,7 +112,7 @@
             </div>
 
             <ul class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[20px]">
-                <li class="group" th:each="member : ${memberPage.content}">
+                <li th:each="member : ${memberPage.content}">
                     <div class="card bg-base-100 shadow-xl">
                         <div class="card-body">
 
@@ -156,7 +156,7 @@
                                     <label class="label">
                                         <span class="label-text">EMAIL</span>
                                     </label>
-                                    <div th:text="${member.email}"></div>
+                                    <div th:text="${member.emailForPrint}"></div>
                                 </div>
                             </div>
                         </div>
