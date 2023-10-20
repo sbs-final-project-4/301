@@ -13,7 +13,8 @@
             <span th:text="|${board.name} 글수정|"></span>
         </h1>
 
-        <form class="flex flex-col gap-6" method="POST" onsubmit="submitModifyForm(this); return false;"
+        <form class="flex flex-col gap-6" method="POST" enctype="multipart/form-data"
+              onsubmit="submitModifyForm(this); return false;"
               th:action>
             <div class="form-control">
                 <label class="label">
@@ -27,11 +28,41 @@
                 <label class="label">
                     <span class="label-text">내용</span>
                 </label>
-                <textarea class="textarea textarea-bordered h-[calc(100vh-450px)] min-h-[100px]" maxlength="20000"
+                <textarea class="textarea textarea-bordered h-[calc(100vh-650px)] min-h-[100px]" maxlength="20000"
                           name="body" placeholder="내용"
                           th:text="${article.body}"
                 ></textarea>
             </div>
+
+            <th:block th:each="i : ${#numbers.sequence(1, 2)}" th:with="genFile = ${filesMap[i + '']}">
+
+                <div th:if="${genFile != null}" class="form-control col-span-full">
+                    <label class="label">
+                        <span class="label-text">기존 첨부파일 <span th:text="${i}"></span> 삭제</span>
+                    </label>
+
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" class="checkbox" th:name="'attachmentRemove__' + ${i}" th:value="true">
+
+                        <a th:href="|${genFile.downloadUrl}|" class="link mt-2">
+                            <i class="fa-regular fa-file"></i>
+                            첨부파일
+                            <span th:text="${i}"></span>
+                            (<span th:text="${genFile.originFileName}"></span>)
+                            다운로드
+                        </a>
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">새 첨부파일 <span th:text="${i}"></span></span>
+                    </label>
+                    <input class="file-input file-input-bordered"
+                           th:name="'attachment__' + ${i}"
+                           type="file">
+                </div>
+            </th:block>
 
             <div class="flex flex-col gap-2">
                 <button class="btn btn-block btn-primary gap-1">

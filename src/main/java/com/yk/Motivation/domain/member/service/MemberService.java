@@ -52,7 +52,7 @@ public class MemberService {
     }
 
     public Optional<String> findProfileImgUrl(Member member) {
-        return genFileService.findGenFileBy(
+        return genFileService.findBy(
                         member.getModelName(), member.getId(), "common", "profileImg", 1
                 )
                 .map(GenFile::getUrl);

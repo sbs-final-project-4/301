@@ -1,5 +1,6 @@
 package com.yk.Motivation.standard.util;
 
+import com.yk.Motivation.base.app.AppConfig;
 import org.apache.tika.Tika;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -42,7 +43,7 @@ public class Ut {
             return Paths.get(sourceFile).getFileName().toString();
         }
 
-        public static String toFile(MultipartFile multipartFile, String tempDirPath) {
+        public static String toFile(MultipartFile multipartFile, String tempDirPath) { // temp 저장
             if (multipartFile == null) return "";
             if (multipartFile.isEmpty()) return "";
 
@@ -59,6 +60,29 @@ public class Ut {
 
         public static void moveFile(String filePath, File file) {
             moveFile(filePath, file.getAbsolutePath());
+        }
+
+        public static boolean exists(String sourceFile) {
+            return new File(sourceFile).exists();
+        }
+
+        public static String tempCopy(String sourceFile) {
+            String tempPath = AppConfig.getTempDirPath() + "/" + getFileName(sourceFile);
+            copy(sourceFile, tempPath);
+
+            return tempPath;
+        }
+
+        private static String getFileName(String sourceFile) {
+            return Paths.get(sourceFile).getFileName().toString();
+        }
+
+        private static void copy(String sourceFile, String tempDirPath) {
+            try {
+                Files.copy(Paths.get(sourceFile), Paths.get(tempDirPath), StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         public static class DownloadFileFailException extends RuntimeException {
@@ -263,7 +287,7 @@ public class Ut {
 
     public static class str {
         public static boolean hasLength(String string) {
-            return string != null && !string.isEmpty();
+            return string != null && !string.trim().isEmpty();
         }
 
         public static boolean isBlank(String string) {

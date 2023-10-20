@@ -13,4 +13,8 @@ public interface GenFileRepository extends JpaRepository<GenFile, Long> {
     Optional<GenFile> findByRelTypeCodeAndRelIdAndTypeCodeAndType2CodeAndFileNo(String relTypeCode, long relId, String typeCode, String type2Code, int fileNo);
 
     List<GenFile> findAllByRelTypeCodeAndRelIdInOrderByTypeCodeAscType2CodeAscFileNoAsc(String relTypeCode, long[] relIds);
+
+    List<GenFile> findByRelTypeCodeAndRelIdAndTypeCodeAndType2CodeOrderByFileNoAsc(String relTypeCode, long relId, String typeCode, String type2Code);
+
+    List<GenFile> findByRelTypeCodeAndRelId(String relTypeCode, long relId);
 }

@@ -1,5 +1,6 @@
 package com.yk.Motivation.domain.genFile.service;
 
+import com.yk.Motivation.base.app.AppConfig;
 import com.yk.Motivation.domain.genFile.entity.GenFile;
 import com.yk.Motivation.domain.genFile.repository.GenFileRepository;
 import lombok.RequiredArgsConstructor;
@@ -10,7 +11,10 @@ import com.yk.Motivation.standard.util.Ut;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,17 +23,22 @@ public class GenFileService {
     private final GenFileRepository genFileRepository;
 
     // 조회
-    public Optional<GenFile> findGenFileBy(String relTypeCode, Long relId, String typeCode, String type2Code, int fileNo) {
+    public Optional<GenFile> findBy(String relTypeCode, Long relId, String typeCode, String type2Code, int fileNo) {
         return genFileRepository.findByRelTypeCodeAndRelIdAndTypeCodeAndType2CodeAndFileNo(relTypeCode, relId, typeCode, type2Code, fileNo);
+    }
+
+    @Transactional
+    public GenFile save(String relTypeCode, Long relId, String typeCode, String type2Code, int fileNo, MultipartFile sourceFile) {
+        String sourceFilePath = Ut.file.toFile(sourceFile, AppConfig.getTempDirPath());
+        return save(relTypeCode, relId, typeCode, type2Code, fileNo, sourceFilePath);
     }
 
     // 명령
     @Transactional
     public GenFile save(String relTypeCode, Long relId, String typeCode, String type2Code, int fileNo, String sourceFile) {
-        findGenFileBy(relTypeCode, relId, typeCode, type2Code, fileNo).ifPresent(genFile -> {
-            Ut.file.remove(genFile.getFilePath());
-            genFileRepository.delete(genFile);
-        });
+        if (!Ut.file.exists(sourceFile)) return null;
+
+        remove(relTypeCode, relId, typeCode, type2Code, fileNo);
 
         String originFileName = Ut.file.getOriginFileName(sourceFile); // 확장자 포함한 원본 파일의 이름
         String fileExt = Ut.file.getExt(originFileName); // 파일의 확장자
@@ -66,6 +75,36 @@ public class GenFileService {
 
     private String getCurrentDirName(String relTypeCode) { // relTypeCode/2023_10_11 ...
         return relTypeCode + "/" + Ut.date.getCurrentDateFormatted("yyyy_MM_dd");
+    }
+
+    public Map<String, GenFile> findGenFilesMapKeyByFileNo(String relTypeCode, long relId, String typeCode, String type2Code) {
+        List<GenFile> genFiles = genFileRepository.findByRelTypeCodeAndRelIdAndTypeCodeAndType2CodeOrderByFileNoAsc(relTypeCode, relId, typeCode, type2Code);
+
+        return genFiles
+                .stream()
+                .collect(Collectors.toMap(
+                        genFile -> String.valueOf(genFile.getFileNo()), // key
+                        genFile -> genFile // value
+                ));
+    }
+
+    public Optional<GenFile> findById(long id) {
+        return genFileRepository.findById(id);
+    }
+
+    @Transactional
+    public void remove(String relTypeCode, long relId, String typeCode, String type2Code, int fileNo) {
+        findBy(relTypeCode, relId, typeCode, type2Code, fileNo).ifPresent(this::remove);
+    }
+
+    @Transactional
+    public void remove(GenFile genFile) {
+        Ut.file.remove(genFile.getFilePath());
+        genFileRepository.delete(genFile);
+    }
+
+    public List<GenFile> findByRelId(String modelName, Long relId) {
+        return genFileRepository.findByRelTypeCodeAndRelId(modelName, relId);
     }
 
 }
