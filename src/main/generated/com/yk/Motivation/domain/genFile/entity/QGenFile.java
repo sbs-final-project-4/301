@@ -40,7 +40,7 @@ public class QGenFile extends EntityPathBase<GenFile> {
 
     public final StringPath filePath = createString("filePath");
 
-    public final NumberPath<Integer> fileSize = createNumber("fileSize", Integer.class);
+    public final NumberPath<Long> fileSize = createNumber("fileSize", Long.class);
 
     //inherited
     public final NumberPath<Long> id = _super.id;

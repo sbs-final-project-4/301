@@ -25,21 +25,22 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     @Transactional
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        OAuth2User oAuth2User = super.loadUser(userRequest);
+        OAuth2User oAuth2User = super.loadUser(userRequest); // 요청을 토대로 OAuth2 사용자 로드
 
         String oauthId = oAuth2User.getName();
-        System.out.println("oauthId : " + oauthId);
-        Map<String, Object> attributes = oAuth2User.getAttributes();
+        Map<String, Object> attributes = oAuth2User.getAttributes(); // OAuth2User 에서  Map 형태로 attribute 가져옴
 
-        Map attributesProperties = (Map) attributes.get("properties");
-        String nickname = (String) attributesProperties.get("nickname");
-        String profileImgUrl = (String) attributesProperties.get("profile_image");
+        Map attributesProperties = (Map) attributes.get("properties"); // attribute 에서 properties 의 value Map 형태로 가져옴
+        String nickname = (String) attributesProperties.get("nickname"); // properties 에서 nickname 의 value 가져옴
+        String profileImgUrl = (String) attributesProperties.get("profile_image"); // properties 에서 profile_image 의 value 가져옴
 
-        String providerTypeCode = userRequest.getClientRegistration().getRegistrationId().toUpperCase();
+        System.out.println("profile_image : " + profileImgUrl);
 
-        String username = providerTypeCode + "__%s".formatted(oauthId);
+        String providerTypeCode = userRequest.getClientRegistration().getRegistrationId().toUpperCase(); // provider 의 Id 대문자로 가져옴 ( KAKAO )
 
-        Member member = memberService.whenSocialLogin(providerTypeCode, username, nickname, profileImgUrl);
+        String username = providerTypeCode + "__%s".formatted(oauthId); // (KAKAO__oauthId)
+
+        Member member = memberService.whenSocialLogin(providerTypeCode, username, nickname, profileImgUrl); // 현재 회원 인지 조회, 없으면 가입
 
         return new CustomOAuth2User(member.getUsername(), member.getPassword(), member.getGrantedAuthorities());
     }

@@ -1,7 +1,7 @@
-<html layout:decorate="~{adm/common/layout}">
+<html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title>회원목록</title>
+    <title th:text="|${board.name} 게시판|"></title>
 </head>
 
 <body>
@@ -9,8 +9,8 @@
 <div class="flex-1 flex items-center justify-center" layout:fragment="content">
     <div class="container w-full px-4">
         <h1 class="mb-4">
-            <i class="fa-solid fa-users"></i>
-            회원목록
+            <th:block th:utext="${board.icon}"></th:block>
+            <span th:text="|${board.name} 게시판|"></span>
         </h1>
 
         <div>
@@ -18,7 +18,7 @@
             <div class="flex bg-base-100 sticky top-[64px] shadow-sm z-10 -mx-4 px-4 py-2 flex-wrap gap-2 items-center">
                 <div>
                     <span class="label-txt">검색된 결과 개수</span>
-                    <span th:text="${memberPage.totalElements}"></span>
+                    <span th:text="${articlePage.totalElements}"></span>
                 </div>
                 <div class="flex-grow"></div>
                 <div class="flex flex-wrap gap-2">
@@ -32,6 +32,11 @@
                        class="btn btn-sm btn-outline">
                         <i class="fa-solid fa-xmark"></i>
                         검색조건 지우기
+                    </a>
+
+                    <a th:if="${@rq.login}" class="btn btn-sm btn-outline" th:href="|/usr/article/${board.code}/write|">
+                        <i class="fa-solid fa-pen"></i>
+                        글쓰기
                     </a>
                 </div>
             </div>
@@ -51,8 +56,8 @@
 
                             <select name="kwType" class="select select-bordered" th:value="${param.kwType}">
                                 <option value="all">전체</option>
-                                <option value="username">아이디</option>
-                                <option value="email">이메일</option>
+                                <option value="subject">제목</option>
+                                <option value="body">내용</option>
                                 <option value="nickname">별명</option>
                             </select>
                         </div>
@@ -85,58 +90,44 @@
                 </form>
             </dialog>
 
-            <div class="mt-4"
-                 th:if="${memberPage.totalPages > 1}"
+            <div class="mt-4" th:if="${articlePage.totalPages > 1}"
                  th:with="queryStrBase = '?kwType=' + ${param.kwType != null ? param.kwType : ''} + '&kw=' + ${param.kw != null ? param.kw : ''} + '&'">
-                <div th:replace="common/fragments :: pagination(${memberPage}, ${queryStrBase}, 1)"></div>
+                <div th:replace="common/fragments :: pagination(${articlePage}, ${queryStrBase}, 1)"></div>
             </div>
 
             <ul class="mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[20px]">
-                <li th:each="member : ${memberPage.content}">
+                <li th:each="article : ${articlePage.content}">
                     <div class="card bg-base-100 shadow-xl">
                         <div class="card-body">
 
-                            <div class="detail grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3">
+                            <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3">
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text">게시물번호</span>
+                                    </label>
+                                    <div th:text="${article.id}"></div>
+                                </div>
+
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text">작성일</span>
+                                    </label>
+                                    <div th:text="${#temporals.format(article.createDate, 'yy.MM.dd')}"></div>
+                                </div>
+
+                                <div class="form-control">
+                                    <label class="label">
+                                        <span class="label-text">작성자</span>
+                                    </label>
+                                    <div th:text="${article.author.nickname}"></div>
+                                </div>
+
                                 <div class="form-control col-span-full">
-                                    <div class="flex justify-center">
-                                        <img class="w-40 h-40 rounded-full"
-                                             th:src="${@memberService.getProfileImgUrl(member)}">
-                                    </div>
-                                </div>
-
-                                <div class="form-control">
                                     <label class="label">
-                                        <span class="label-text">회원번호</span>
+                                        <span class="label-text">제목</span>
                                     </label>
-                                    <div th:text="${member.id}"></div>
-                                </div>
-
-                                <div class="form-control">
-                                    <label class="label">
-                                        <span class="label-text">가입일</span>
-                                    </label>
-                                    <div th:text="${#temporals.format(member.createDate, 'yy.MM.dd')}"></div>
-                                </div>
-
-                                <div class="form-control">
-                                    <label class="label">
-                                        <span class="label-text">아이디</span>
-                                    </label>
-                                    <div th:text="${member.username}"></div>
-                                </div>
-
-                                <div class="form-control">
-                                    <label class="label">
-                                        <span class="label-text">별명</span>
-                                    </label>
-                                    <div th:text="${member.nickname}"></div>
-                                </div>
-
-                                <div class="form-control">
-                                    <label class="label">
-                                        <span class="label-text">EMAIL</span>
-                                    </label>
-                                    <div th:text="${member.emailForPrint}"></div>
+                                    <a class="link truncate" th:href="|/usr/article/${board.code}/detail/${article.id}|"
+                                       th:text="${article.subject}"></a>
                                 </div>
                             </div>
                         </div>
@@ -145,14 +136,12 @@
             </ul>
 
             <div class="mt-4"
-                 th:if="${memberPage.totalPages > 1}"
+                 th:if="${articlePage.totalPages > 1}"
                  th:with="queryStrBase = '?kwType=' + ${param.kwType != null ? param.kwType : ''} + '&kw=' + ${param.kw != null ? param.kw : ''} + '&'">
-                <div th:replace="common/fragments :: pagination(${memberPage}, ${queryStrBase}, 1)"></div>
+                <div th:replace="common/fragments :: pagination(${articlePage}, ${queryStrBase}, 1)"></div>
             </div>
         </div>
     </div>
 </div>
 
 </body>
-
-</html>

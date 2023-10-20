@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+</head>
+
+<body>
+
+<th:block th:fragment="pagination(itemPage, queryStrBase, pageArmSize)">
+    <div th:if="${!itemPage.isEmpty()}"
+         class="flex justify-center">
+        <div class="join">
+            <a th:href="@{|${queryStrBase}page=1|}"
+               class="join-item btn"
+               th:classappend="${itemPage.number + 1 == 1} ? 'btn-active'"
+               th:text="1"
+            >
+            </a>
+
+            <a
+                    th:href="@{|${queryStrBase}page=${itemPage.number + 1 - pageArmSize - 1}|}"
+                    th:if="${itemPage.number + 1 - pageArmSize > 2}"
+                    class="join-item btn"
+            >...</a>
+
+            <th:block th:if="${2 <= itemPage.totalPages - 1}">
+                <a th:each="page: ${#numbers.sequence(2, itemPage.totalPages - 1)}"
+                   th:if="${page >= itemPage.number + 1 - pageArmSize and page <= itemPage.number + 1 + pageArmSize}"
+                   th:classappend="${page == itemPage.number + 1} ? 'btn-active'"
+                   th:href="@{|${queryStrBase}page=${page}|}"
+                   class="join-item btn" th:text="${page}">
+                </a>
+            </th:block>
+
+            <a
+                    th:href="@{|${queryStrBase}page=${itemPage.number + 1 + pageArmSize + 1}|}"
+                    th:if="${itemPage.number + 1 + pageArmSize < itemPage.totalPages - 1}"
+                    class="join-item btn"
+            >...</a>
+
+            <a th:href="@{|${queryStrBase}page=${itemPage.totalPages}|}"
+               class="join-item btn"
+               th:classappend="${itemPage.number + 1 == itemPage.totalPages} ? 'btn-active'"
+               th:text="${itemPage.totalPages}"
+            ></a>
+        </div>
+    </div>
+</th:block>
+</body>
+</html>

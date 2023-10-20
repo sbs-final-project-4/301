@@ -217,4 +217,13 @@ public class Rq {
     public String getRefererUrlPath(String defaultValue) {
         return Ut.url.getPath(getRefererUrl(defaultValue), defaultValue);
     }
+
+
+    public String getCurrentUrlPath() {
+        return Ut.url.getPath(getCurrentUrl(), "");
+    }
+
+    private String getCurrentUrl() {
+        return req.getRequestURI();
+    }
 }

@@ -122,6 +122,8 @@ public class MemberService {
     private void sendJoinCompleteEmail(Member member) {
         final String email = member.getEmail();
 
+        if (Ut.str.isBlank(email)) return;
+
         CompletableFuture<RsData> sendRsFuture = emailService.send(
                 email,
                 "[%s 가입축하] 회원가입이 완료되었습니다.".formatted(
@@ -184,6 +186,8 @@ public class MemberService {
     }
 
     private void sendEmailVerificationEmail(Member member) {
+        if (Ut.str.isBlank(member.getEmail())) return;
+
         emailVerificationService.send(member);
     }
 
@@ -234,10 +238,12 @@ public class MemberService {
 
     @Transactional
     public Member whenSocialLogin(String providerTypeCode, String username, String nickname, String profileImgUrl) {
-        Optional<Member> opMember = findByUsername(username);
+        Optional<Member> opMember = findByUsername(username); // providerCode__~~~~ 로 member 조회
 
-        if (opMember.isPresent()) return opMember.get();
+        if (opMember.isPresent()) return opMember.get(); // 이미 회원이면 member 객체 return
 
+        // Oauth2User 에서 가져온 profileImgUrl 있으면 실행
+        // profileImgUrl 에서 download 해서 temp 에 저장, 그 path 를 return
         String filePath = Ut.str.hasLength(profileImgUrl) ? Ut.file.downloadFileByHttp(profileImgUrl, AppConfig.getTempDirPath()) : "";
 
         return join(username, "", nickname, "", filePath).getData();

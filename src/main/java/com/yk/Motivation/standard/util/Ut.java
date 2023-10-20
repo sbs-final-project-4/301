@@ -99,23 +99,35 @@ public class Ut {
             }
         }
 
+        // fileUrl 에서 파일을 다운로드 하여 filePath(outputDir/tempFileName) 에 저장
         public static String downloadFileByHttp(String fileUrl, String outputDir) {
-            String originFileName = getFileNameFromUrl(fileUrl);
-            String fileExt = getFileExt(originFileName);
+            String originFileName = getFileNameFromUrl(fileUrl); // filename.ext
+            String fileExt = getFileExt(originFileName); // ext
 
             if (fileExt.isEmpty()) {
                 fileExt = "tmp";
             }
 
-            new File(outputDir).mkdirs();
+            new File(outputDir).mkdirs(); // 경로 없으면 생성 (tem Directory)
 
             String tempFileName = UUID.randomUUID() + ORIGIN_FILE_NAME_SEPARATOR + originFileName + "." + fileExt;
             String filePath = outputDir + "/" + tempFileName;
 
+            // 'try-with-resources' 문을 사용하여 파일 출력 스트림을 생성
+            // 이렇게 하면 스트림이 사용 후 자동으로 닫음
             try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
+
+                // 주어진 파일 URL에서 입력 스트림을 열어 읽기 가능한 바이트 채널을 생성
                 ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(fileUrl).openStream());
+
+                // FileOutputStream 객체에서 파일 채널을 가져옴
                 FileChannel fileChannel = fileOutputStream.getChannel();
+
+                // readableByteChannel에서 데이터를 읽어와 fileChannel을 통해 파일에 기록
+                // 시작 위치는 0이며, Long.MAX_VALUE는 최대 복사 가능한 바이트 수를 나타냄
+                // 실제로는 EOF(End-Of-File) 또는 파일의 크기에 도달할 때까지 데이터를 복사
                 fileChannel.transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+
             } catch (Exception e) {
                 throw new DownloadFileFailException();
             }
