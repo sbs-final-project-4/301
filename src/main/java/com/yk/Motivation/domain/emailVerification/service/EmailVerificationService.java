@@ -38,7 +38,7 @@ public class EmailVerificationService {
                 );
         String body = genEmailVerificationUrl(member);
 
-        return emailService.send(member.getEmail(), subject, body);
+        return emailService.sendAsync(member.getEmail(), subject, body);
     }
 
     private String genEmailVerificationUrl(Member member) {

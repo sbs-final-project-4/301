@@ -166,7 +166,7 @@ public class MemberService {
 
         if (Ut.str.isBlank(email)) return;
 
-        CompletableFuture<RsData> sendRsFuture = emailService.send(
+        CompletableFuture<RsData> sendRsFuture = emailService.sendAsync(
                 email,
                 "[%s 가입축하] 회원가입이 완료되었습니다.".formatted(
                         AppConfig.getSiteName()
@@ -261,7 +261,7 @@ public class MemberService {
 
         final String email = member.getEmail();
 
-        CompletableFuture<RsData> sendRsFuture = emailService.send(
+        CompletableFuture<RsData> sendRsFuture = emailService.sendAsync(
                 email,
                 "[%s 임시비밀번호] 임시 비밀번호 입니다.".formatted(
                         AppConfig.getSiteName()

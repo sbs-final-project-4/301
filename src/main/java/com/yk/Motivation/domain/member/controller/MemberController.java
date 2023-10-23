@@ -9,9 +9,11 @@ import com.yk.Motivation.standard.util.Ut;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Controller
 @RequestMapping("/usr/member")
 @RequiredArgsConstructor
+@Validated
 public class MemberController {
     private final MemberService memberService;
     private final Rq rq;
@@ -54,14 +57,18 @@ public class MemberController {
     @PreAuthorize("isAnonymous()")
     @GetMapping("/checkUsernameDup")
     @ResponseBody
-    public RsData<String> checkUsernameDup(String username) {
+    public RsData<String> checkUsernameDup(
+            @NotBlank @Length(min = 4) String username
+    ) {
         return memberService.checkUsernameDup(username);
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/checkProducerNameDup")
     @ResponseBody
-    public RsData<String> checkProducerNameDup(String producerName) {
+    public RsData<String> checkProducerNameDup(
+            @NotBlank @Length(min = 2) String producerName
+    ) {
         return memberService.checkProducerNameDup(rq.getMember(), producerName);
     }
 
@@ -80,7 +87,9 @@ public class MemberController {
     @PreAuthorize("isAnonymous()")
     @GetMapping("/checkEmailDup")
     @ResponseBody
-    public RsData<String> checkEmailDup(String email) {
+    public RsData<String> checkEmailDup(
+            @NotBlank @Length(min = 4) String email
+    ) {
         return memberService.checkEmailDup(email);
     }
 
@@ -105,7 +114,9 @@ public class MemberController {
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/findUsername")
-    public String findUsername(String email) {
+    public String findUsername(
+            @NotBlank @Length(min = 4) String email
+    ) {
         return memberService.findByEmail(email)
                 .map(member ->
                         rq.redirect(
@@ -124,16 +135,18 @@ public class MemberController {
 
     @PreAuthorize("isAnonymous()")
     @PostMapping("/findPassword")
-    public String findPassword(String username, String email) {
-        return
-                memberService.findByUsernameAndEmail(username, email)
-                        .map(member -> {
-                            memberService.sendTempPasswordToEmail(member);
-                            return rq.redirect(
-                                    "/usr/member/login?lastUsername=%s".formatted(member.getUsername()),
-                                    "해당 회원의 이메일로 임시 비밀번호를 발송하였습니다."
-                            );
-                        }).orElseGet(() -> rq.historyBack("일치하는 회원이 존재하지 않습니다."));
+    public String findPassword(
+            @NotBlank @Length(min = 4) String username,
+            @NotBlank @Length(min = 4) String email
+    ) {
+        return memberService.findByUsernameAndEmail(username, email)
+                .map(member -> {
+                    memberService.sendTempPasswordToEmail(member);
+                    return rq.redirect(
+                            "/usr/member/login?lastUsername=%s".formatted(member.getUsername()),
+                            "해당 회원의 이메일로 임시 비밀번호를 발송하였습니다."
+                    );
+                }).orElseGet(() -> rq.historyBack("일치하는 회원이 존재하지 않습니다."));
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -170,8 +183,10 @@ public class MemberController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/checkPassword")
-    public String checkPassword(String password, String redirectUrl) {
-        if (!memberService.isSamePassword(rq.getMember(), password))
+    public String checkPassword(
+            @NotBlank @Length(min = 4) String password,
+            @NotBlank String redirectUrl
+    ) {        if (!memberService.isSamePassword(rq.getMember(), password))
             return rq.historyBack("비밀번호가 일치하지 않습니다.");
 
         String code = memberService.genCheckPasswordAuthCode(rq.getMember());
@@ -186,12 +201,16 @@ public class MemberController {
     @ToString
     public static class JoinForm {
         @NotBlank
+        @Length(min = 4)
         private String username;
         @NotBlank
+        @Length(min = 4)
         private String nickname;
         @NotBlank
+        @Length(min = 4)
         private String password;
         @NotBlank
+        @Length(min = 4)
         private String email;
         private MultipartFile profileImg;
     }
@@ -201,7 +220,9 @@ public class MemberController {
     @ToString
     public static class ModifyForm {
         @NotBlank
+        @Length(min = 4)
         private String nickname;
+        @Length(min = 4)
         private String password;
         private MultipartFile profileImg;
     }
@@ -215,7 +236,7 @@ public class MemberController {
     @SneakyThrows
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/beProducer")
-    public String beProducer(String producerName) {
+    public String beProducer(@NotBlank @Length(min = 2) String producerName) {
         Member member = rq.getMember();
 
         RsData<Member> rs = memberService.beProducer(member.getId(), producerName);

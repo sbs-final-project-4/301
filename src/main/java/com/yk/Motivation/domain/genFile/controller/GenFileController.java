@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +25,7 @@ import java.io.FileNotFoundException;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/usr/genFile")
+@Validated
 public class GenFileController {
     private final Rq rq;
     private final GenFileService genFileService;

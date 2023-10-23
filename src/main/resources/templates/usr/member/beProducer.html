@@ -70,7 +70,7 @@
                     return;
                 }
 
-                if (form.producerName.value.length < 4) {
+                if (form.producerName.value.length < 2) {
                     clearProducerNameInputMsg();
                     return;
                 }
@@ -128,9 +128,9 @@
                     return;
                 }
 
-                if (form.producerName.value.length < 4) {
+                if (form.producerName.value.length < 2) {
                     form.producerName.focus();
-                    toastWarning('활동명을 4자 이상 입력해주세요.');
+                    toastWarning('활동명을 2자 이상 입력해주세요.');
                     return;
                 }
 

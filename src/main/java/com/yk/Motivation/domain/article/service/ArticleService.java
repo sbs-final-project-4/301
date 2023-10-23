@@ -5,6 +5,7 @@ import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.article.entity.Article;
 import com.yk.Motivation.domain.article.repository.ArticleRepository;
 import com.yk.Motivation.domain.board.entity.Board;
+import com.yk.Motivation.domain.document.service.DocumentService;
 import com.yk.Motivation.domain.genFile.entity.GenFile;
 import com.yk.Motivation.domain.genFile.service.GenFileService;
 import com.yk.Motivation.domain.member.entity.Member;
@@ -27,6 +28,7 @@ import java.util.Optional;
 public class ArticleService {
     private final ArticleRepository articleRepository;
     private final GenFileService genFileService;
+    private final DocumentService documentService;
 
     @Transactional
     public RsData<Article> write(Board board, Member author, String subject, String tagsStr, String body) {
@@ -47,7 +49,7 @@ public class ArticleService {
 
         article.addTags(tagsStr);
 
-        updateTempGenFilesToInBody(article);
+        documentService.updateTempGenFilesToInBody(article);
 
         return new RsData<>("S-1", article.getId() + "번 게시물이 생성되었습니다.", article);
     }
@@ -72,37 +74,18 @@ public class ArticleService {
         return checkActorCanModify(actor, article);
     }
 
+    @Transactional
     public RsData<Article> modify(Article article, String subject, String tagsStr, String body, String bodyHtml) {
 
         article.modifyTags(tagsStr);
+
         article.setSubject(subject);
         article.setBody(body);
         article.setBodyHtml(bodyHtml);
 
-        updateTempGenFilesToInBody(article);
+        documentService.updateTempGenFilesToInBody(article);
 
         return new RsData<>("S-1", article.getId() + "번 게시물이 수정되었습니다.", article);
-    }
-
-    private void updateTempGenFilesToInBody(Article article) {
-        Map<String, String> urlsMap = new HashMap<>(); // 기존경로, 새로운경로 중복으로 사용하기 때문에 중복을 피하기 위해 만듦.
-
-        String newBody = Ut.str.replace(article.getBody(), "\\(/gen/temp_member/([^)]+)\\?type=temp\\)", (String url) -> { // 기존 경로를 새로운 경로로 replace 함
-            url = "/gen/temp_member/" + url; // ![](/gen/temp_member/2023_10_23/5.jpg?type=temp) -> /gen/temp_member/2023_10_23/5.jpg
-            String newUrl = genFileService.tempToFile(url, article, "common", "inBody", 0).getUrl(); // 기존 경로의 파일 새로운 경로로 이동, 기존 temp 경로의 파일 삭제
-            urlsMap.put(url, newUrl);  // 기존 url, 새로운 경로의 newUrl
-            return "(" + newUrl + ")";
-        });
-
-        article.setBody(newBody);
-
-        String newBodyHtml = Ut.str.replace(article.getBodyHtml(), "=\"/gen/temp_member/([^\" ]+)\\?type=temp\"", (String url) -> { // BodyHtml 에서도 위의 작업 반복
-            url = "/gen/temp_member/" + url;
-            String newUrl = urlsMap.get(url);
-            return "=\"" + newUrl + "\"";
-        });
-
-        article.setBodyHtml(newBodyHtml);
     }
 
     @Transactional

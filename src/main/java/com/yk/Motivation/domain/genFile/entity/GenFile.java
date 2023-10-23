@@ -22,8 +22,8 @@ import static lombok.AccessLevel.PROTECTED;
 @ToString(callSuper = true)
 @Table(
         uniqueConstraints = @UniqueConstraint(
-                columnNames = { // 아래 5개 컬럼 조합의 결과가 유니크 해야 함
-                        "relId", "relTypeCode", "typeCode", "type2Code", "fileNo"
+                columnNames = { // 아래 5개 컬럼 조합의 결과가 유니크 해야 함 (5개로 하고 싶었는데 길이 문제로 유니크 조건 추가 실패... typeCode 뺌)
+                        "relId", "relTypeCode", "type2Code", "fileNo"
                 }
         ),
         indexes = {

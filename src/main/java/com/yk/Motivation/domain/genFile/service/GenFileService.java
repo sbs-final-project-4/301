@@ -1,6 +1,7 @@
 package com.yk.Motivation.domain.genFile.service;
 
 import com.yk.Motivation.base.app.AppConfig;
+import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
 import com.yk.Motivation.domain.article.entity.Article;
 import com.yk.Motivation.domain.genFile.entity.GenFile;
 import com.yk.Motivation.domain.genFile.repository.GenFileRepository;
@@ -141,14 +142,14 @@ public class GenFileService {
     }
 
     @Transactional
-    public GenFile tempToFile(String url, Article article, String typeCode, String type2Code, long fileNo) {
+    public GenFile tempToFile(String url, BaseEntity entity, String typeCode, String type2Code, long fileNo) {
         String fileName = Ut.file.getFileNameFromUrl(url);
         String fileExt = Ut.file.getFileExt(fileName);
 
         long genFileId = Long.parseLong(fileName.replace("." + fileExt, ""));
         GenFile tempGenFile = findById(genFileId).get();
 
-        GenFile newGenFile = save(article.getModelName(), article.getId(), typeCode, type2Code, fileNo, tempGenFile.getFilePath());
+        GenFile newGenFile = save(entity.getModelName(), entity.getId(), typeCode, type2Code, fileNo, tempGenFile.getFilePath());
 
         remove(tempGenFile);
 

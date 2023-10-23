@@ -1,6 +1,7 @@
 package com.yk.Motivation.domain.article.entity;
 
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
+import com.yk.Motivation.domain.document.standard.DocumentTag;
 import com.yk.Motivation.domain.member.entity.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
@@ -18,7 +19,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @SuperBuilder
 @ToString(callSuper = true)
-public class ArticleTag extends BaseEntity {
+public class ArticleTag extends BaseEntity implements DocumentTag {
     @ManyToOne
     private Member author;
 

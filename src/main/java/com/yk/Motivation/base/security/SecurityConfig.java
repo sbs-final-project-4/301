@@ -44,17 +44,17 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
-                                .requestMatchers(of("/usr/member/notVerified")
+                                .requestMatchers(requestMatchersOf("/usr/member/notVerified")
                                 )
                                 .permitAll()
                                 .requestMatchers(
-                                        of("/usr/member/beProducer", "/usr/member/modify")
-                                ).access(expressionString("@memberController.assertCheckPasswordAuthCodeVerified()"))
+                                        requestMatchersOf("/usr/member/beProducer", "/usr/member/modify")
+                                ).access(accessOf("@memberController.assertCheckPasswordAuthCodeVerified()"))
                                 .requestMatchers(
-                                        of("/", "/usr/**")
-                                ).access(expressionString("isAnonymous() or @memberController.assertCurrentMemberVerified()"))
+                                        requestMatchersOf("/", "/usr/**")
+                                ).access(accessOf("isAnonymous() or @memberController.assertCurrentMemberVerified()"))
                                 .requestMatchers(
-                                        of("/adm/**")
+                                        requestMatchersOf("/adm/**")
                                 )
                                 .hasAuthority("admin")
                                 .anyRequest().permitAll()
@@ -85,7 +85,7 @@ public class SecurityConfig {
         return http.build();
     }
 
-    private WebExpressionAuthorizationManager expressionString(String expressionString) {
+    private WebExpressionAuthorizationManager accessOf(String expressionString) {
         DefaultHttpSecurityExpressionHandler expressionHandler = new DefaultHttpSecurityExpressionHandler();
         expressionHandler.setApplicationContext(context);
         WebExpressionAuthorizationManager authorization = new WebExpressionAuthorizationManager(expressionString);
@@ -94,7 +94,7 @@ public class SecurityConfig {
         return authorization;
     }
 
-    private AntPathRequestMatcher[] of(String... patterns) {
+    private AntPathRequestMatcher[] requestMatchersOf(String... patterns) {
         return Stream.of(patterns)
                 .map(AntPathRequestMatcher::new)
                 .toArray(AntPathRequestMatcher[]::new);

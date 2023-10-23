@@ -29,14 +29,13 @@ import java.util.regex.Pattern;
 public class Ut {
 
     public static class markdown {
-
+        // 오직 초기 데이터를 생성하는데만 사용된다.
+        // 운영모드에서는 사용되지 않는다.
         public static String toHtml(String body) {
             return body.replace("\r\n", "<br>");
         }
     }
-
     public static class date {
-
         public static String getCurrentDateFormatted(String pattern) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
             return simpleDateFormat.format(new Date());
@@ -44,8 +43,11 @@ public class Ut {
     }
 
     public static class file {
-        private static final String ORIGIN_FILE_NAME_SEPARATOR = "--originFileName_";
+        private static final String ORIGIN_FILE_NAME_SEPARATOR;
 
+        static {
+            ORIGIN_FILE_NAME_SEPARATOR = "--originFileName_";
+        }
         public static String getOriginFileName(String file) {
             if (file.contains(ORIGIN_FILE_NAME_SEPARATOR)) {
                 String[] fileInfos = file.split(ORIGIN_FILE_NAME_SEPARATOR);
@@ -158,7 +160,7 @@ public class Ut {
             try (FileOutputStream fileOutputStream = new FileOutputStream(filePath)) {
 
                 // 주어진 파일 URL에서 입력 스트림을 열어 읽기 가능한 바이트 채널을 생성
-                ReadableByteChannel readableByteChannel = Channels.newChannel(new URL(fileUrl).openStream());
+                ReadableByteChannel readableByteChannel = Channels.newChannel(new URI(fileUrl).toURL().openStream());
 
                 // FileOutputStream 객체에서 파일 채널을 가져옴
                 FileChannel fileChannel = fileOutputStream.getChannel();
@@ -387,5 +389,6 @@ public class Ut {
         public static String value(List<String> requestParameterValues) {
             return getFirstStrOrEmpty(requestParameterValues);
         }
+
     }
 }

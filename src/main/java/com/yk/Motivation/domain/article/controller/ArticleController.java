@@ -16,6 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,6 +35,7 @@ import java.util.Map;
 @Controller
 @RequestMapping("/usr/article")
 @RequiredArgsConstructor
+@Validated
 public class ArticleController {
     private final BoardService boardService;
     private final ArticleService articleService;
@@ -60,9 +63,9 @@ public class ArticleController {
     }
 
     @GetMapping("/listByTag/{tagContent}")
-    public String showList(
+    public String showListByTag(
             Model model,
-            @PathVariable String tagContent,
+            @NotBlank @PathVariable String tagContent,
             @RequestParam(defaultValue = "1") int page
     ) {
         List<Sort.Order> sorts = new ArrayList<>();
@@ -111,6 +114,7 @@ public class ArticleController {
     @Getter
     public static class ArticleWriteForm {
         @NotBlank
+        @Length(min = 2)
         private String subject;
         private String tagsStr;
         @NotBlank
@@ -155,7 +159,7 @@ public class ArticleController {
             Model model,
             @PathVariable String boardCode,
             @PathVariable long id,
-            ArticleModifyForm modifyForm
+            @Valid ArticleModifyForm modifyForm
     ) {
         Board board = boardService.findByCode(boardCode).get();
         Article article = articleService.findById(id).get();
@@ -188,6 +192,7 @@ public class ArticleController {
     @Setter
     public static class ArticleModifyForm {
         @NotBlank
+        @Length(min = 2)
         private String subject;
         private String tagsStr;
         @NotBlank

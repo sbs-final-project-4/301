@@ -235,7 +235,11 @@ public class Rq {
     }
 
     private String getCurrentUrl() {
-        return req.getRequestURI();
+        return req.getRequestURI() + "?" + req.getQueryString();
+    }
+
+    public String getEncodedCurrentUrl() {
+        return Ut.url.encode(getCurrentUrl());
     }
 
     public String getParam(String paramName, String defaultValue) {

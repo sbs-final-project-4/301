@@ -495,6 +495,51 @@
     </div>
 </th:block>
 
+<th:block th:fragment="postListItemCard(post)">
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+
+            <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3">
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">번호</span>
+                    </label>
+                    <div th:text="${post.id}"></div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">작성일</span>
+                    </label>
+                    <div th:text="${#temporals.format(post.createDate, 'yy.MM.dd')}"></div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">작성자</span>
+                    </label>
+                    <div th:text="${post.author.nickname}"></div>
+                </div>
+
+                <div class="form-control col-span-full">
+                    <label class="label">
+                        <span class="label-text">제목</span>
+                    </label>
+                    <a class="link truncate" th:href="|/usr/post/detail/${post.id}?listUrl=${@rq.encodedCurrentUrl}|"
+                       th:text="${post.subject}"></a>
+                </div>
+
+                <div class="form-control col-span-full">
+                    <label class="label">
+                        <span class="label-text">태그</span>
+                    </label>
+                    <div th:utext="${post.getTagLinks('<a class=`link` href=`%s`>#%s</a>', '/usr/post/listByTag/%s')}"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+
 <th:block th:fragment="articleListItemCard(article)">
     <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
