@@ -145,7 +145,7 @@ public class GenFileService {
         String fileName = Ut.file.getFileNameFromUrl(url);
         String fileExt = Ut.file.getFileExt(fileName);
 
-        long genFileId = Long.parseLong(fileName.replaceAll("." + fileExt, ""));
+        long genFileId = Long.parseLong(fileName.replace("." + fileExt, ""));
         GenFile tempGenFile = findById(genFileId).get();
 
         GenFile newGenFile = save(article.getModelName(), article.getId(), typeCode, type2Code, fileNo, tempGenFile.getFilePath());

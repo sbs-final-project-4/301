@@ -51,6 +51,11 @@ public class MemberService {
         return memberRepository.findById(id);
     }
 
+    private Optional<Member> findByProducerName(String producerName) {
+        return memberRepository.findByProducerName(producerName);
+
+    }
+
     public Optional<String> findProfileImgUrl(Member member) {
         return genFileService.findBy(
                         member.getModelName(), member.getId(), "common", "profileImg", 1
@@ -70,6 +75,16 @@ public class MemberService {
         return RsData.of("S-1", "%s(은)는 사용 가능한 이메일 입니다.".formatted(email), email);
     }
 
+    public RsData<String> checkProducerNameDup(Member actor, String producerName) {
+        if (producerName.equals(actor.getProducerName()))
+            return RsData.of("S-1", "%s(은)는 사용 가능한 활동명입니다.".formatted(producerName), producerName);
+
+        if (findByProducerName(producerName).isPresent())
+            return RsData.of("F-1", "%s(은)는 사용중인 활동명입니다.".formatted(producerName));
+
+        return RsData.of("S-1", "%s(은)는 사용 가능한 활동명입니다.".formatted(producerName), producerName);
+    }
+
     // 명령
     @Transactional
     public RsData<Member> join(String username, String password, String nickname, String email, String profileImgFilePath) {
@@ -78,6 +93,8 @@ public class MemberService {
 
         if (findByEmail(email).isPresent())
             return RsData.of("F-2", "%s(은)는 사용중인 이메일 입니다.".formatted(username));
+
+        nickname = getUniqueNicknameIfNeed(nickname);
 
         Member member = Member
                 .builder()
@@ -95,6 +112,31 @@ public class MemberService {
         sendEmailVerificationEmail(member);
 
         return RsData.of("S-1", "회원가입이 완료되었습니다.", member);
+    }
+
+    // 중복 닉네임이면 # 붙이고 3자리 번호 부여
+    // 설마 그럴 일 없겠지만... 10번의 시도가 모두 중복 닉네임일 경우, 4자리로 업그레이드
+    // 를 반복.
+    private String getUniqueNicknameIfNeed(String nickname) { 
+        int appenderStrBaseLen = 3;
+        int appenderStrAddiLen;
+        String appendStr = "";
+
+        int loopCount = 0;
+
+        while (true) {
+            Optional<Member> optMember = memberRepository.findByNickname(nickname + appendStr);
+
+            if (optMember.isEmpty()) return nickname + appendStr;
+
+            nickname = nickname.split("#", 2)[0];
+
+            loopCount++;
+
+            appenderStrAddiLen = loopCount / 10;
+
+            appendStr = '#' + Ut.str.randomNumStr(appenderStrBaseLen + appenderStrAddiLen);
+        }
     }
 
     @Transactional
@@ -147,7 +189,8 @@ public class MemberService {
         Member member = findById(memberId).get();
 
         if (Ut.str.hasLength(password)) member.setPassword(passwordEncoder.encode(password));
-        if (Ut.str.hasLength(nickname)) member.setNickname(nickname);
+        if (Ut.str.hasLength(nickname) && !member.getNickname().equals(nickname))
+            member.setNickname(getUniqueNicknameIfNeed(nickname));
         if (profileImg != null) saveProfileImg(member, profileImg);
 
         return RsData.of("S-1", "회원정보가 수정되었습니다.", member);
@@ -167,7 +210,7 @@ public class MemberService {
     }
 
     public RsData<?> checkCheckPasswordAuthCode(Member member, String checkPasswordAuthCode) {
-        if (checkPasswordAuthCode == null) return RsData.of("F-1", "checkPasswordAuthCode를 입력해주세요.");
+        if (Ut.str.isBlank(checkPasswordAuthCode)) return RsData.of("F-1", "checkPasswordAuthCode를 입력해주세요.");
 
         if (attrService.get("member__%d__extra__checkPasswordAuthCode".formatted(member.getId()), "").equals(checkPasswordAuthCode))
             return RsData.of("S-1", "유효한 코드입니다.");
@@ -247,6 +290,16 @@ public class MemberService {
         String filePath = Ut.str.hasLength(profileImgUrl) ? Ut.file.downloadFileByHttp(profileImgUrl, AppConfig.getTempDirPath()) : "";
 
         return join(username, "", nickname, "", filePath).getData();
+    }
+
+    @Transactional
+    public RsData<Member> beProducer(long memberId, String producerName) {
+        memberRepository.findById(memberId)
+                .ifPresent(member -> {
+                    member.setProducerName(producerName);
+                });
+
+        return RsData.of("S-1", "활동명이 적용되었습니다.");
     }
 
 }

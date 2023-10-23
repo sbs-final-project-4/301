@@ -8,10 +8,7 @@ import com.yk.Motivation.domain.member.service.MemberService;
 import com.yk.Motivation.standard.util.Ut;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -59,6 +56,25 @@ public class MemberController {
     @ResponseBody
     public RsData<String> checkUsernameDup(String username) {
         return memberService.checkUsernameDup(username);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/checkProducerNameDup")
+    @ResponseBody
+    public RsData<String> checkProducerNameDup(String producerName) {
+        return memberService.checkProducerNameDup(rq.getMember(), producerName);
+    }
+
+    public boolean assertCheckPasswordAuthCodeVerified() {
+        memberService
+                .checkCheckPasswordAuthCode(rq.getMember(), rq.getParam("checkPasswordAuthCode", ""))
+                .optional()
+                .filter(RsData::isFail)
+                .ifPresent((rsData) -> {
+                    throw new AccessDeniedException("올바르지 않은 접근입니다.");
+                });
+
+        return true;
     }
 
     @PreAuthorize("isAnonymous()")
@@ -128,32 +144,13 @@ public class MemberController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/modify")
-    public String showModify(String checkPasswordAuthCode) {
-
-//        if (!rq.getRefererUrlPath("").startsWith("/usr/member/checkPassword"))
-//            throw new AccessDeniedException("올바르지 않은 접근입니다.");
-
-        memberService
-                .checkCheckPasswordAuthCode(rq.getMember(), checkPasswordAuthCode)
-                .optional()
-                .filter(RsData::isFail)
-                .ifPresent((rsData) -> {
-                    throw new AccessDeniedException("올바르지 않은 접근입니다.");
-                });
-
+    public String showModify() {
         return "usr/member/modify";
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify")
-    public String modify(@Valid ModifyForm modifyForm, String checkPasswordAuthCode) {
-        memberService
-                .checkCheckPasswordAuthCode(rq.getMember(), checkPasswordAuthCode)
-                .optional()
-                .filter(RsData::isFail)
-                .ifPresent((rsData) -> {
-                    throw new AccessDeniedException("올바르지 않은 접근입니다.");
-                });
+    public String modify(@Valid ModifyForm modifyForm) {
 
         RsData<Member> modifyRs = memberService.modify(
                 rq.getMember().getId(),
@@ -207,6 +204,23 @@ public class MemberController {
         private String nickname;
         private String password;
         private MultipartFile profileImg;
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/beProducer")
+    public String showBeProducer() {
+        return "usr/member/beProducer";
+    }
+
+    @SneakyThrows
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/beProducer")
+    public String beProducer(String producerName) {
+        Member member = rq.getMember();
+
+        RsData<Member> rs = memberService.beProducer(member.getId(), producerName);
+
+        return rq.redirectOrBack("/usr/member/me", rs);
     }
 
 }

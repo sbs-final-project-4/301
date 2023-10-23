@@ -39,7 +39,7 @@ public class GenFileController {
 
         if (contentType == null) contentType = "application/octet-stream"; // MIME 타입 기본값
 
-        String fileName = Ut.url.encode(genFile.getOriginFileName()).replaceAll("\\+", " "); // 파일 이름 URL 인코딩 후 + 를 공백으로
+        String fileName = Ut.url.encode(genFile.getOriginFileName()).replace("%20", " "); // 파일 이름 URL 인코딩 후 %20 을 공백으로
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"") // 파일을 첨부로 다운로드 할 것 (헤더 설정)

@@ -1,6 +1,9 @@
 package com.yk.Motivation.base.security;
 
 
+import jakarta.servlet.annotation.WebListener;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -10,31 +13,48 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.expression.DefaultHttpSecurityExpressionHandler;
+import org.springframework.security.web.access.expression.WebExpressionAuthorizationManager;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+    private final ApplicationContext context;
+
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+
+        // authorizeRequests id deprecated -> authorizeHttpRequests
+
+        // 문제 발생
+        // 이전 버전에서는 .access 메서드에서  SpEL 표현식을 통해 스프링 빈에 직접 접근이 가능했었다.
+        // WebApplicationInitializer 를 사용 하여 ContextLoaderListener 를 추가하는 방식이 Spring Security 6.1.2 와 Tomcat 10.1를 함께 사용할 때 문제를 일으켰다.
+        // 때문에 ApplicationContext 를 직접 주입 받아서 context 필드를 통해 사용하게 했다.
+        // https://github.com/spring-projects/spring-security/issues/13609
+
+
         http
-                .authorizeRequests(
+                .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
-                                .requestMatchers(
-                                        new AntPathRequestMatcher("/usr/member/notVerified")
+                                .requestMatchers(of("/usr/member/notVerified")
                                 )
                                 .permitAll()
                                 .requestMatchers(
-                                        new AntPathRequestMatcher("/"),
-                                        new AntPathRequestMatcher("/usr/**")
-                                ).access("isAnonymous() or @memberController.assertCurrentMemberVerified()")
+                                        of("/usr/member/beProducer", "/usr/member/modify")
+                                ).access(expressionString("@memberController.assertCheckPasswordAuthCodeVerified()"))
                                 .requestMatchers(
-                                        new AntPathRequestMatcher("/adm/**")
+                                        of("/", "/usr/**")
+                                ).access(expressionString("isAnonymous() or @memberController.assertCurrentMemberVerified()"))
+                                .requestMatchers(
+                                        of("/adm/**")
                                 )
                                 .hasAuthority("admin")
                                 .anyRequest().permitAll()
@@ -59,17 +79,32 @@ public class SecurityConfig {
                 )
                 .logout((logout) -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/usr/member/logout"))
-                        .invalidateHttpSession(true) // 로그아웃 후 세션 정리
-                        .logoutSuccessUrl("/"))
-//                        .addLogoutHandler(oAuth2LogoutHandler()))
+                        .logoutSuccessUrl("/")
+                        .invalidateHttpSession(true))
         ;
         return http.build();
+    }
+
+    private WebExpressionAuthorizationManager expressionString(String expressionString) {
+        DefaultHttpSecurityExpressionHandler expressionHandler = new DefaultHttpSecurityExpressionHandler();
+        expressionHandler.setApplicationContext(context);
+        WebExpressionAuthorizationManager authorization = new WebExpressionAuthorizationManager(expressionString);
+        authorization.setExpressionHandler(expressionHandler);
+
+        return authorization;
+    }
+
+    private AntPathRequestMatcher[] of(String... patterns) {
+        return Stream.of(patterns)
+                .map(AntPathRequestMatcher::new)
+                .toArray(AntPathRequestMatcher[]::new);
     }
 
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+}
 
 //    public LogoutHandler oAuth2LogoutHandler() {
 //        return (request, response, authentication) -> {
@@ -83,4 +118,3 @@ public class SecurityConfig {
 //            }
 //        };
 //    }
-}

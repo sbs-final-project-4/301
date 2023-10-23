@@ -46,6 +46,12 @@
                     <li th:if="${@rq.logout}"><a href="/usr/member/join"><i class="fa-solid fa-user-plus"></i> 회원가입</a>
                     </li>
                     <li th:if="${@rq.login}"><a href="/usr/member/me"><i class="fa-solid fa-user"></i> 내 정보</a></li>
+                    <li th:if="${@rq.login}">
+                        <a href="/usr/member/checkPassword?redirectUrl=/usr/member/beProducer">
+                            <i class="fa-brands fa-product-hunt"></i>
+                            <span th:text="${@rq.producerPageName}"></span>
+                        </a>
+                    </li>
                     <li th:if="${@rq.login}"><a href="/usr/member/logout"><i
                             class="fa-solid fa-arrow-right-from-bracket"></i> 로그아웃</a></li>
                     <li><a href="/usr/article/notice1/list"><i class="fa-regular fa-flag"></i> 공지사항 게시판</a></li>

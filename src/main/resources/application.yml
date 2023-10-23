@@ -21,10 +21,6 @@ spring:
   thymeleaf:
     cache: false
     prefix: file:src/main/resources/templates/
-#  h2:
-#    console:
-#      enabled: true
-#      path: /h2-console
   output:
     ansi:
       enabled: always

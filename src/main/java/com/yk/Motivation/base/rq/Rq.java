@@ -72,6 +72,17 @@ public class Rq {
         return getMember().isAdmin();
     }
 
+    public boolean isProducer() {
+        if (isLogout()) return false;
+
+        return getMember().isProducer();
+    }
+
+    public String getProducerPageName() {
+        if (isProducer()) return "크리에이터 정보";
+        return "크리에이터 신청";
+    }
+
     // 세션 관련 함수
     public void setSession(String name, Object value) {
         session.setAttribute(name, value);
@@ -226,4 +237,15 @@ public class Rq {
     private String getCurrentUrl() {
         return req.getRequestURI();
     }
+
+    public String getParam(String paramName, String defaultValue) {
+        String value = req.getParameter(paramName);
+
+        if (value == null) {
+            return defaultValue;
+        }
+
+        return value;
+    }
 }
+
