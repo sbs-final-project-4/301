@@ -28,6 +28,20 @@ public class Article extends BaseEntity {
     private Board board;
 
     private String subject;
+
     @Column(columnDefinition = "TEXT")
     private String body;
+
+    @Column(columnDefinition = "TEXT")
+    private String bodyHtml;
+
+    public String getBodyForEditor() {
+        return body
+                .replaceAll("(?i)(</?)script", "$1t-script");
+    }
+
+    public String getBodyHtmlForPrint() {
+        return bodyHtml
+                .replaceAll("toastui-editor-ww-code-block-highlighting", "");
+    }
 }

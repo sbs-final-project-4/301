@@ -55,8 +55,8 @@ public class NotProd {
             System.out.println("file1Path : " + file1Path);
             System.out.println("file2Path : " + file2Path);
 
-            articleService.saveAttachmentFile(article1, file1Path, 1);
-            articleService.saveAttachmentFile(article1, file2Path, 2);
+            articleService.saveAttachmentFile(article1, file1Path, 1L);
+            articleService.saveAttachmentFile(article1, file2Path, 2L);
         };
     }
 }

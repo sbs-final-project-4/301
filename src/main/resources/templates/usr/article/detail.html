@@ -7,6 +7,8 @@
 <body>
 
 <div class="flex-1 flex items-center justify-center" layout:fragment="content">
+    <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
+
     <div class="container w-full px-4">
         <h1 class="mb-4">
             <i class="fa-solid fa-pen"></i>
@@ -48,7 +50,10 @@
                         <label class="label">
                             <span class="label-text">내용</span>
                         </label>
-                        <div class="whitespace-pre-line" th:text="${article.body}"></div>
+                        <div class="toastui-editor-contents"
+                             style="overflow-wrap: break-word;"
+                             th:utext="${article.bodyHtmlForPrint}">
+                        </div>
                     </div>
 
                     <div class="form-control col-span-full" th:each="fileEntry : ${filesMap}">

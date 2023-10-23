@@ -7,6 +7,8 @@
 <body>
 
 <div class="flex-1 flex items-center justify-center" layout:fragment="content">
+    <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
+
     <div class="container w-full px-4">
         <h1 class="mb-4">
             <i class="fa-solid fa-pen"></i>
@@ -16,21 +18,22 @@
         <form class="flex flex-col gap-6" enctype="multipart/form-data" method="POST"
               onsubmit="submitWriteForm(this); return false;"
               th:action>
+            <input type="hidden" name="body">
+            <input type="hidden" name="bodyHtml">
             <div class="form-control">
                 <label class="label">
                     <span class="label-text">제목</span>
                 </label>
                 <input class="input input-bordered" maxlength="100"
-                       name="subject" placeholder="제목" type="text">
+                       name="subject" placeholder="제목" type="text" autofocus>
             </div>
 
             <div class="form-control">
                 <label class="label">
                     <span class="label-text">내용</span>
                 </label>
-                <textarea class="textarea textarea-bordered h-[calc(100vh-650px)] min-h-[100px]" maxlength="20000"
-                          name="body" placeholder="내용"
-                ></textarea>
+
+                <div class="toast-ui-editor" height="calc(100vh - 200px)" placeholder="내용"></div>
             </div>
 
             <div th:each="i : ${#numbers.sequence(1, 2)}" class="form-control">
@@ -74,17 +77,17 @@
                     return;
                 }
 
-                form.body.value = form.body.value.trim();
+                const editor = $(form).find(".toast-ui-editor").data("data-toast-editor");
 
-                if (form.body.value.length == 0) {
-                    form.body.focus();
-                    toastWarning('내용을 입력해주세요.');
-                    return;
-                }
+                const markdown = editor.getMarkdown().trim();
+                const html = editor.getHTML().trim();
 
-                if (form.body.value.length < 2) {
-                    form.body.focus();
-                    toastWarning('내용을 2자 이상 입력해주세요.');
+                form.body.value = markdown;
+                form.bodyHtml.value = html;
+
+                if (form.body.value.length == 0 || form.bodyHtml.value.length == 0) {
+                    toastWarning("내용을 입력해주세요");
+                    editor.focus();
                     return;
                 }
 

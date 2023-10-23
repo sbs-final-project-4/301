@@ -22,9 +22,21 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Ut {
+
+    public static class markdown {
+
+        public static String toHtml(String body) {
+            return body.replaceAll("\r\n", "<br>");
+        }
+    }
+
     public static class date {
+
         public static String getCurrentDateFormatted(String pattern) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
             return simpleDateFormat.format(new Date());
@@ -34,13 +46,13 @@ public class Ut {
     public static class file {
         private static final String ORIGIN_FILE_NAME_SEPARATOR = "--originFileName_";
 
-        public static String getOriginFileName(String sourceFile) {
-            if (sourceFile.contains(ORIGIN_FILE_NAME_SEPARATOR)) {
-                String[] fileInfos = sourceFile.split(ORIGIN_FILE_NAME_SEPARATOR);
+        public static String getOriginFileName(String file) {
+            if (file.contains(ORIGIN_FILE_NAME_SEPARATOR)) {
+                String[] fileInfos = file.split(ORIGIN_FILE_NAME_SEPARATOR);
                 return fileInfos[fileInfos.length - 1];
             }
 
-            return Paths.get(sourceFile).getFileName().toString();
+            return Paths.get(file).getFileName().toString();
         }
 
         public static String toFile(MultipartFile multipartFile, String tempDirPath) { // temp 저장
@@ -62,24 +74,28 @@ public class Ut {
             moveFile(filePath, file.getAbsolutePath());
         }
 
-        public static boolean exists(String sourceFile) {
-            return new File(sourceFile).exists();
+        public static boolean exists(String file) {
+            return new File(file).exists();
         }
 
-        public static String tempCopy(String sourceFile) {
-            String tempPath = AppConfig.getTempDirPath() + "/" + getFileName(sourceFile);
-            copy(sourceFile, tempPath);
+        public static boolean exists(MultipartFile file) {
+            return file != null && !file.isEmpty();
+        }
+
+        public static String tempCopy(String file) {
+            String tempPath = AppConfig.getTempDirPath() + "/" + getFileName(file);
+            copy(file, tempPath);
 
             return tempPath;
         }
 
-        private static String getFileName(String sourceFile) {
-            return Paths.get(sourceFile).getFileName().toString();
+        private static String getFileName(String file) {
+            return Paths.get(file).getFileName().toString();
         }
 
-        private static void copy(String sourceFile, String tempDirPath) {
+        private static void copy(String file, String tempDirPath) {
             try {
-                Files.copy(Paths.get(sourceFile), Paths.get(tempDirPath), StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(Paths.get(file), Paths.get(tempDirPath), StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -182,6 +198,8 @@ public class Ut {
             Path destFile = Paths.get(destFilePath);
 
             try {
+                // file 경로의 파일이 destFile 경로로 이동함
+                // destFile 경로에 이미 파일이 존재 한다면 'StandardCopyOption.REPLACE_EXISTING' 에 의해서 덮어 씌워짐
                 Files.move(file, destFile, StandardCopyOption.REPLACE_EXISTING);
             } catch (IOException ignored) {
 
@@ -251,7 +269,7 @@ public class Ut {
             return url;
         }
 
-        private static String deleteQueryParam(String url, String paramName) {
+        public static String deleteQueryParam(String url, String paramName) {
             int startPoint = url.indexOf(paramName + "=");
             if (startPoint == -1) return url;
 
@@ -305,6 +323,28 @@ public class Ut {
             }
 
             return password.toString();
+        }
+
+        public static String replace(String input, String regex, Function<String, String> replacer) {
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(input);
+
+            StringBuilder result = new StringBuilder();
+
+            while (matcher.find()) {
+                String replacement = replacer.apply(matcher.group(1));
+                matcher.appendReplacement(result, replacement);
+            }
+
+            matcher.appendTail(result);
+
+            return result.toString();
+        }
+
+        public static String ucfirst(String str) {
+            if (str == null || str.isEmpty()) return str;
+
+            return Character.toUpperCase(str.charAt(0)) + str.substring(1);
         }
     }
 

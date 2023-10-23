@@ -7,6 +7,8 @@
 <body>
 
 <div class="flex-1 flex items-center justify-center" layout:fragment="content">
+    <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
+
     <div class="container w-full px-4">
         <h1 class="mb-4">
             <i class="fa-solid fa-pen-to-square"></i>
@@ -16,6 +18,9 @@
         <form class="flex flex-col gap-6" method="POST" enctype="multipart/form-data"
               onsubmit="submitModifyForm(this); return false;"
               th:action>
+            <input type="hidden" name="body">
+            <input type="hidden" name="bodyHtml">
+
             <div class="form-control">
                 <label class="label">
                     <span class="label-text">제목</span>
@@ -28,10 +33,10 @@
                 <label class="label">
                     <span class="label-text">내용</span>
                 </label>
-                <textarea class="textarea textarea-bordered h-[calc(100vh-650px)] min-h-[100px]" maxlength="20000"
-                          name="body" placeholder="내용"
-                          th:text="${article.body}"
-                ></textarea>
+
+                <div class="toast-ui-editor" height="calc(100vh - 200px)" placeholder="내용">
+                    <script type="text/x-template" th:utext="${article.bodyForEditor}"></script>
+                </div>
             </div>
 
             <th:block th:each="i : ${#numbers.sequence(1, 2)}" th:with="genFile = ${filesMap[i + '']}">
@@ -96,18 +101,34 @@
                     return;
                 }
 
-                form.body.value = form.body.value.trim();
+                const editor = $(form).find(".toast-ui-editor").data("data-toast-editor");
 
-                if (form.body.value.length == 0) {
-                    form.body.focus();
-                    toastWarning('내용을 입력해주세요.');
+                const markdown = editor.getMarkdown().trim();
+                const html = editor.getHTML().trim();
+
+                form.body.value = markdown;
+                form.bodyHtml.value = html;
+
+                if (form.body.value.length == 0 || form.bodyHtml.value.length == 0) {
+                    toastWarning("내용을 입력해주세요");
+                    editor.focus();
                     return;
                 }
 
-                if (form.body.value.length < 2) {
-                    form.body.focus();
-                    toastWarning('내용을 2자 이상 입력해주세요.');
-                    return;
+                // 파일 입력 필드의 인덱스 시작
+                for (let i = 1; true; i++) {
+                    const fileInput = form['attachment__' + i];
+
+                    // 해당 이름의 입력 필드가 없으면 반복문 종료
+                    if (!fileInput) break;
+
+                    if (fileInput.files.length > 0 && fileInput.files[0].size === 0) {
+                        fileInput.focus();
+                        toastWarning('첨부파일 ' + i + '의 용량이 0 입니다. 다른 파일을 선택해주세요.');
+                        return;
+                    }
+
+                    i++;
                 }
 
                 form.submit();

@@ -5,12 +5,35 @@
     font-style: normal;
 }
 
-html > body {
-  font-family: "Pretendard-Regular";
-  text-wrap: none;
+:root {
+    --base-font-family: "Pretendard-Regular";
 }
 
-#toast-container .toast {
+html > body {
+    margin: 0;
+    font-family: var(--base-font-family);
+    text-wrap: none;
+}
+
+html > body .ProseMirror,
+html > body .toastui-editor-contents,
+html > body .toastui-editor-defaultUI {
+    font-family: var(--base-font-family);
+}
+
+/*
+html > body .toastui-editor-defaultUI {
+    border: 0;
+}
+html > body .toastui-editor-defaultUI-toolbar {
+    border-radius: 0;
+}
+html > body .toastui-editor-mode-switch {
+    border-radius: 0;
+}
+*/
+
+html > body #toast-container .toast {
   white-space: normal;
 }
 

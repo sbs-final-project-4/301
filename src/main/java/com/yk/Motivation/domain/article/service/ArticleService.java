@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,14 +30,22 @@ public class ArticleService {
 
     @Transactional
     public RsData<Article> write(Board board, Member author, String subject, String body) {
+        return write(board, author, subject, body, Ut.markdown.toHtml(body));
+    }
+
+    @Transactional
+    public RsData<Article> write(Board board, Member author, String subject, String body, String bodyHtml) {
         Article article = Article.builder()
                 .board(board)
                 .author(author)
                 .subject(subject)
                 .body(body)
+                .bodyHtml(bodyHtml)
                 .build();
 
         articleRepository.save(article);
+
+        updateTempGenFilesToInBody(article);
 
         return new RsData<>("S-1", article.getId() + "번 게시물이 생성되었습니다.", article);
     }
@@ -62,11 +71,35 @@ public class ArticleService {
     }
 
     @Transactional
-    public RsData<Article> modify(Article article, String subject, String body) {
+    public RsData<Article> modify(Article article, String subject, String body, String bodyHtml) {
         article.setSubject(subject);
         article.setBody(body);
+        article.setBodyHtml(bodyHtml);
+
+        updateTempGenFilesToInBody(article);
 
         return new RsData<>("S-1", article.getId() + "번 게시물이 수정되었습니다.", article);
+    }
+
+    private void updateTempGenFilesToInBody(Article article) {
+        Map<String, String> urlsMap = new HashMap<>(); // 기존경로, 새로운경로 중복으로 사용하기 때문에 중복을 피하기 위해 만듦.
+
+        String newBody = Ut.str.replace(article.getBody(), "\\(/gen/temp_member/([^)]+)\\?type=temp\\)", (String url) -> { // 기존 경로를 새로운 경로로 replace 함
+            url = "/gen/temp_member/" + url; // ![](/gen/temp_member/2023_10_23/5.jpg?type=temp) -> /gen/temp_member/2023_10_23/5.jpg
+            String newUrl = genFileService.tempToFile(url, article, "common", "inBody", 0).getUrl(); // 기존 경로의 파일 새로운 경로로 이동, 기존 temp 경로의 파일 삭제
+            urlsMap.put(url, newUrl);  // 기존 url, 새로운 경로의 newUrl
+            return "(" + newUrl + ")";
+        });
+
+        article.setBody(newBody);
+
+        String newBodyHtml = Ut.str.replace(article.getBodyHtml(), "=\"/gen/temp_member/([^\" ]+)\\?type=temp\"", (String url) -> { // BodyHtml 에서도 위의 작업 반복
+            url = "/gen/temp_member/" + url;
+            String newUrl = urlsMap.get(url);
+            return "=\"" + newUrl + "\"";
+        });
+
+        article.setBodyHtml(newBodyHtml);
     }
 
     @Transactional
@@ -83,13 +116,13 @@ public class ArticleService {
     }
 
     @Transactional
-    public RsData<GenFile> saveAttachmentFile(Article article, MultipartFile attachmentFile, int fileNo) {
+    public RsData<GenFile> saveAttachmentFile(Article article, MultipartFile attachmentFile, long fileNo) {
         String attachmentFilePath = Ut.file.toFile(attachmentFile, AppConfig.getTempDirPath());
         return saveAttachmentFile(article, attachmentFilePath, fileNo);
     }
 
     @Transactional
-    public RsData<GenFile> saveAttachmentFile(Article article, String attachmentFile, int fileNo) {
+    public RsData<GenFile> saveAttachmentFile(Article article, String attachmentFile, long fileNo) {
         GenFile genFile = genFileService.save(article.getModelName(), article.getId(), "common", "attachment", fileNo, attachmentFile);
 
         return new RsData<>("S-1", genFile.getId() + "번 파일이 생성되었습니다.", genFile);
@@ -100,7 +133,7 @@ public class ArticleService {
     }
 
     @Transactional
-    public void removeAttachmentFile(Article article, int fileNo) {
+    public void removeAttachmentFile(Article article, long fileNo) {
         genFileService.remove(article.getModelName(), article.getId(), "common", "attachment", fileNo);
     }
 }
