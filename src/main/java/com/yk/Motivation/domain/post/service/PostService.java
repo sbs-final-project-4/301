@@ -159,4 +159,20 @@ public class PostService {
     public Page<Post> findByTag(Member author, String tagContent, Pageable pageable) {
         return postRepository.findByAuthorAndPostTags_content(author, tagContent, pageable);
     }
+
+    public Page<Post> findByTag(Member author, String tagContent, boolean isPublic, Pageable pageable) {
+        return postRepository.findByAuthorAndPostTags_contentAndIsPublic(author, tagContent, isPublic, pageable);
+    }
+
+    public Optional<PostKeyword> findKeywordById(long postKeywordId) {
+        return postKeywordRepository.findById(postKeywordId);
+    }
+
+    public List<PostKeyword> findPostKeywordsByMemberId(Member actor) {
+        return postKeywordRepository.findByAuthorOrderByContent(actor);
+    }
+
+    public Optional<PostKeyword> findPostKeywordById(long postKeywordId) {
+        return postKeywordRepository.findById(postKeywordId);
+    }
 }

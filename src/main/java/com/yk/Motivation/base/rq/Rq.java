@@ -261,18 +261,19 @@ public class Rq {
         return Long.parseLong(getPathVariable(index));
     }
 
-    public String suitableListByTagPageBaseUrlByCurrentUrl() {
+    public String getSuitableListByTagPageBaseUrlByCurrentUrl(String domainName) {
         String currentUrl = getCurrentUrlPath();
 
-        String listByTagPageBaseUrl = "/usr/post/listByTag";
+        String listByTagPageBaseUrl = "/usr/" + domainName + "/listByTag";
 
-        if (currentUrl.startsWith("/usr/post/list")) return listByTagPageBaseUrl;
-        if (currentUrl.startsWith("/usr/post/listByTag")) return listByTagPageBaseUrl;
+        if (currentUrl.startsWith("/usr/" + domainName + "/list")) return listByTagPageBaseUrl;
+        if (currentUrl.startsWith("/usr/" + domainName + "/listByTag")) return listByTagPageBaseUrl;
 
         String listUrl = getParam("listUrl", "");
 
-        if (listUrl.startsWith("/usr/post/list")) return listByTagPageBaseUrl;
-        if (listUrl.startsWith("/usr/post/listByTag")) return listByTagPageBaseUrl;
+        if (currentUrl.startsWith("/usr/" + domainName + "/detail") && listUrl.isBlank()) return listByTagPageBaseUrl;
+        if (listUrl.startsWith("/usr/" + domainName + "/list")) return listByTagPageBaseUrl;
+        if (listUrl.startsWith("/usr/" + domainName + "/listByTag")) return listByTagPageBaseUrl;
 
         return "/usr/post/myListByTag";
     }

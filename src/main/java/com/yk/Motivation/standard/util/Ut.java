@@ -32,7 +32,7 @@ public class Ut {
         // 오직 초기 데이터를 생성하는데만 사용된다.
         // 운영모드에서는 사용되지 않는다.
         public static String toHtml(String body) {
-            return body.replace("\r\n", "<br>");
+            return "<p>" + body.replace("\r\n", "<br>") + "</p>";
         }
     }
     public static class date {

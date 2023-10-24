@@ -1,7 +1,7 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title th:text="|글 - ${post.subject}|"></title>
+    <title th:text="|책 - ${book.subject}|"></title>
 </head>
 
 <body>
@@ -11,8 +11,8 @@
 
     <div class="container w-full px-4">
         <h1 class="mb-4">
-            <i class="fa-regular fa-file-word"></i>
-            <span th:text="|글|"></span>
+            <i class="fa-solid fa-book"></i>
+            <span th:text="|책|"></span>
         </h1>
 
         <div class="card bg-base-100 shadow-xl">
@@ -22,42 +22,50 @@
                         <label class="label">
                             <span class="label-text">번호</span>
                         </label>
-                        <div th:text="${post.id}"></div>
+                        <div th:text="${book.id}"></div>
                     </div>
 
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">작성일</span>
                         </label>
-                        <div th:text="${#temporals.format(post.createDate, 'yy.MM.dd')}"></div>
+                        <div th:text="${#temporals.format(book.createDate, 'yy.MM.dd')}"></div>
                     </div>
 
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text">작성자</span>
+                            <span class="label-text">저자</span>
                         </label>
-                        <div th:text="${post.author.nickname}"></div>
+                        <div th:text="${book.author.producerName}"></div>
                     </div>
 
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">공개여부</span>
                         </label>
-                        <div th:text="${post.publicHanName}"></div>
+                        <div th:text="${book.publicHanName}"></div>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">본문</span>
+                        </label>
+                        <a class="link" th:href="|/usr/post/listByKeyword/${book.postKeyword.id}|"
+                           th:text="|#${book.postKeyword.content}(${book.postKeyword.total})|"></a>
                     </div>
 
                     <div class="form-control col-span-full">
                         <label class="label">
                             <span class="label-text">제목</span>
                         </label>
-                        <div th:text="${post.subject}"></div>
+                        <div th:text="${book.subject}"></div>
                     </div>
 
                     <div class="form-control col-span-full">
                         <label class="label">
                             <span class="label-text">태그</span>
                         </label>
-                        <div th:utext="${post.getTagLinks('<a class=`link` href=`%s`>#%s</a>', @rq.getSuitableListByTagPageBaseUrlByCurrentUrl('post') + '/%s')}"></div>
+                        <div th:utext="${book.getTagLinks('<a class=`link` href=`%s`>#%s</a>', @rq.getSuitableListByTagPageBaseUrlByCurrentUrl('book') + '/%s')}"></div>
                     </div>
 
                     <div class="form-control col-span-full">
@@ -66,7 +74,7 @@
                         </label>
                         <div class="toastui-editor-contents"
                              style="overflow-wrap: break-word;"
-                             th:utext="${post.bodyHtmlForPrint}">
+                             th:utext="${book.bodyHtmlForPrint}">
                         </div>
                     </div>
 
@@ -87,14 +95,14 @@
 
                 <div class="mt-6">
                     <div class="text-center">
-                        <a th:if="${@postService.checkActorCanModify(@rq.member, post).success}"
+                        <a th:if="${@bookService.checkActorCanModify(@rq.member, book).success}"
                            class="btn btn-link"
-                           th:href="|/usr/post/modify/${post.id}|">수정</a>
+                           th:href="|/usr/book/modify/${book.id}|">수정</a>
                         <a onclick="return confirm('정말로 삭제하시겠습니까?');"
-                           th:if="${@postService.checkActorCanRemove(@rq.member, post).success}"
+                           th:if="${@bookService.checkActorCanRemove(@rq.member, book).success}"
                            class="btn btn-link"
-                           th:href="|/usr/post/remove/${post.id}|" method="POST">삭제</a>
-                        <a th:with="listUrl = ${param.listUrl != null ? param.listUrl : '/usr/post/list'}"
+                           th:href="|/usr/book/remove/${book.id}|" method="POST">삭제</a>
+                        <a th:with="listUrl = ${param.listUrl != null ? param.listUrl : '/usr/book/list'}"
                            class="btn btn-link" th:href="${listUrl}">목록</a>
                     </div>
                 </div>

@@ -62,6 +62,15 @@ public class SecurityConfig {
                                         requestMatchersOf("/usr/article/*/remove/*")
                                 ).access(accessOf("@articleController.assertActorCanRemove()"))
                                 .requestMatchers(
+                                        requestMatchersOf("/usr/book/*/write")
+                                ).access(accessOf("@bookController.assertActorCanWrite()"))
+                                .requestMatchers(
+                                        requestMatchersOf("/usr/book/*/modify/*")
+                                ).access(accessOf("@bookController.assertActorCanModify()"))
+                                .requestMatchers(
+                                        requestMatchersOf("/usr/book/*/remove/*")
+                                ).access(accessOf("@bookController.assertActorCanRemove()"))
+                                .requestMatchers(
                                         requestMatchersOf("/usr/member/beProducer", "/usr/member/modify")
                                 ).access(accessOf("@memberController.assertCheckPasswordAuthCodeVerified()"))
                                 .requestMatchers(
