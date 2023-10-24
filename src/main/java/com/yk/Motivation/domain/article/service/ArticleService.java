@@ -62,6 +62,18 @@ public class ArticleService {
         return articleRepository.findById(id);
     }
 
+    public RsData<?> checkActorCanWrite(Member actor, Board board) {
+        if (actor == null) {
+            return new RsData<>("F-1", "로그인 후 이용해주세요.", null);
+        }
+
+        if (board.isAdminOnlyWritable() && !actor.isAdmin()) {
+            return new RsData<>("F-2", "관리자만 작성이 가능합니다.", null);
+        }
+
+        return new RsData<>("S-1", "가능합니다.", null);
+    }
+
     public RsData<?> checkActorCanModify(Member actor, Article article) {
         if (actor == null || !actor.equals(article.getAuthor())) {
             return new RsData<>("F-1", "권한이 없습니다.", null);
@@ -70,7 +82,7 @@ public class ArticleService {
         return new RsData<>("S-1", "가능합니다.", null);
     }
 
-    public RsData<?> checkActorCanDelete(Member actor, Article article) {
+    public RsData<?> checkActorCanRemove(Member actor, Article article) {
         return checkActorCanModify(actor, article);
     }
 

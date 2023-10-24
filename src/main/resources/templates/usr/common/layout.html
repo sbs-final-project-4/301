@@ -54,6 +54,8 @@
                     </li>
                     <li th:if="${@rq.login}"><a href="/usr/post/myList"><i class="fa-regular fa-file-lines"></i> 내 글</a>
                     </li>
+                    <li th:if="${@rq.login}"><a href="/usr/post/list"><i class="fa-regular fa-rectangle-list"></i> 글</a>
+                    </li>
                     <li><a href="/usr/article/notice1/list"><i class="fa-regular fa-flag"></i> 공지사항 게시판</a></li>
                     <li><a href="/usr/article/free1/list"><i class="fa-solid fa-face-grin-tears"></i> 자유 게시판</a></li>
                     <li th:if="${@rq.login}">

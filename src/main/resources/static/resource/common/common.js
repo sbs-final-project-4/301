@@ -61,15 +61,15 @@ $(function () {
     });
 
     $('a[method="post"]').click(function (e) {
-//        let onclickAfter = null;
-//
-//        eval("onclickAfter = function() { " + $(this).attr('onclick-after') + "}");
-//
-//        if (!onclickAfter()) return false;
+        let onclickAfter = null;
 
-        if (!confirm('정말로 삭제하시겠습니까?')) {
-            return false; // "취소"를 클릭했을 경우 함수를 종료하고 요청을 중지한다.
-        }
+        eval("onclickAfter = function() { " + $(this).attr('onclick-after') + "}");
+
+        if (!onclickAfter()) return false;
+
+//        if (!confirm('정말로 삭제하시겠습니까?')) {
+//            return false; // "취소"를 클릭했을 경우 함수를 종료하고 요청을 중지한다.
+//        }
 
         const action = $(this).attr('href');
         const csfTokenValue = $("meta[name='_csrf']").attr("content");
@@ -81,12 +81,12 @@ $(function () {
 
         return false;
     });
-//
-//    $('a[method="post"][onclick]').each(function (index, el) {
-//        const onclick = $(el).attr('onclick');
-//
-//        $(el).removeAttr('onclick');
-//
-//        $(el).attr('onclick-after', onclick);
-//    });
+
+    $('a[method="post"][onclick]').each(function (index, el) {
+        const onclick = $(el).attr('onclick');
+
+        $(el).removeAttr('onclick');
+
+        $(el).attr('onclick-after', onclick);
+    });
 });

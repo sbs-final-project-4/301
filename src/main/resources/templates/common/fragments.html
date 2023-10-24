@@ -533,7 +533,7 @@
                     <label class="label">
                         <span class="label-text">태그</span>
                     </label>
-                    <div th:utext="${post.getTagLinks('<a class=`link` href=`%s`>#%s</a>', '/usr/post/listByTag/%s')}"></div>
+                    <div th:utext="${post.getTagLinks('<a class=`link` href=`%s`>#%s</a>', @rq.suitableListByTagPageBaseUrlByCurrentUrl + '/%s')}"></div>
                 </div>
             </div>
         </div>
@@ -564,6 +564,13 @@
                         <span class="label-text">작성자</span>
                     </label>
                     <div th:text="${article.author.nickname}"></div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">공개</span>
+                    </label>
+                    <div th:text="${post.publicHanName}"></div>
                 </div>
 
                 <div class="form-control col-span-full">

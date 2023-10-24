@@ -7,6 +7,7 @@ import com.yk.Motivation.domain.board.entity.Board;
 import com.yk.Motivation.domain.board.service.BoardService;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.service.MemberService;
+import com.yk.Motivation.domain.post.entity.Post;
 import com.yk.Motivation.domain.post.service.PostService;
 import com.yk.Motivation.standard.util.Ut;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,12 +72,18 @@ public class NotProd {
         articleService.saveAttachmentFile(article1, file1Path, 1L);
         articleService.saveAttachmentFile(article1, file2Path, 2L);
 
-        postService.write(member1, "제목 1", "#자바 #HTML", "내용 1");
-        postService.write(member1, "제목 2", "#CSS #HTML #Python", "내용 2");
-        postService.write(member1, "제목 3", "#Java #HTML", "내용 3");
-        postService.write(member2, "제목 4", "#Python #Script", "내용 4");
-        postService.write(member2, "제목 5", "#Java #JSP", "내용 5");
-        postService.write(member2, "제목 6", "#CSS #Hungry #Python", "내용 6");
+        Post post1 = postService.write(member1, "제목 1", "#자바 #HTML", "내용 1", true).getData();
+
+        String file3Path = Ut.file.tempCopy(AppConfig.getResourcesStaticDirPath() + "/resource/common/common.css");
+        String file4Path = Ut.file.tempCopy(AppConfig.getResourcesStaticDirPath() + "/resource/common/common.js");
+        postService.saveAttachmentFile(post1, file3Path, 1L);
+        postService.saveAttachmentFile(post1, file4Path, 2L);
+
+        Post post2 = postService.write(member1, "제목 2", "#CSS #HTML #Python", "내용 2", true).getData();
+        Post post3 = postService.write(member1, "제목 3", "#Java #HTML", "내용 3", true).getData();
+        Post post4 = postService.write(member2, "제목 4", "#Python #Script", "내용 4", false).getData();
+        Post post5 = postService.write(member2, "제목 5", "#Java #JSP", "내용 5", false).getData();
+        Post post6 = postService.write(member2, "제목 6", "#CSS #Hungry #Python", "내용 6", true).getData();
     }
 
     @Transactional

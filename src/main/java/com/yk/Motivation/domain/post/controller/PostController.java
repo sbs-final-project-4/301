@@ -1,6 +1,5 @@
 package com.yk.Motivation.domain.post.controller;
 
-import com.yk.Motivation.base.exception.NeedHistoryBackException;
 import com.yk.Motivation.base.rq.Rq;
 import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.genFile.entity.GenFile;
@@ -18,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -36,6 +36,22 @@ import java.util.Map;
 public class PostController {
     private final PostService postService;
     private final Rq rq;
+
+    @GetMapping("/list")
+    public String showList(
+            Model model,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "") String kw,
+            @RequestParam(defaultValue = "all") String kwType
+    ) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
+        Page<Post> postPage = postService.findByKw(kwType, kw, true, pageable);
+        model.addAttribute("postPage", postPage);
+
+        return "usr/post/list";
+    }
 
     @GetMapping("/myList")
     public String showMyList(
@@ -77,7 +93,7 @@ public class PostController {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
-        Page<Post> postPage = postService.findByTag(tagContent, pageable);
+        Page<Post> postPage = postService.findByTag(tagContent, true, pageable);
         model.addAttribute("postPage", postPage);
 
         return "usr/post/listByTag";
@@ -95,7 +111,7 @@ public class PostController {
         Page<Post> postPage = postService.findByTag(rq.getMember(), tagContent, pageable);
         model.addAttribute("postPage", postPage);
 
-        return "usr/post/listByTag";
+        return "usr/post/mylistByTag";
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -109,7 +125,7 @@ public class PostController {
     public String write(
             @Valid PostController.PostWriteForm writeForm
     ) {
-        RsData<Post> rsData = postService.write(rq.getMember(), writeForm.getSubject(), writeForm.getTagsStr(), writeForm.getBody(), writeForm.getBodyHtml());
+        RsData<Post> rsData = postService.write(rq.getMember(), writeForm.getSubject(), writeForm.getTagsStr(), writeForm.getBody(), writeForm.getBodyHtml(), writeForm.isPublic());
 
         if (Ut.file.exists(writeForm.getAttachment__1()))
             postService.saveAttachmentFile(rsData.getData(), writeForm.getAttachment__1(), 1);
@@ -119,9 +135,10 @@ public class PostController {
         return rq.redirectOrBack("/usr/post/detail/%d".formatted(rsData.getData().getId()), rsData);
     }
 
-    @AllArgsConstructor
     @Getter
+    @Setter
     public static class PostWriteForm {
+        private boolean isPublic;
         @NotBlank
         @Length(min = 2)
         private String subject;
@@ -142,14 +159,6 @@ public class PostController {
     ) {
         Post post = postService.findById(id).get();
 
-        postService
-                .checkActorCanModify(rq.getMember(), post)
-                .optional()
-                .filter(RsData::isFail)
-                .ifPresent(rsData -> {
-                    throw new NeedHistoryBackException(rsData);
-                });
-
         Map<String, GenFile> filesMap = postService.findGenFilesMapKeyByFileNo(post, "common", "attachment");
 
         model.addAttribute("post", post);
@@ -166,15 +175,7 @@ public class PostController {
     ) {
         Post post = postService.findById(id).get();
 
-        postService
-                .checkActorCanModify(rq.getMember(), post)
-                .optional()
-                .filter(RsData::isFail)
-                .ifPresent(rsData -> {
-                    throw new NeedHistoryBackException(rsData);
-                });
-
-        RsData<Post> rsData = postService.modify(post, modifyForm.getSubject(), modifyForm.getTagsStr(), modifyForm.getBody(), modifyForm.getBodyHtml());
+        RsData<Post> rsData = postService.modify(post, modifyForm.getSubject(), modifyForm.getTagsStr(), modifyForm.getBody(), modifyForm.getBodyHtml(), modifyForm.isPublic());
 
         if (modifyForm.attachmentRemove__1)
             postService.removeAttachmentFile(rsData.getData(), 1);
@@ -201,6 +202,7 @@ public class PostController {
         private String body;
         @NotBlank
         private String bodyHtml;
+        private boolean isPublic;
         private MultipartFile attachment__1;
         private MultipartFile attachment__2;
         private boolean attachmentRemove__1;
@@ -214,16 +216,36 @@ public class PostController {
     ) {
         Post post = postService.findById(id).get();
 
-        postService
-                .checkActorCanDelete(rq.getMember(), post)
-                .optional()
-                .filter(RsData::isFail)
-                .ifPresent(rsData -> {
-                    throw new NeedHistoryBackException(rsData);
-                });
-
         RsData<?> rsData = postService.remove(post);
 
         return rq.redirectOrBack("/usr/post/myList", rsData);
+    }
+
+    public boolean assertActorCanModify() {
+        long postId = rq.getPathVariableAsLong(3);
+        Post post = postService.findById(postId).get();
+
+        postService.checkActorCanModify(rq.getMember(), post)
+                .optional()
+                .filter(RsData::isFail)
+                .ifPresent(rsData -> {
+                    throw new AccessDeniedException(rsData.getMsg());
+                });
+
+        return true;
+    }
+
+    public boolean assertActorCanRemove() {
+        long postId = rq.getPathVariableAsLong(3);
+        Post post = postService.findById(postId).get();
+
+        postService.checkActorCanRemove(rq.getMember(), post)
+                .optional()
+                .filter(RsData::isFail)
+                .ifPresent(rsData -> {
+                    throw new AccessDeniedException(rsData.getMsg());
+                });
+
+        return true;
     }
 }

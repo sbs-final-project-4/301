@@ -37,17 +37,18 @@ public class PostService {
     private final DocumentService documentService;
 
     @Transactional
-    public RsData<Post> write(Member author, String subject, String tagsStr, String body) {
-        return write(author, subject, tagsStr, body, Ut.markdown.toHtml(body));
+    public RsData<Post> write(Member author, String subject, String tagsStr, String body, boolean isPublic) {
+        return write(author, subject, tagsStr, body, Ut.markdown.toHtml(body), isPublic);
     }
 
     @Transactional
-    public RsData<Post> write(Member author, String subject, String tagsStr, String body, String bodyHtml) {
+    public RsData<Post> write(Member author, String subject, String tagsStr, String body, String bodyHtml, boolean isPublic) {
         Post post = Post.builder()
                 .author(author)
                 .subject(subject)
                 .body(body)
                 .bodyHtml(bodyHtml)
+                .isPublic(isPublic)
                 .build();
 
         postRepository.save(post);
@@ -58,6 +59,10 @@ public class PostService {
         documentService.updateTempGenFilesToInBody(post);
 
         return new RsData<Post>("S-1", post.getId() + "번 글이 생성되었습니다.", post);
+    }
+
+    public Page<Post> findByKw(String kwType, String kw, boolean isPublic, Pageable pageable) {
+        return postRepository.findByKw(kwType, kw, isPublic, pageable);
     }
 
     public Page<Post> findByKw(Member author, String kwType, String kw, Pageable pageable) {
@@ -76,12 +81,12 @@ public class PostService {
         return new RsData<>("S-1", "가능합니다.", null);
     }
 
-    public RsData<?> checkActorCanDelete(Member actor, Post post) {
+    public RsData<?> checkActorCanRemove(Member actor, Post post) {
         return checkActorCanModify(actor, post);
     }
 
     @Transactional
-    public RsData<Post> modify(Post post, String subject, String tagsStr, String body, String bodyHtml) {
+    public RsData<Post> modify(Post post, String subject, String tagsStr, String body, String bodyHtml, boolean isPublic) {
 
         Map<String, PostKeyword> postKeywordsMap = findPostKeywordsMap(post.getAuthor(), tagsStr);
         post.modifyTags(tagsStr, postKeywordsMap);
@@ -89,6 +94,7 @@ public class PostService {
         post.setSubject(subject);
         post.setBody(body);
         post.setBodyHtml(bodyHtml);
+        post.setPublic(isPublic);
 
         documentService.updateTempGenFilesToInBody(post);
 
@@ -146,8 +152,8 @@ public class PostService {
         genFileService.remove(post.getModelName(), post.getId(), "common", "attachment", fileNo);
     }
 
-    public Page<Post> findByTag(String tagContent, Pageable pageable) {
-        return postRepository.findByPostTags_content(tagContent, pageable);
+    public Page<Post> findByTag(String tagContent, boolean isPublic, Pageable pageable) {
+        return postRepository.findByPostTags_contentAndIsPublic(tagContent, isPublic, pageable);
     }
 
     public Page<Post> findByTag(Member author, String tagContent, Pageable pageable) {

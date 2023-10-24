@@ -1,7 +1,6 @@
 package com.yk.Motivation.domain.article.controller;
 
 
-import com.yk.Motivation.base.exception.NeedHistoryBackException;
 import com.yk.Motivation.base.rq.Rq;
 import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.article.entity.Article;
@@ -21,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -135,14 +135,6 @@ public class ArticleController {
         Board board = boardService.findByCode(boardCode).get();
         Article article = articleService.findById(id).get();
 
-        articleService
-                .checkActorCanModify(rq.getMember(), article)
-                .optional()
-                .filter(RsData::isFail)
-                .ifPresent(rsData -> {
-                    throw new NeedHistoryBackException(rsData);
-                });
-
         Map<String, GenFile> filesMap = articleService.findGenFilesMapKeyByFileNo(article, "common", "attachment");
 
         model.addAttribute("board", board);
@@ -163,14 +155,6 @@ public class ArticleController {
     ) {
         Board board = boardService.findByCode(boardCode).get();
         Article article = articleService.findById(id).get();
-
-        articleService
-                .checkActorCanModify(rq.getMember(), article)
-                .optional()
-                .filter(RsData::isFail)
-                .ifPresent(rsData -> {
-                    throw new NeedHistoryBackException(rsData);
-                });
 
         RsData<Article> rsData = articleService.modify(article, modifyForm.getSubject(), modifyForm.getTagsStr(), modifyForm.getBody(), modifyForm.getBodyHtml());
 
@@ -231,19 +215,50 @@ public class ArticleController {
     ) {
         Board board = boardService.findByCode(boardCode).get();
         Article article = articleService.findById(id).get();
-
-        articleService
-                .checkActorCanDelete(rq.getMember(), article)
-                .optional()
-                .filter(RsData::isFail)
-                .ifPresent(rsData -> {
-                    throw new NeedHistoryBackException(rsData);
-                });
-
         RsData<?> rsData = articleService.remove(article);
 
         return rq.redirectOrBack("/usr/article/%s/list".formatted(board.getCode()), rsData);
     }
 
+    public boolean assertActorCanWrite() {
+        String boardCode = rq.getPathVariable(2);
+        Board board = boardService.findByCode(boardCode).get();
+        articleService.checkActorCanWrite(rq.getMember(), board)
+                .optional()
+                .filter(RsData::isFail)
+                .ifPresent(rsData -> {
+                    throw new AccessDeniedException(rsData.getMsg());
+                });
 
+        return true;
+    }
+
+    public boolean assertActorCanModify() {
+        long articleId = rq.getPathVariableAsLong(4);
+        Article article = articleService.findById(articleId).get();
+
+        articleService.checkActorCanModify(rq.getMember(), article)
+                .optional()
+                .filter(RsData::isFail)
+                .ifPresent(rsData -> {
+                    throw new AccessDeniedException(rsData.getMsg());
+                });
+
+        return true;
+    }
+
+    public boolean assertActorCanRemove() {
+        long articleId = rq.getPathVariableAsLong(4);
+        Article article = articleService.findById(articleId).get();
+
+        articleService.checkActorCanRemove(rq.getMember(), article)
+                .optional()
+                .filter(RsData::isFail)
+                .ifPresent(rsData -> {
+                    throw new AccessDeniedException(rsData.getMsg());
+                });
+
+        return true;
+
+    }
 }

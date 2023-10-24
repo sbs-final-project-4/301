@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PostRepository extends JpaRepository<Post, Long>, PostRepositoryCustom {
 
-    Page<Post> findByPostTags_content(String tagContent, Pageable pageable);
-
     Page<Post> findByAuthorAndPostTags_content(Member author, String tagContent, Pageable pageable);
+
+    Page<Post> findByPostTags_contentAndIsPublic(String tagContent, Boolean isPublic, Pageable pageable);
+
 }

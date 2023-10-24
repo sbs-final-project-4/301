@@ -21,4 +21,9 @@ public class Board extends BaseEntity {
     @Column(unique = true)
     private String code;
     private String icon;
+
+    // 오직 관리자만이 쓸 수 있는 게시판인지 여부
+    public boolean isAdminOnlyWritable() {
+        return code.startsWith("notice");
+    }
 }

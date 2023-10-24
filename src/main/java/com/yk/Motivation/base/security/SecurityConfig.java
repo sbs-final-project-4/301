@@ -45,8 +45,22 @@ public class SecurityConfig {
                 .authorizeHttpRequests(
                         authorizeRequests -> authorizeRequests
                                 .requestMatchers(requestMatchersOf("/usr/member/notVerified")
-                                )
-                                .permitAll()
+                                ).permitAll()
+                                .requestMatchers(
+                                        requestMatchersOf("/usr/post/modify/*")
+                                ).access(accessOf("@postController.assertActorCanModify()"))
+                                .requestMatchers(
+                                        requestMatchersOf("/usr/post/remove/*")
+                                ).access(accessOf("@postController.assertActorCanRemove()"))
+                                .requestMatchers(
+                                        requestMatchersOf("/usr/article/*/write")
+                                ).access(accessOf("@articleController.assertActorCanWrite()"))
+                                .requestMatchers(
+                                        requestMatchersOf("/usr/article/*/modify/*")
+                                ).access(accessOf("@articleController.assertActorCanModify()"))
+                                .requestMatchers(
+                                        requestMatchersOf("/usr/article/*/remove/*")
+                                ).access(accessOf("@articleController.assertActorCanRemove()"))
                                 .requestMatchers(
                                         requestMatchersOf("/usr/member/beProducer", "/usr/member/modify")
                                 ).access(accessOf("@memberController.assertCheckPasswordAuthCodeVerified()"))

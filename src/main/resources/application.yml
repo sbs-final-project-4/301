@@ -28,7 +28,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/motivation?useUnicode=true&serverTimezone=Asia/Seoul
     username: root
-    password: qkqh134679258
+    password:
   security:
     oauth2:
       client:

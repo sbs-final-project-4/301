@@ -11,7 +11,7 @@
 
     <div class="container w-full px-4">
         <h1 class="mb-4">
-            <i class="fa-solid fa-pen"></i>
+            <i class="fa-regular fa-file-word"></i>
             <span th:text="|${board.name} 게시글|"></span>
         </h1>
 
@@ -82,9 +82,8 @@
                         <a th:if="${@articleService.checkActorCanModify(@rq.member, article).success}"
                            class="btn btn-link"
                            th:href="|/usr/article/${board.code}/modify/${article.id}|">수정</a>
-<!--                        <a onclick="return confirm('정말로 삭제하시겠습니까?');"-->
-                        <a onclick="return;"
-                           th:if="${@articleService.checkActorCanDelete(@rq.member, article).success}"
+                        <a onclick="return confirm('정말로 삭제하시겠습니까?');"
+                           th:if="${@articleService.checkActorCanRemove(@rq.member, article).success}"
                            class="btn btn-link"
                            th:href="|/usr/article/${board.code}/remove/${article.id}|" method="POST">삭제</a>
                         <a class="btn btn-link" th:href="|/usr/article/${board.code}/list|">목록</a>

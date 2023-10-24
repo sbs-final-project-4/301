@@ -37,6 +37,8 @@ public class Post extends BaseEntity implements DocumentHavingSortableTags {
     @Column(columnDefinition = "TEXT")
     private String bodyHtml;
 
+    private boolean isPublic;
+
     @OneToMany(mappedBy = "post", orphanRemoval = true, cascade = {CascadeType.ALL})
     @Builder.Default
     @ToString.Exclude
@@ -58,5 +60,9 @@ public class Post extends BaseEntity implements DocumentHavingSortableTags {
         postTags.add(tag);
 
         return tag;
+    }
+
+    public String getPublicHanName() {
+        return isPublic ? "공개" : "비공개";
     }
 }

@@ -22,6 +22,15 @@
             <input type="hidden" name="bodyHtml">
 
             <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="label-text">공개여부</span>
+                </label>
+
+                <input type="checkbox" name="public" value="true" th:checked="${post.public}"
+                       class="toggle toggle-primary"/>
+            </div>
+
+            <div class="form-control">
                 <label class="label">
                     <span class="label-text">제목</span>
                 </label>
@@ -58,7 +67,7 @@
                     </label>
 
                     <div class="flex items-center gap-3">
-                        <input type="checkbox" class="checkbox" th:name="'attachmentRemove__' + ${i}" th:value="true">
+                        <input type="checkbox" class="checkbox" th:name="'attachmentRemove__' + ${i}" value="true">
 
                         <a th:href="|${genFile.downloadUrl}|" class="link mt-2">
                             <i class="fa-regular fa-file"></i>
