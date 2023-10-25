@@ -8,34 +8,39 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.IOException;
 
 @Configuration
-public class AppConfig {
-    private static String resourcesStaticDirPath;
+public class AppConfig { // application.yml - custom
+    private static String resourcesStaticDirPath; // static/ 절대 경로
 
     @Getter
-    public static String tempDirPath;
+    public static String tempDirPath; // c:/temp/motivation/temp
 
     @Getter
-    public static String genFileDirPath;
+    public static String genFileDirPath; // c:/temp/motivation
 
     @Getter
-    public static String siteName;
+    public static String siteName; // 모티베이션
 
     @Getter
-    public static String siteBaseUrl;
+    public static String siteBaseUrl; // localhost:8090 -> 도메인으로 변경
 
-    @Value("${custom.genFile.dirPath}")
+    @Value("${custom.genFile.dirPath}") // setter
     public void setGenFileDirPath(String genFileDirPath) {
         AppConfig.genFileDirPath = genFileDirPath;
     }
 
-    @Value("${custom.site.name}")
+    @Value("${custom.site.name}") // setter
     public void setSiteName(String siteName) {
         AppConfig.siteName = siteName;
     }
 
-    @Value("${custom.site.baseUrl}")
+    @Value("${custom.site.baseUrl}") // setter
     public void setSiteBaseUrl(String siteBaseUrl) {
         AppConfig.siteBaseUrl = siteBaseUrl;
+    }
+
+    @Value("${custom.tempDirPath}") // setter
+    public void setTempDirPath(String tempDirPath) {
+        AppConfig.tempDirPath = tempDirPath;
     }
 
     public static String getResourcesStaticDirPath() { // static/ 디렉토리의 절대경로를 return
@@ -49,10 +54,5 @@ public class AppConfig {
         }
 
         return resourcesStaticDirPath;
-    }
-
-    @Value("${custom.tempDirPath}")
-    public void setTempDirPath(String tempDirPath) {
-        AppConfig.tempDirPath = tempDirPath;
     }
 }

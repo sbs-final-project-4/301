@@ -16,12 +16,12 @@ import static lombok.AccessLevel.PROTECTED;
 
 @Getter
 @SuperBuilder
-@MappedSuperclass
+@MappedSuperclass // BaseEntiy 가 db 에 테이블로 생성 안되게 해줌
 @NoArgsConstructor(access = PROTECTED)
-@EntityListeners(AuditingEntityListener.class)
+@EntityListeners(AuditingEntityListener.class) // @CreateDate , LastModifiedDate 사용가능하게
 @ToString
 @EqualsAndHashCode
-public class BaseEntity {
+public class BaseEntity { // 모든 Entity 가 상속 받게 될 BaseEntity
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -38,7 +38,7 @@ public class BaseEntity {
     @Builder.Default
     private Map<String, Object> extra = new LinkedHashMap<>();
 
-    public String getModelName() {
+    public String getModelName() { // Entity class 이름 첫자 소문자로 return
         String simpleName = this.getClass().getSimpleName();
         return Character.toLowerCase(simpleName.charAt(0)) + simpleName.substring(1);
     }

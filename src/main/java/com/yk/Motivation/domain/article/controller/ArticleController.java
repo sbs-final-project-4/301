@@ -103,9 +103,8 @@ public class ArticleController {
 
         if (Ut.file.exists(writeForm.getAttachment__1()))
             articleService.saveAttachmentFile(rsData.getData(), writeForm.getAttachment__1(), 1);
-        if (Ut.file.exists(writeForm.getAttachment__1()))
+        if (Ut.file.exists(writeForm.getAttachment__2()))
             articleService.saveAttachmentFile(rsData.getData(), writeForm.getAttachment__2(), 2);
-
 
         return rq.redirectOrBack("/usr/article/%s/detail/%d".formatted(board.getCode(), rsData.getData().getId()), rsData);
     }

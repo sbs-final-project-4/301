@@ -23,9 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 @Configuration
-@Profile("!prod")
+@Profile("!prod")  // 이 구성은 'prod' 프로파일이 활성화되지 않은 경우에만 적용된다.
 public class NotProd {
-//    @Value("${custom.security.oauth2.client.registration.kakao.devUserOauthId}")
+
+//    @Value("${custom.security.oauth2.client.registration.kakao.devUserOauthId}") // 개발 중 테스트를 위해 사용 했었음.
 //    private String kakaoDevUserOAuthId;
 
     @Autowired

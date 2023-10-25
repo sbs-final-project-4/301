@@ -573,6 +573,13 @@
                     <div th:text="${post.author.nickname}"></div>
                 </div>
 
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">공개</span>
+                    </label>
+                    <div th:text="${post.publicHanName}"></div>
+                </div>
+
                 <div class="form-control col-span-full">
                     <label class="label">
                         <span class="label-text">제목</span>
@@ -618,20 +625,13 @@
                     <div th:text="${article.author.nickname}"></div>
                 </div>
 
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">공개</span>
-                    </label>
-                    <div th:text="${post.publicHanName}"></div>
-                </div>
-
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">본문</span>
-                    </label>
-                    <a class="link" target="_blank" th:href="|/usr/post/listByKeyword/${book.postKeyword.id}|"
-                       th:text="|#${book.postKeyword.content}(${book.postKeyword.total})|"></a>
-                </div>
+<!--                <div class="form-control">-->
+<!--                    <label class="label">-->
+<!--                        <span class="label-text">본문</span>-->
+<!--                    </label>-->
+<!--                    <a class="link" target="_blank" th:href="|/usr/post/listByKeyword/${book.postKeyword.id}|"-->
+<!--                       th:text="|#${book.postKeyword.content}(${book.postKeyword.total})|"></a>-->
+<!--                </div>-->
 
                 <div class="form-control col-span-full">
                     <label class="label">

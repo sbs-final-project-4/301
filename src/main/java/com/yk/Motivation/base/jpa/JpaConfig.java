@@ -7,9 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class JpaConfig {
+public class JpaConfig { // EntityManager 주입, JPAQueryFactory Bean 등록
 
-    @PersistenceContext
+    @PersistenceContext // entityManager 주입
     private EntityManager entityManager;
 
     @Bean

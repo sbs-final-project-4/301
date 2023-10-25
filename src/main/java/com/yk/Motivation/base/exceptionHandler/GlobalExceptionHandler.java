@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class GlobalExceptionHandler {
     private final Rq rq;
 
-    @ExceptionHandler(NeedHistoryBackException.class)
+    @ExceptionHandler(NeedHistoryBackException.class) // NeedHistoryBackException 을 Handle 하겠다!
     @ResponseStatus(HttpStatus.FORBIDDEN) // 요 예외가 터지면 응답 할 HTTP 상태 코드는 'FORBIDDEN' (403)
     public String handle(NeedHistoryBackException ex) {
         return rq.historyBack(ex.getMessage());

@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
 @Component
-@RequestScope
+@RequestScope // 빈의 생명주기가 HTTP 요청의 생명주기와 동일하게
 public class Rq {
     private final MemberService memberService;
     private final HttpServletRequest req;
@@ -40,7 +40,7 @@ public class Rq {
         }
     }
 
-    private String getLoginedMemberUsername() {
+    private String getLoginedMemberUsername() { // 로그인 했다면, 로그인 한 member 의 logindID
         if (isLogout()) return null;
 
         return user.getUsername();
@@ -66,19 +66,19 @@ public class Rq {
         return member;
     }
 
-    public boolean isAdmin() {
+    public boolean isAdmin() { // isAdmin 이면 true
         if (isLogout()) return false;
 
         return getMember().isAdmin();
     }
 
-    public boolean isProducer() {
+    public boolean isProducer() { // isProducer 면 true
         if (isLogout()) return false;
 
         return getMember().isProducer();
     }
 
-    public String getProducerPageName() {
+    public String getProducerPageName() { // 크리에이터 정보와 신청을 동적으로 보여주려고
         if (isProducer()) return "크리에이터 정보";
         return "크리에이터 신청";
     }
@@ -176,21 +176,24 @@ public class Rq {
         return sb.toString();
     }
 
+    //
+
+
     public String historyBack(RsData rs) {
         return historyBack(rs.getMsg());
     }
 
-    public String historyBack(String msg) {
+    public String historyBack(String msg) { // historyBack 시에 toastr 를 위해 내용을 발라서 historyback 시킴
 
-        String referer = req.getHeader("referer");
-        String key = "historyBackFailMsg___" + referer;
+        String referer = req.getHeader("referer"); // referer 정보 가져옴
+        String key = "historyBackFailMsg___" + referer; // value 제단
         req.setAttribute("localStorageKeyAboutHistoryBackFailMsg", key);
-        req.setAttribute("historyBackFailMsg", Ut.url.withTtl(msg));
+        req.setAttribute("historyBackFailMsg", Ut.url.withTtl(msg)); // timeout 을 위한 ttl 을 발라서 msg 저장
 
         // 200 이 아니라 400 으로 응답코드가 지정되도록
         resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 
-        return "common/js";
+        return "common/js"; //  history back
     }
 
     public String redirect(String url) {
@@ -201,23 +204,23 @@ public class Rq {
         return redirect(url, rs.getMsg());
     }
 
-    public String redirect(String url, String msg) {
+    public String redirect(String url, String msg) { // msg 가 있다면, url 에 parameter 로 ?msg= 형태로 redirect
         if (Ut.str.isBlank(msg)) return "redirect:" + url;
 
         return "redirect:" + Ut.url.modifyQueryParam(url, "msg", Ut.url.encodeWithTtl(msg));
     }
 
-    public String redirectOrBack(String url, RsData rs) {
+    public String redirectOrBack(String url, RsData rs) { // rsData 가 isSuccess 면 redirect, isFail 이면 history back
         if ( rs.isFail() ) return historyBack(rs);
 
         return redirect(url, rs);
     }
 
-    public String getProfileImgUrl() {
+    public String getProfileImgUrl() { // profileImg 경로 가져오기
         return memberService.getProfileImgUrl(getMember());
     }
 
-    public String getRefererUrl(String defaultValue) {
+    public String getRefererUrl(String defaultValue) { // referer 정보 가져오기
         String referer = req.getHeader("referer");
 
         if (Ut.str.isBlank(referer)) return defaultValue;
@@ -225,15 +228,19 @@ public class Rq {
         return referer;
     }
 
+    // url 예시 : https://www.example.com/products/shoes/sneakers
+    // 예시에서 Path 는 /products/shoes/sneakers
+
     public String getRefererUrlPath(String defaultValue) {
         return Ut.url.getPath(getRefererUrl(defaultValue), defaultValue);
     }
-
 
     public String getCurrentUrlPath() {
         return Ut.url.getPath(getCurrentUrl(), "");
     }
 
+    // getRequestURL() 은 parameter (queryString) 은 버리고 url 만 return 함
+    // 때문에 getQueryString() 으로 parameter 부분을 가져와서 다시 붙여주는 것
     private String getCurrentUrl() {
         String queryString = req.getQueryString();
         return req.getRequestURI() + (Ut.str.hasLength(queryString) ? "?" + queryString : "");
