@@ -95,6 +95,63 @@ public class GenFileService {
         return genFile;
     }
 
+    @Transactional
+    public GenFile saveForLesson(String relTypeCode, Long relId, String typeCode, String type2Code, long fileNo, String sourceFile) {
+        if (!Ut.file.exists(sourceFile)) return null;
+
+        // fileNo 가 0 이면, 이 파일은 로직상 무조건 새 파일이다.
+        if (fileNo > 0) remove(relTypeCode, relId, typeCode, type2Code, fileNo);
+
+        String originFileName = Ut.file.getOriginFileName(sourceFile); // 확장자 포함한 원본 파일의 이름
+        String fileExt = Ut.file.getExt(originFileName); // 파일의 확장자
+        String fileExtTypeCode = Ut.file.getFileExtTypeCodeFromFileExt(fileExt); // img, video, audio 등...
+        String fileExtType2Code = Ut.file.getFileExtType2CodeFromFileExt(fileExt); // 파일의 확장자?
+        long fileSize = new File(sourceFile).length(); // 파일의 크기를 바이트 단위로
+        String fileDir = getCurrentDirNameForLesson(relTypeCode, relId); // relTypeCode/2023_10_11/1 ...
+
+        int maxTryCount = 3;
+
+        GenFile genFile = null;
+
+        // fileNo 가 0이면 auto increment 를 해주고 싶다.
+        // 그러나 동시에 많은 요청이 발생 하면, fileNo 의 중복이 발생 해버릴 수도 있다.
+        // 그래서 세 번 정도는 기회를 주겠다.
+        for (int tryCount = 1; tryCount <= maxTryCount; tryCount++) {
+            try {
+                if (fileNo == 0) fileNo = genNextFileNo(relTypeCode, relId, typeCode, type2Code);
+
+                genFile = GenFile.builder()
+                        .relTypeCode(relTypeCode) // 관련 엔티티
+                        .relId(relId) // 관련 엔티티의 id(primary key)
+                        .typeCode(typeCode) // common ...
+                        .type2Code(type2Code) // profileImg ...
+                        .fileExtTypeCode(fileExtTypeCode) // 확장자
+                        .fileExtType2Code(fileExtType2Code) // 확장자
+                        .originFileName(originFileName) // 이름.확장자
+                        .fileSize(fileSize) // 파일크기 (바이트)
+                        .fileNo(fileNo) // 파일 번호
+                        .fileExt(fileExt) // 확장자
+                        .fileDir(fileDir) // 파일 위치
+                        .build();
+
+                genFileRepository.save(genFile);
+
+                break;
+            } catch (Exception ignored) {
+
+            }
+        }
+
+        File file = new File(genFile.getFilePath()); // directory 핸들링
+
+        file.getParentFile().mkdirs(); // 없으면 생성
+
+        Ut.file.moveFile(sourceFile, file); // sourceFile 경로의 파일을 file 로 이동
+        Ut.file.remove(sourceFile); // sourceFile 경로의 파일 삭제
+
+        return genFile;
+    }
+
     private long genNextFileNo(String relTypeCode, Long relId, String typeCode, String type2Code) {
         return genFileRepository
                 .findTop1ByRelTypeCodeAndRelIdAndTypeCodeAndType2CodeOrderByFileNoDesc(relTypeCode, relId, typeCode, type2Code)
@@ -104,6 +161,10 @@ public class GenFileService {
 
     private String getCurrentDirName(String relTypeCode) { // relTypeCode/2023_10_11 ...
         return relTypeCode + "/" + Ut.date.getCurrentDateFormatted("yyyy_MM_dd");
+    }
+
+    private String getCurrentDirNameForLesson(String relTypeCode, Long lectureId) { // relTypeCode/2023_10_11/1 ...
+        return relTypeCode + "/" + Ut.date.getCurrentDateFormatted("yyyy_MM_dd") + "/" + lectureId;
     }
 
     public Map<String, GenFile> findGenFilesMapKeyByFileNo(String relTypeCode, long relId, String typeCode, String type2Code) {

@@ -108,25 +108,11 @@ public class NotProd {
 
         bookService.write(member1, postKeywordHtml, "HTML 기초", "#HTML #프론트 엔드", "내용 1", Ut.markdown.toHtml("내용 1"), true);
 
-        lectureService.write(member1, "제목1", "#123", "내용1", true);
-        lectureService.write(member1, "제목2", "#123", "내용1", true);
-        lectureService.write(member1, "제목3", "#123", "내용1", true);
-        lectureService.write(member1, "제목4", "#123", "내용1", true);
-        lectureService.write(member1, "제목5", "#123", "내용1", true);
-        lectureService.write(member1, "제목6", "#123", "내용1", true);
-        lectureService.write(member1, "제목7", "#123", "내용1", true);
-        lectureService.write(member1, "제목8", "#123", "내용1", true);
-        lectureService.write(member1, "제목9", "#123", "내용1", true);
-        lectureService.write(member1, "제목10", "#123", "내용1", true);
-        lectureService.write(member1, "제목11", "#123", "내용1", true);
-        lectureService.write(member1, "제목12", "#123", "내용1", true);
-        lectureService.write(member1, "제목13", "#123", "내용1", true);
-        lectureService.write(member1, "제목14", "#123", "내용1", true);
-        lectureService.write(member1, "제목15", "#123", "내용1", true);
-        lectureService.write(member1, "제목16", "#123", "내용1", true);
-        lectureService.write(member1, "제목17", "#123", "내용1", true);
-        lectureService.write(member1, "제목18", "#123", "내용1", true);
-        lectureService.write(member1, "제목19", "#123", "내용1", true);
+        lectureService.write(member1, "제목1", "#HTML", "내용1", true);
+        lectureService.write(member1, "제목2", "#HTML", "내용1", false);
+        lectureService.write(member2, "제목3", "#CSS", "내용1", true);
+        lectureService.write(member2, "제목4", "#CSS", "내용1", true);
+
 
     }
 

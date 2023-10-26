@@ -1,0 +1,182 @@
+<html layout:decorate="~{usr/common/layout}">
+
+<head>
+    <title th:text="|강의 - ${lecture.subject}|"></title>
+</head>
+
+<body>
+
+<div class="flex-1 flex items-center justify-center" layout:fragment="content">
+    <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
+
+    <div class="container w-full px-4">
+        <h1 class="mb-4">
+            <i class="fa-regular fa-file-word"></i>
+            <span th:text="|${lecture.subject} 대시보드|"></span>
+        </h1>
+
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">강의번호</span>
+                        </label>
+                        <div th:text="${lecture.id}"></div>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">등록일</span>
+                        </label>
+                        <div th:text="${#temporals.format(lecture.createDate, 'yy.MM.dd')}"></div>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">강사명</span>
+                        </label>
+                        <div th:text="${lecture.producer.producerName}"></div>
+                    </div>
+
+                    <div class="form-control col-span-full">
+                        <label class="label">
+                            <span class="label-text">제목</span>
+                        </label>
+                        <div th:text="${lecture.subject}"></div>
+                    </div>
+
+                    <div class="form-control col-span-full">
+                        <label class="label">
+                            <span class="label-text">태그</span>
+                        </label>
+                        <div th:utext="${lecture.getTagLinks('<a class=`link` href=`%s`>#%s</a>', '/usr/article/listByTag/%s')}"></div>
+                    </div>
+
+                    <div class="form-control col-span-full">
+                        <label class="label">
+                            <span class="label-text">내용</span>
+                        </label>
+                        <div class="toastui-editor-contents"
+                             style="overflow-wrap: break-word;"
+                             th:utext="${lecture.bodyHtmlForPrint}">
+                        </div>
+                    </div>
+
+                    <div class="form-control col-span-full" th:each="fileEntry : ${filesMap}">
+                        <label class="label">
+                            <span class="label-text">강의자료 <span th:text="${fileEntry.key}"></span></span>
+                        </label>
+
+                        <a th:href="|${fileEntry.value.downloadUrl}|" class="link">
+                            <i class="fa-regular fa-file"></i>
+                            강의자료
+                            <span th:text="${fileEntry.key}"></span>
+                            (<span th:text="${fileEntry.value.originFileName}"></span>)
+                            다운로드
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <div class="text-center">
+                        <a th:if="${@lectureService.checkProducerCanModify(@rq.member, lecture).success}"
+                           class="btn btn-link"
+                           th:href="|/usr/lecture/modify/${lecture.id}|">수정</a>
+                        <a onclick="return confirm('정말로 삭제하시겠습니까?');"
+                           th:if="${@lectureService.checkProducerCanRemove(@rq.member, lecture).success}"
+                           class="btn btn-link"
+                           th:href="|/usr/lecture/remove/${lecture.id}|" method="POST">삭제</a>
+                        <a class="btn btn-link" th:href="|/usr/lecture/list|">목록</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="my-4">
+            <i class="fa-regular fa-file-word"></i>
+            <span th:text="|${lecture.subject} 커리큘럼|"></span>
+        </h1>
+
+        <div class="card bg-base-100 shadow-xl mt-4">
+            <div class="card-body">
+                <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">강의번호</span>
+                        </label>
+                        <div th:text="${lecture.id}"></div>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">등록일</span>
+                        </label>
+                        <div th:text="${#temporals.format(lecture.createDate, 'yy.MM.dd')}"></div>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">강사명</span>
+                        </label>
+                        <div th:text="${lecture.producer.producerName}"></div>
+                    </div>
+
+                    <div class="form-control col-span-full">
+                        <label class="label">
+                            <span class="label-text">제목</span>
+                        </label>
+                        <div th:text="${lecture.subject}"></div>
+                    </div>
+
+                    <div class="form-control col-span-full">
+                        <label class="label">
+                            <span class="label-text">태그</span>
+                        </label>
+                        <div th:utext="${lecture.getTagLinks('<a class=`link` href=`%s`>#%s</a>', '/usr/article/listByTag/%s')}"></div>
+                    </div>
+
+                    <div class="form-control col-span-full">
+                        <label class="label">
+                            <span class="label-text">내용</span>
+                        </label>
+                        <div class="toastui-editor-contents"
+                             style="overflow-wrap: break-word;"
+                             th:utext="${lecture.bodyHtmlForPrint}">
+                        </div>
+                    </div>
+
+                    <div class="form-control col-span-full" th:each="fileEntry : ${filesMap}">
+                        <label class="label">
+                            <span class="label-text">강의자료 <span th:text="${fileEntry.key}"></span></span>
+                        </label>
+
+                        <a th:href="|${fileEntry.value.downloadUrl}|" class="link">
+                            <i class="fa-regular fa-file"></i>
+                            강의자료
+                            <span th:text="${fileEntry.key}"></span>
+                            (<span th:text="${fileEntry.value.originFileName}"></span>)
+                            다운로드
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-6">
+                    <div class="text-center">
+                        <a th:if="${@lectureService.checkProducerCanModify(@rq.member, lecture).success}"
+                           class="btn btn-link"
+                           th:href="|/usr/lecture/modify/${lecture.id}|">수정</a>
+                        <a onclick="return confirm('정말로 삭제하시겠습니까?');"
+                           th:if="${@lectureService.checkProducerCanRemove(@rq.member, lecture).success}"
+                           class="btn btn-link"
+                           th:href="|/usr/lecture/remove/${lecture.id}|" method="POST">삭제</a>
+                        <a class="btn btn-link" th:href="|/usr/lecture/list|">목록</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+
+</html>

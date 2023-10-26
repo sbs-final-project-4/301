@@ -1,0 +1,30 @@
+package com.yk.Motivation.domain.lesson.entity;
+
+import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
+import com.yk.Motivation.domain.lecture.entity.Lecture;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+
+import static lombok.AccessLevel.PROTECTED;
+
+@Entity
+@Setter
+@Getter
+@AllArgsConstructor(access = PROTECTED)
+@NoArgsConstructor(access = PROTECTED)
+@SuperBuilder
+@ToString(callSuper = true)
+public class Lesson extends BaseEntity {
+
+    @ManyToOne
+    private Lecture lecture;
+
+    private String subject;
+
+    private int sortNo;
+
+}

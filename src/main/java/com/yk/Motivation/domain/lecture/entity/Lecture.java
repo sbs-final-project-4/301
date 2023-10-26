@@ -3,12 +3,15 @@ package com.yk.Motivation.domain.lecture.entity;
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
 import com.yk.Motivation.domain.document.standard.DocumentHavingTags;
 import com.yk.Motivation.domain.document.standard.DocumentTag;
+import com.yk.Motivation.domain.lesson.entity.Lesson;
 import com.yk.Motivation.domain.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -38,6 +41,12 @@ public class Lecture extends BaseEntity implements DocumentHavingTags {
     @Builder.Default
     @ToString.Exclude
     private Set<LectureTag> lectureTags = new HashSet<>();
+
+    @OneToMany(mappedBy = "lecture", orphanRemoval = true, cascade = {CascadeType.ALL})
+    @Builder.Default
+    @ToString.Exclude
+    @OrderBy("sortNo")
+    private List<Lesson> lessons = new ArrayList<>();
 
     // DocumentHavingTags 의 추상메서드
     // 태그기능을 사용하려면 필요하다.
