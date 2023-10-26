@@ -21,7 +21,7 @@ public class AppConfig { // application.yml - custom
     public static String siteName; // 모티베이션
 
     @Getter
-    public static String siteBaseUrl; // localhost:8090 -> 도메인으로 변경
+    public static String siteBaseUrl; // ( localhost:8090 -> 도메인으로 변경 )
 
     @Value("${custom.genFile.dirPath}") // setter
     public void setGenFileDirPath(String genFileDirPath) {

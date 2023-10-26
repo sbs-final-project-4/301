@@ -6,6 +6,8 @@ import com.yk.Motivation.domain.article.service.ArticleService;
 import com.yk.Motivation.domain.board.entity.Board;
 import com.yk.Motivation.domain.board.service.BoardService;
 import com.yk.Motivation.domain.book.service.BookService;
+import com.yk.Motivation.domain.lecture.entity.Lecture;
+import com.yk.Motivation.domain.lecture.service.LectureService;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.service.MemberService;
 import com.yk.Motivation.domain.post.entity.Post;
@@ -40,6 +42,8 @@ public class NotProd {
     private ArticleService articleService;
     @Autowired
     private PostService postService;
+    @Autowired
+    private LectureService lectureService;
 
     @Autowired
     private BookService bookService;
@@ -103,6 +107,27 @@ public class NotProd {
         Post post6 = postService.write(member2, "제목 6", "#CSS #Hungry #Python", "내용 6", true).getData();
 
         bookService.write(member1, postKeywordHtml, "HTML 기초", "#HTML #프론트 엔드", "내용 1", Ut.markdown.toHtml("내용 1"), true);
+
+        lectureService.write(member1, "제목1", "#123", "내용1", true);
+        lectureService.write(member1, "제목2", "#123", "내용1", true);
+        lectureService.write(member1, "제목3", "#123", "내용1", true);
+        lectureService.write(member1, "제목4", "#123", "내용1", true);
+        lectureService.write(member1, "제목5", "#123", "내용1", true);
+        lectureService.write(member1, "제목6", "#123", "내용1", true);
+        lectureService.write(member1, "제목7", "#123", "내용1", true);
+        lectureService.write(member1, "제목8", "#123", "내용1", true);
+        lectureService.write(member1, "제목9", "#123", "내용1", true);
+        lectureService.write(member1, "제목10", "#123", "내용1", true);
+        lectureService.write(member1, "제목11", "#123", "내용1", true);
+        lectureService.write(member1, "제목12", "#123", "내용1", true);
+        lectureService.write(member1, "제목13", "#123", "내용1", true);
+        lectureService.write(member1, "제목14", "#123", "내용1", true);
+        lectureService.write(member1, "제목15", "#123", "내용1", true);
+        lectureService.write(member1, "제목16", "#123", "내용1", true);
+        lectureService.write(member1, "제목17", "#123", "내용1", true);
+        lectureService.write(member1, "제목18", "#123", "내용1", true);
+        lectureService.write(member1, "제목19", "#123", "내용1", true);
+
     }
 
     @Transactional
