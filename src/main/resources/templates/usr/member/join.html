@@ -112,7 +112,7 @@
 
                 fetch(
                     'checkUsernameDup?username=' + form.username.value
-                )
+                    )
                     .then(res => res.json())
                     .then((rs) => {
                         if ( rs.success ) {

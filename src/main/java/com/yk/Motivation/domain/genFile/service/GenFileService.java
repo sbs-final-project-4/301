@@ -163,8 +163,8 @@ public class GenFileService {
         return relTypeCode + "/" + Ut.date.getCurrentDateFormatted("yyyy_MM_dd");
     }
 
-    private String getCurrentDirNameForLesson(String relTypeCode, Long lectureId) { // relTypeCode/2023_10_11/1 ...
-        return relTypeCode + "/" + Ut.date.getCurrentDateFormatted("yyyy_MM_dd") + "/" + lectureId;
+    private String getCurrentDirNameForLesson(String relTypeCode, Long lessonId) { // relTypeCode/2023_10_11/1 ...
+        return relTypeCode + "/" + Ut.date.getCurrentDateFormatted("yyyy_MM_dd") + "/" + lessonId;
     }
 
     public Map<String, GenFile> findGenFilesMapKeyByFileNo(String relTypeCode, long relId, String typeCode, String type2Code) {

@@ -109,9 +109,7 @@ public class NotProd {
         bookService.write(member1, postKeywordHtml, "HTML 기초", "#HTML #프론트 엔드", "내용 1", Ut.markdown.toHtml("내용 1"), true);
 
         lectureService.write(member1, "제목1", "#HTML", "내용1", true);
-        lectureService.write(member1, "제목2", "#HTML", "내용1", false);
-        lectureService.write(member2, "제목3", "#CSS", "내용1", true);
-        lectureService.write(member2, "제목4", "#CSS", "내용1", true);
+        lectureService.write(member1, "제목2", "#HTML", "내용1", true);
 
 
     }

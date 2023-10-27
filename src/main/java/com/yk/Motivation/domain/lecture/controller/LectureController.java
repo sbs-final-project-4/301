@@ -10,6 +10,8 @@ import com.yk.Motivation.domain.board.service.BoardService;
 import com.yk.Motivation.domain.genFile.entity.GenFile;
 import com.yk.Motivation.domain.lecture.entity.Lecture;
 import com.yk.Motivation.domain.lecture.service.LectureService;
+import com.yk.Motivation.domain.lesson.entity.Lesson;
+import com.yk.Motivation.domain.lesson.service.LessonService;
 import com.yk.Motivation.standard.util.Ut;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -39,6 +41,7 @@ import java.util.Map;
 @Validated
 public class LectureController {
     private final LectureService lectureService;
+    private final LessonService lessonService;
     private final Rq rq;
 
     @GetMapping("/list")
@@ -63,10 +66,12 @@ public class LectureController {
             @PathVariable long id
     ) {
         Lecture lecture = lectureService.findById(id).get();
+        List<Lesson> lessons = lessonService.findByLectureId(id);
 
         Map<String, GenFile> filesMap = lectureService.findGenFilesMapKeyByFileNo(lecture, "common", "attachment");
 
         model.addAttribute("lecture", lecture);
+        model.addAttribute("lessons", lessons);
         model.addAttribute("filesMap", filesMap);
 
         return "usr/lecture/detail";
