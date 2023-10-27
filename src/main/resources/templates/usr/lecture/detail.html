@@ -104,7 +104,7 @@
                 <div class="detail grid grid-rows-[repeat(auto-fit,minmax(100px,1fr))] gap-3">
                     <div th:each="lesson : ${lessons}" class="text-left">
                         <span class="btn btn-active btn-neutral mr-4" th:text="|${lesson.sortNo} 강 |"></span>
-                        <a th:href="|#|" class="text-left btn btn-outline w-[300px]"
+                        <a th:href="|/usr/lesson/hls/${lesson.id}|" class="text-left btn btn-outline w-[300px]"
                            th:text="${lesson.subject}">
                         </a>
                     </div>

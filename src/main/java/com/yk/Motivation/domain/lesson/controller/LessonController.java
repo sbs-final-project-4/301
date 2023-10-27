@@ -99,58 +99,69 @@ public class LessonController {
 
 
 
-
-
-
-
-
-    @GetMapping("/hls/{id}")
+    @GetMapping("/hls/{lessonId}")
     public String videoHls(
             Model model,
-            @PathVariable Long lessonId
+            @PathVariable long lessonId
             ) {
 
+        String masterPlayListPath = getHlsSourcePath(lessonId, "master.m3u8");
+
+        model.addAttribute("videoUrl", masterPlayListPath);
+        return "usr/lesson/hls";
+    }
+
+//    @GetMapping("/hls/{lessonId}/{fileName}.m3u8")
+//    public ResponseEntity<Resource> videoHlsMasterM3U8(@PathVariable long lessonId, @PathVariable String fileName) {
+//
+//        System.out.println("여기까지");
+//
+//
+//        String outputFilePath = getHlsSourcePath(lessonId, fileName + ".m3u8");
+//
+//        Resource resource = new FileSystemResource(outputFilePath);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + ".m3u8");
+//        headers.setContentType(MediaType.parseMediaType("application/vnd.apple.mpegurl"));
+//
+//        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/hls/{lessonId}/{folderName2}/{fileName}.m3u8")
+//    public ResponseEntity<Resource> videoHlsMediaM3U8(@PathVariable long lessonId, @PathVariable String folderName2, @PathVariable String fileName) {
+//
+//        System.out.println("여기까지");
+//
+//        String outputFilePath = getHlsSourcePath(lessonId, folderName2) + "/" + fileName + ".m3u8";
+//
+//        Resource resource = new FileSystemResource(outputFilePath);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + ".m3u8");
+//        headers.setContentType(MediaType.parseMediaType("application/vnd.apple.mpegurl"));
+//
+//        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+//    }
+//
+//    @GetMapping("/hls/{lessonId}/{folderName2}/{tsName}.ts")
+//    public ResponseEntity<Resource> videoHlsTs(@PathVariable long lessonId, @PathVariable String folderName2, @PathVariable String tsName) {
+//
+//        System.out.println("여기까지");
+//
+//        String outputFilePath = getHlsSourcePath(lessonId, folderName2) + "/" + tsName + ".ts";
+//
+//        Resource resource = new FileSystemResource(outputFilePath);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + tsName + ".ts");
+//        headers.setContentType(MediaType.parseMediaType(MediaType.APPLICATION_OCTET_STREAM_VALUE));
+//        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+//    }
+
+    private String getHlsSourcePath(long lessonId, String fileName) {
         Lesson lesson = lessonService.findById(lessonId).get();
         GenFile genFile = genFileService.findBy(lesson.getModelName(), lesson.getId(), "common", "lessonVideo", 1).get();
 
-        String masterPlayListPath = AppConfig.getGenFileDirPath() + "/" + genFile.getFileDir() +"/" + "hls" + "/" + "master.m3u8";
-
-        model.addAttribute("videoUrl", masterPlayListPath);
-        return "hls";
-    }
-
-    @GetMapping("/hls/{fileName}.m3u8")
-    public ResponseEntity<Resource> videoHlsMasterM3U8(@PathVariable String fileName) {
-
-        String fileFullPath = outputFilePath + "/" + fileName + ".m3u8";
-        Resource resource = new FileSystemResource(fileFullPath);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + ".m3u8");
-        headers.setContentType(MediaType.parseMediaType("application/vnd.apple.mpegurl"));
-
-        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
-    }
-
-    @GetMapping("/hls/{folderName2}/{fileName}.m3u8")
-    public ResponseEntity<Resource> videoHlsMediaM3U8(@PathVariable String folderName2, @PathVariable String fileName) {
-
-        String fileFullPath = outputFilePath + "/" + folderName2 + "/" + fileName + ".m3u8";
-        Resource resource = new FileSystemResource(fileFullPath);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + ".m3u8");
-        headers.setContentType(MediaType.parseMediaType("application/vnd.apple.mpegurl"));
-
-        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
-    }
-
-    @GetMapping("/hls/{folderName2}/{tsName}.ts")
-    public ResponseEntity<Resource> videoHlsTs(@PathVariable String folderName2, @PathVariable String tsName) {
-        String fileFullPath = outputFilePath + "/" + folderName2 + "/" + tsName + ".ts";
-        Resource resource = new FileSystemResource(fileFullPath);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + tsName + ".ts");
-        headers.setContentType(MediaType.parseMediaType(MediaType.APPLICATION_OCTET_STREAM_VALUE));
-        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
+        return "/gen/" + genFile.getFileDir() + "/" + "hls" + "/" + fileName;
+//        return AppConfig.getGenFileDirPath() + "/" + genFile.getFileDir() +"/" + "hls" + "/" + fileName;
     }
 
 
