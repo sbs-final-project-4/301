@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag & Drop with TailwindCSS</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 p-10">
+
+<div class="container bg-blue-200 p-4 rounded-lg m-4 flex flex-col">
+
+    <div class="draggable bg-gray-300 p-5 m-5 rounded-lg text-3xl cursor-move" draggable="true">
+        <div class="form-control">
+            <label class="label">
+                <span class="label-text">수업 1 제목</span>
+            </label>
+            <input class="input input-bordered" maxlength="100"
+                   name="subjects" placeholder="제목" type="text" autofocus>
+        </div>
+
+        <div class="form-control">
+            <label class="label">
+                <span class="label-text">수업 1 영상</span>
+            </label>
+            <input class="file-input file-input-bordered"
+                   name="videos"
+                   type="file">
+        </div>
+    </div>
+    <div class="draggable bg-gray-300 p-5 m-5 rounded-lg text-3xl cursor-move" draggable="true">
+        <div class="form-control">
+            <label class="label">
+                <span class="label-text">수업 2제목</span>
+            </label>
+            <input class="input input-bordered" maxlength="100"
+                   name="subjects" placeholder="제목" type="text" autofocus>
+        </div>
+
+        <div class="form-control">
+            <label class="label">
+                <span class="label-text">수업 2 영상</span>
+            </label>
+            <input class="file-input file-input-bordered"
+                   name="videos"
+                   type="file">
+        </div>
+    </div>
+    <div class="draggable bg-gray-300 p-5 m-5 rounded-lg text-3xl cursor-move" draggable="true">
+        <div class="form-control">
+            <label class="label">
+                <span class="label-text">수업 3 제목</span>
+            </label>
+            <input class="input input-bordered" maxlength="100"
+                   name="subjects" placeholder="제목" type="text" autofocus>
+        </div>
+
+        <div class="form-control">
+            <label class="label">
+                <span class="label-text">수업 3 영상</span>
+            </label>
+            <input class="file-input file-input-bordered"
+                   name="videos"
+                   type="file">
+        </div>
+    </div>
+    <div class="draggable bg-gray-300 p-5 m-5 rounded-lg text-3xl cursor-move" draggable="true">
+        <div class="form-control">
+            <label class="label">
+                <span class="label-text">수업 4 제목</span>
+            </label>
+            <input class="input input-bordered" maxlength="100"
+                   name="subjects" placeholder="제목" type="text" autofocus>
+        </div>
+
+        <div class="form-control">
+            <label class="label">
+                <span class="label-text">수업 4 영상</span>
+            </label>
+            <input class="file-input file-input-bordered"
+                   name="videos"
+                   type="file">
+        </div>
+    </div>
+</div>
+
+<script>
+    const draggables = document.querySelectorAll(".draggable");
+    const container = document.querySelector(".container");
+
+    draggables.forEach(draggable => {
+        draggable.addEventListener("dragstart", () => {
+            draggable.classList.add("dragging");
+        });
+
+        draggable.addEventListener("dragend", () => {
+            draggable.classList.remove("dragging");
+        });
+    });
+
+    container.addEventListener("dragover", e => {
+        e.preventDefault();
+        const afterElement = getDragAfterElement(container, e.clientY);
+        const draggable = document.querySelector(".dragging");
+        if (!afterElement) {
+            container.appendChild(draggable);
+        } else {
+            container.insertBefore(draggable, afterElement);
+        }
+    });
+
+    function getDragAfterElement(container, y) {
+        const draggableElements = [...container.querySelectorAll(".draggable:not(.dragging)")];
+
+        return draggableElements.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = y - box.top - box.height / 2;
+            if (offset < 0 && offset > closest.offset) {
+                return { offset: offset, element: child };
+            } else {
+                return closest;
+            }
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+</script>
+</body>
+
+</html>

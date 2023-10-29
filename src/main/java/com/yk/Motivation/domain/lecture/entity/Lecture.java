@@ -37,6 +37,8 @@ public class Lecture extends BaseEntity implements DocumentHavingTags {
 
     private boolean isPublic;
 
+    private boolean isLessonsReady;
+
     @OneToMany(mappedBy = "lecture", orphanRemoval = true, cascade = {CascadeType.ALL})
     @Builder.Default
     @ToString.Exclude

@@ -39,7 +39,7 @@ public class FfmpegService {
 
     private static final Logger log = LoggerFactory.getLogger(FfmpegService.class);
 
-    public void videoHlsMake(String inputFilePath, String fileDir) throws IOException {
+    public double videoHlsMake(String inputFilePath, String fileDir) throws IOException {
 
         String outputFilePath = AppConfig.getGenFileDirPath() + "/" + fileDir + "/" + "hls";
 
@@ -52,7 +52,8 @@ public class FfmpegService {
         FFprobe ffprobe = new FFprobe(ffprobePath);
 
         // 원본 영상의 해상도를 가져옵니다.
-        FFmpegProbeResult probeResult = ffprobe.probe(inputFilePath); // inputFilePath는 원본 비디오 경로 변수로 가정합니다.
+        FFmpegProbeResult probeResult = ffprobe.probe(inputFilePath);
+        double originalDuration = probeResult.getFormat().duration; // 영상의 길이를 초 단위로
         int originalHeight = getVideoHeight(inputFilePath, ffprobePath);
 
         CompletableFuture<Void> future480p = CompletableFuture.runAsync(() -> {
@@ -89,6 +90,7 @@ public class FfmpegService {
                 e.printStackTrace();
             }
         }).join();
+        return originalDuration;
     }
 
     private String convertVideo(FFmpeg ffmpeg, FFprobe ffprobe, String outputFilePath, String inputFilePath, String folderName, String outputFileName, String scale, String bitrateVideo, String bitrateAudio) throws IOException {
@@ -127,7 +129,7 @@ public class FfmpegService {
         // Master Playlist 생성 시작
         StringBuilder masterPlaylistContent = new StringBuilder("#EXTM3U\n");
         masterPlaylistContent.append("#EXT-X-VERSION:3\n");
-        masterPlaylistContent.append("#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=640x360\n");
+        masterPlaylistContent.append("#EXT-X-STREAM-INF:BANDWIDTH=800000,RESOLUTION=854x480\n");
         masterPlaylistContent.append("480/480p.m3u8\n");
         masterPlaylistContent.append("#EXT-X-STREAM-INF:BANDWIDTH=1400000,RESOLUTION=1280x720\n");
         masterPlaylistContent.append("720/720p.m3u8\n");

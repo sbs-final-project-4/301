@@ -27,4 +27,9 @@ public class Lesson extends BaseEntity {
 
     private int sortNo;
 
+    private int lessonLength;
+
+    public String getLessonLengthForPrint() {
+        return lessonLength/60 + " : " + lessonLength%60;
+    }
 }

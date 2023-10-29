@@ -31,15 +31,12 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.text.html.Option;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/usr/lesson")
@@ -67,8 +64,8 @@ public class LessonController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/{lectureId}/write")
-    public String write(
-            Model model,
+    @ResponseBody
+    public RsData<Long> write(
             @PathVariable Long lectureId,
             @Valid LessonController.LessonWriteForm writeForm
     ) {
@@ -76,7 +73,8 @@ public class LessonController {
 
         RsData<Lecture> rsData = lessonService.write(lecture, writeForm.getSubjects(), writeForm.getVideos());
 
-        return rq.redirectOrBack("/usr/lecture/detail/%d".formatted(lectureId), rsData);
+//        return rq.redirectOrBack("/usr/lecture/detail/%d".formatted(lectureId), rsData);
+        return RsData.of("S-1", "%d 번 강의가 등록 되었습니다.".formatted(lectureId), lecture.getId());
     }
 
     @Setter
@@ -84,6 +82,62 @@ public class LessonController {
     public static class LessonWriteForm {
         private List<String> subjects;
         private List<MultipartFile> videos;
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/modify/{id}")
+    public String showModify(
+            Model model,
+            @PathVariable long id
+    ) {
+        Lecture lecture = lectureService.findById(id).get();
+        List<Lesson> lessons = lecture.getLessons();
+
+        model.addAttribute("lessons", lessons);
+
+        return "usr/lesson/modify";
+    }
+
+//    @PreAuthorize("isAuthenticated()")
+//    @PostMapping("/modify/{id}")
+//    public String modify(
+//            @PathVariable long id,
+//            @Valid LectureController.LectureModifyForm modifyForm
+//    ) {
+//        Lecture lecture = lectureService.findById(id).get();
+//
+//        RsData<Lecture> rsData = lectureService.modify(lecture, modifyForm.getSubject(), modifyForm.getTagsStr(), modifyForm.getBody(), modifyForm.getBodyHtml(), modifyForm.isPublic());
+//
+//        if (modifyForm.attachmentRemove__1)
+//            lectureService.removeAttachmentFile(rsData.getData(), 1);
+//
+//        if (modifyForm.attachmentRemove__2)
+//            lectureService.removeAttachmentFile(rsData.getData(), 2);
+//
+//        if (Ut.file.exists(modifyForm.getAttachment__1()))
+//            lectureService.saveAttachmentFile(rsData.getData(), modifyForm.getAttachment__1(), 1);
+//        if (Ut.file.exists(modifyForm.getAttachment__2()))
+//            lectureService.saveAttachmentFile(rsData.getData(), modifyForm.getAttachment__2(), 2);
+//
+//        return rq.redirectOrBack("/usr/lecture/detail/%d".formatted(rsData.getData().getId()), rsData);
+//    }
+
+    @Getter
+    @Setter
+    public static class LectureModifyForm {
+        private boolean isPublic;
+        @NotBlank
+        @Length(min = 2)
+        private String subject;
+        private String tagsStr;
+        @NotBlank
+        private String body;
+        @NotBlank
+        private String bodyHtml;
+        private MultipartFile attachment__1;
+        private MultipartFile attachment__2;
+        private boolean attachmentRemove__1;
+        private boolean attachmentRemove__2;
     }
 
 
@@ -111,58 +165,19 @@ public class LessonController {
         return "usr/lesson/hls";
     }
 
-//    @GetMapping("/hls/{lessonId}/{fileName}.m3u8")
-//    public ResponseEntity<Resource> videoHlsMasterM3U8(@PathVariable long lessonId, @PathVariable String fileName) {
-//
-//        System.out.println("여기까지");
-//
-//
-//        String outputFilePath = getHlsSourcePath(lessonId, fileName + ".m3u8");
-//
-//        Resource resource = new FileSystemResource(outputFilePath);
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + ".m3u8");
-//        headers.setContentType(MediaType.parseMediaType("application/vnd.apple.mpegurl"));
-//
-//        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/hls/{lessonId}/{folderName2}/{fileName}.m3u8")
-//    public ResponseEntity<Resource> videoHlsMediaM3U8(@PathVariable long lessonId, @PathVariable String folderName2, @PathVariable String fileName) {
-//
-//        System.out.println("여기까지");
-//
-//        String outputFilePath = getHlsSourcePath(lessonId, folderName2) + "/" + fileName + ".m3u8";
-//
-//        Resource resource = new FileSystemResource(outputFilePath);
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + fileName + ".m3u8");
-//        headers.setContentType(MediaType.parseMediaType("application/vnd.apple.mpegurl"));
-//
-//        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
-//    }
-//
-//    @GetMapping("/hls/{lessonId}/{folderName2}/{tsName}.ts")
-//    public ResponseEntity<Resource> videoHlsTs(@PathVariable long lessonId, @PathVariable String folderName2, @PathVariable String tsName) {
-//
-//        System.out.println("여기까지");
-//
-//        String outputFilePath = getHlsSourcePath(lessonId, folderName2) + "/" + tsName + ".ts";
-//
-//        Resource resource = new FileSystemResource(outputFilePath);
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + tsName + ".ts");
-//        headers.setContentType(MediaType.parseMediaType(MediaType.APPLICATION_OCTET_STREAM_VALUE));
-//        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
-//    }
-
     private String getHlsSourcePath(long lessonId, String fileName) {
         Lesson lesson = lessonService.findById(lessonId).get();
         GenFile genFile = genFileService.findBy(lesson.getModelName(), lesson.getId(), "common", "lessonVideo", 1).get();
 
         return "/gen/" + genFile.getFileDir() + "/" + "hls" + "/" + fileName;
-//        return AppConfig.getGenFileDirPath() + "/" + genFile.getFileDir() +"/" + "hls" + "/" + fileName;
     }
+//
+//    private List<GenFile> getLessonsGenfile(List<Lesson> lessons) {
+//        return lessons.stream()
+//                .map(lesson -> genFileService.findBy(lesson.getModelName(), lesson.getId(), "common", "lessonVideo", 1).orElse(null))
+//                .filter(Objects::nonNull)
+//                .collect(Collectors.toList());
+//    }
 
 
 }
