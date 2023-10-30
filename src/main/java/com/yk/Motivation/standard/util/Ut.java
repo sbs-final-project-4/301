@@ -242,6 +242,25 @@ public class Ut {
                 file.delete();
             }
         }
+
+        public static void removeAll(String filePath) {
+            if (filePath == null) {
+                return;
+            }
+
+            File file = new File(filePath);
+            if (file.exists()) {
+                if (file.isDirectory()) {
+                    File[] children = file.listFiles();
+                    if (children != null) {
+                        for (File child : children) {
+                            removeAll(child.getAbsolutePath());
+                        }
+                    }
+                }
+                file.delete();
+            }
+        }
     }
 
     public static class url {

@@ -43,20 +43,51 @@
             <div class="flex flex-col gap-2">
                 <button class="btn btn-block btn-primary gap-1">
                     <i class="fa-solid fa-pen"></i>
-                    <span>글쓰기</span>
+                    <span>강의 등록</span>
                 </button>
 
                 <div class="text-center">
-                    <a class="btn btn-link" th:href="|/|">목록</a>
+                    <a class="btn btn-link" href="/usr/lecture/list">목록으로</a>
                 </div>
             </div>
 
         </form>
 
-        <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background-color:rgba(255,255,255,0.8); z-index:9999;">
-            <div style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);">
-                <div class="spinner"></div>
-                <p>Loading...</p>
+        <div id="loadingOverlay" style="display:none;" class="fixed top-0 left-0 w-full h-full bg-white bg-opacity-80 z-50">
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+
+                <p>동영상이 업로드 중 입니다. 잠시만 기다려주세요.</p>
+
+                <br>
+
+                <progress class="progress" style="width:360px;"></progress>
+
+                <br>
+
+                <ul class="mt-4 list-disc mx-5 text-gray-400">
+                    <li>
+                        동영상 업로드가 완료되면 페이지가 이동 됩니다.
+                    </li>
+                    <li>
+                        동영상의 양에 따라 몇 분의 시간이 걸릴 수 있습니다.
+                    </li>
+
+                    <br>
+
+                    <li>
+                        업로드가 완료되면 동영상의 변환작이 시작됩니다.
+                    </li>
+                    <li>
+                        동영상 변환이 진행되는 동안은 작성을 완료한 커리큘럼이라도 노출이 되지 않습니다.
+                    </li>
+                    <li>
+                        동영상 변환이 완료되면 작성하신 커리큘럼을 확인하실 수 있습니다.
+                    </li>
+
+
+                </ul>
+
+
             </div>
         </div>
 

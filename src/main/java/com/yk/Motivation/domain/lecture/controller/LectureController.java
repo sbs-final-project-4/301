@@ -66,7 +66,7 @@ public class LectureController {
             @PathVariable long id
     ) {
         Lecture lecture = lectureService.findById(id).get();
-        List<Lesson> lessons = lessonService.findByLectureId(id);
+        List<Lesson> lessons = lecture.getLessons();
 
         Map<String, GenFile> filesMap = lectureService.findGenFilesMapKeyByFileNo(lecture, "common", "attachment");
 

@@ -73,7 +73,6 @@ public class LessonController {
 
         RsData<Lecture> rsData = lessonService.write(lecture, writeForm.getSubjects(), writeForm.getVideos());
 
-//        return rq.redirectOrBack("/usr/lecture/detail/%d".formatted(lectureId), rsData);
         return RsData.of("S-1", "%d 번 강의가 등록 되었습니다.".formatted(lectureId), lecture.getId());
     }
 
@@ -85,69 +84,41 @@ public class LessonController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/modify/{id}")
+    @GetMapping("/{lectureId}/modify")
     public String showModify(
             Model model,
-            @PathVariable long id
+            @PathVariable long lectureId
     ) {
-        Lecture lecture = lectureService.findById(id).get();
+        Lecture lecture = lectureService.findById(lectureId).get();
         List<Lesson> lessons = lecture.getLessons();
 
+        model.addAttribute("lecture", lecture);
         model.addAttribute("lessons", lessons);
 
         return "usr/lesson/modify";
     }
 
-//    @PreAuthorize("isAuthenticated()")
-//    @PostMapping("/modify/{id}")
-//    public String modify(
-//            @PathVariable long id,
-//            @Valid LectureController.LectureModifyForm modifyForm
-//    ) {
-//        Lecture lecture = lectureService.findById(id).get();
-//
-//        RsData<Lecture> rsData = lectureService.modify(lecture, modifyForm.getSubject(), modifyForm.getTagsStr(), modifyForm.getBody(), modifyForm.getBodyHtml(), modifyForm.isPublic());
-//
-//        if (modifyForm.attachmentRemove__1)
-//            lectureService.removeAttachmentFile(rsData.getData(), 1);
-//
-//        if (modifyForm.attachmentRemove__2)
-//            lectureService.removeAttachmentFile(rsData.getData(), 2);
-//
-//        if (Ut.file.exists(modifyForm.getAttachment__1()))
-//            lectureService.saveAttachmentFile(rsData.getData(), modifyForm.getAttachment__1(), 1);
-//        if (Ut.file.exists(modifyForm.getAttachment__2()))
-//            lectureService.saveAttachmentFile(rsData.getData(), modifyForm.getAttachment__2(), 2);
-//
-//        return rq.redirectOrBack("/usr/lecture/detail/%d".formatted(rsData.getData().getId()), rsData);
-//    }
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/{lectureId}/modify")
+    @ResponseBody
+    public RsData<Long> modify(
+            @PathVariable Long lectureId,
+            @Valid LessonController.LessonModifyForm modifyForm
+    ) {
+
+        Lecture lecture = lectureService.findById(lectureId).get();
+
+        lessonService.modify(lecture, modifyForm.getSubject(), modifyForm.getVideo());
+
+        return RsData.of("S-1", "%d 번 강의가 수정 되었습니다.".formatted(lectureId), lecture.getId());
+    }
 
     @Getter
     @Setter
-    public static class LectureModifyForm {
-        private boolean isPublic;
-        @NotBlank
-        @Length(min = 2)
-        private String subject;
-        private String tagsStr;
-        @NotBlank
-        private String body;
-        @NotBlank
-        private String bodyHtml;
-        private MultipartFile attachment__1;
-        private MultipartFile attachment__2;
-        private boolean attachmentRemove__1;
-        private boolean attachmentRemove__2;
+    public static class LessonModifyForm {
+        private List<String> subject;
+        private List<MultipartFile> video;
     }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -171,13 +142,6 @@ public class LessonController {
 
         return "/gen/" + genFile.getFileDir() + "/" + "hls" + "/" + fileName;
     }
-//
-//    private List<GenFile> getLessonsGenfile(List<Lesson> lessons) {
-//        return lessons.stream()
-//                .map(lesson -> genFileService.findBy(lesson.getModelName(), lesson.getId(), "common", "lessonVideo", 1).orElse(null))
-//                .filter(Objects::nonNull)
-//                .collect(Collectors.toList());
-//    }
 
 
 }

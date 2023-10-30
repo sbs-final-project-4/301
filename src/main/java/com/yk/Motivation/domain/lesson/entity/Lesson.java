@@ -1,6 +1,7 @@
 package com.yk.Motivation.domain.lesson.entity;
 
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
+import com.yk.Motivation.domain.genFile.entity.GenFile;
 import com.yk.Motivation.domain.lecture.entity.Lecture;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;

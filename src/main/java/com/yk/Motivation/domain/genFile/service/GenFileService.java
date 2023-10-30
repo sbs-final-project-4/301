@@ -194,6 +194,19 @@ public class GenFileService {
         genFileRepository.flush();
     }
 
+    @Transactional
+    public void removeLessonVideo(String relTypeCode, long relId, String typeCode, String type2Code, long fileNo) {
+        findBy(relTypeCode, relId, typeCode, type2Code, fileNo).ifPresent(this::removeLessonVideo);
+    }
+    @Transactional
+    public void removeLessonVideo(GenFile genFile) {
+        Ut.file.removeAll(AppConfig.getGenFileDirPath() + "/" + genFile.getFileDir());
+        genFileRepository.delete(genFile);
+        genFileRepository.flush();
+    }
+
+
+
     public List<GenFile> findByRelId(String modelName, Long relId) {
         return genFileRepository.findByRelTypeCodeAndRelId(modelName, relId);
     }
