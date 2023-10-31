@@ -13,7 +13,9 @@ toastr.options = {   // toastr 라이브러리 설정
     showEasing: "swing",
     hideEasing: "linear",
     showMethod: "fadeIn",
-    hideMethod: "fadeOut"
+    hideMethod: "fadeOut",
+    zIndex: 9999999
+
 };
 
 function parseMsg(msg) {  // msg 유효기간 5초 ( ;ttl= )

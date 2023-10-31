@@ -87,7 +87,7 @@ public class LessonController {
     @GetMapping("/{lectureId}/modify")
     public String showModify(
             Model model,
-            @PathVariable long lectureId
+            @PathVariable Long lectureId
     ) {
         Lecture lecture = lectureService.findById(lectureId).get();
         List<Lesson> lessons = lecture.getLessons();
@@ -106,19 +106,99 @@ public class LessonController {
             @Valid LessonController.LessonModifyForm modifyForm
     ) {
 
+        lessonService.modify(lectureId, modifyForm.getLessonId(), modifyForm.getSubject(), modifyForm.getVideo());
+
+        return RsData.of("S-1", "%d 번 강의가 수정 되었습니다.".formatted(lectureId), lectureId);
+    }
+
+
+    @Getter
+    @Setter
+    public static class LessonModifyForm {
+        private long lessonId;
+        private String subject;
+        private MultipartFile video;
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/{lectureId}/modifySortNo")
+    public String showModifySortNo(
+            Model model,
+            @PathVariable Long lectureId
+    ) {
+        Lecture lecture = lectureService.findById(lectureId).get();
+        List<Lesson> lessons = lecture.getLessons();
+
+        model.addAttribute("lecture", lecture);
+        model.addAttribute("lessons", lessons);
+
+        return "usr/lesson/modifySortNo";
+    }
+
+
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/{lectureId}/modifySortNo")
+    public String modifySortNo(
+            @PathVariable Long lectureId,
+            @RequestParam List<Long> order
+    ) {
+        lessonService.modifySortNo(lectureId, order);
+
+        return "redirect:/usr/lesson/" + lectureId + "/modify";
+    }
+
+
+
+
+
+
+
+
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/{lectureId}/remove/{lessonId}")
+    public String remove(
+            Model model,
+            @PathVariable Long lectureId,
+            @PathVariable Long lessonId,
+            @Valid LessonController.LessonModifyForm modifyForm
+    ) {
         Lecture lecture = lectureService.findById(lectureId).get();
 
-        lessonService.modify(lecture, modifyForm.getSubject(), modifyForm.getVideo());
+        lessonService.remove(lectureId, lessonId);
+
+        List<Lesson> lessons = lecture.getLessons();
+
+        model.addAttribute("lecture", lecture);
+        model.addAttribute("lessons", lessons);
+
+        return "redirect:/usr/lecture/detail/" + lectureId;
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/{lectureId}/writeAddLesson")
+    @ResponseBody
+    public RsData<Long> writeAddLesson(
+            @PathVariable Long lectureId,
+            @Valid LessonController.writeAddLessonForm addLessonForm
+    ) {
+
+        Lecture lecture = lectureService.findById(lectureId).get();
+        List<Lesson> lessons = lecture.getLessons();
+
+        lessonService.writeAddLesson(lecture, lessons, addLessonForm.getSubject(), addLessonForm.getVideo());
 
         return RsData.of("S-1", "%d 번 강의가 수정 되었습니다.".formatted(lectureId), lecture.getId());
     }
 
     @Getter
     @Setter
-    public static class LessonModifyForm {
-        private List<String> subject;
-        private List<MultipartFile> video;
+    public static class writeAddLessonForm {
+        private String subject;
+        private MultipartFile video;
     }
+
 
 
 

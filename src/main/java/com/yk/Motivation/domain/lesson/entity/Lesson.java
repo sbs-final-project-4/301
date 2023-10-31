@@ -30,6 +30,8 @@ public class Lesson extends BaseEntity {
 
     private int lessonLength;
 
+    private boolean isLessonReady;
+
     public String getLessonLengthForPrint() {
         return lessonLength/60 + " : " + lessonLength%60;
     }

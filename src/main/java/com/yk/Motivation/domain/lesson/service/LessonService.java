@@ -7,6 +7,7 @@ import com.yk.Motivation.domain.ffmpeg.service.FfmpegService;
 import com.yk.Motivation.domain.genFile.entity.GenFile;
 import com.yk.Motivation.domain.genFile.service.GenFileService;
 import com.yk.Motivation.domain.lecture.entity.Lecture;
+import com.yk.Motivation.domain.lecture.repository.LectureRepository;
 import com.yk.Motivation.domain.lecture.service.LectureService;
 import com.yk.Motivation.domain.lesson.entity.Lesson;
 import com.yk.Motivation.domain.lesson.repository.LessonRepository;
@@ -20,9 +21,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +38,11 @@ public class LessonService {
     private LessonService self;
 
     private final LessonRepository lessonRepository;
+    private final LectureRepository lectureRepository;
     private final LectureService lectureService;
     private final GenFileService genFileService;
     private final FfmpegService ffmpegService;
+
 
 
     @Transactional
@@ -64,6 +70,7 @@ public class LessonService {
                 try {
                     double originalDuration = ffmpegService.videoHlsMake(rsData.getData().getFilePath(), rsData.getData().getFileDir());
                     self.setLessonLength(lesson.getId(), originalDuration);
+                    self.setLessonReadyTrue(lesson.getId());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -83,45 +90,114 @@ public class LessonService {
     }
 
     @Transactional
-    public void modify(Lecture lecture, List<String> subject, List<MultipartFile> video) {
+    public void modify(long lectureId, long lessonId, String subject, MultipartFile video) {
+
+        Lecture lecture = lectureService.findById(lectureId).get();
 
         if (lecture.isLessonsReady()) {
             lecture.setLessonsReady(false);
         }
 
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
+        Lesson lesson = lessonRepository.findById(lessonId).get();
+
+        lesson.setSubject(subject);
+        if(lesson.isLessonReady()) {
+            lesson.setLessonReady(false);
+        }
+
+        if(!video.isEmpty()) {
+
+            removeVideoFile(lesson, 1);
+
+            RsData<GenFile> rsData = saveVideoFile(lesson, video, 0);
+
+            CompletableFuture<Void> processFuture = CompletableFuture.runAsync(() -> {
+                try {
+                    double originalDuration = ffmpegService.videoHlsMake(rsData.getData().getFilePath(), rsData.getData().getFileDir());
+                    self.setLessonLength(lesson.getId(), originalDuration);
+                    self.setLessonReadyTrue(lesson.getId());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }).thenRun(() -> {
+                self.setLessonsReadyTrue(lecture);
+            });
+        } else {
+            setLessonsReadyTrue(lecture);
+        }
+    }
+
+    @Transactional
+    public void remove(Long lectureId, Long lessonId) {
+
+        Lecture lecture = lectureService.findById(lectureId).get();
+        List<Lesson> lessons = lecture.getLessons();
+
+        Lesson lesson = lessonRepository.findById(lessonId).get();
+
+        Iterator<Lesson> iterator = lessons.iterator();
+        while (iterator.hasNext()) {
+            Lesson l = iterator.next();
+            if (lesson.getSortNo() == l.getSortNo()) {
+                iterator.remove();
+            } else if (lesson.getSortNo() < l.getSortNo()) {
+                l.setSortNo(l.getSortNo() - 1);
+            }
+        }
+
+        removeVideoFile(lesson, 1);
+        lessonRepository.delete(lesson);
+    }
+
+    @Transactional
+    public void writeAddLesson(Lecture lecture, List<Lesson> lessons, String subject, MultipartFile video) {
+
+        if (lecture.isLessonsReady()) {
+            lecture.setLessonsReady(false);
+        }
+
+        Lesson lesson = Lesson.builder()
+                .lecture(lecture)
+                .subject(subject)
+                .sortNo(lessons.size()+1)
+                .build();
+
+        lessonRepository.save(lesson);
+
+        RsData<GenFile> rsData = saveVideoFile(lesson, video, 0);
+
+        CompletableFuture<Void> processFuture = CompletableFuture.runAsync(() -> {
+            try {
+                double originalDuration = ffmpegService.videoHlsMake(rsData.getData().getFilePath(), rsData.getData().getFileDir());
+                self.setLessonLength(lesson.getId(), originalDuration);
+                self.setLessonReadyTrue(lesson.getId());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).thenRun(() -> {
+            self.setLessonsReadyTrue(lecture);
+        });
+    }
+
+    @Transactional
+    public void modifySortNo(Long lectureId, List<Long> order) {
+        Lecture lecture = lectureService.findById(lectureId).get();
 
         List<Lesson> lessons = lecture.getLessons();
 
-        for (int i = 0; i < lessons.size(); i++) {
+        for (Lesson lesson : lessons) {
+            for (int i = 0; i < order.size(); i++) {
 
-            Lesson lesson = lessons.get(i);
-
-            lesson.setSubject(subject.get(i));
-
-            if(!video.get(i).isEmpty()) {
-                removeVideoFile(lesson, 1);
-
-                RsData<GenFile> rsData = saveVideoFile(lesson, video.get(i), 0);
-
-                CompletableFuture<Void> processFuture = CompletableFuture.runAsync(() -> {
-                    try {
-                        double originalDuration = ffmpegService.videoHlsMake(rsData.getData().getFilePath(), rsData.getData().getFileDir());
-                        self.setLessonLength(lesson.getId(), originalDuration);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-                futures.add(processFuture);
+                if(lesson.getId() == order.get(i)) lesson.setSortNo(i+1);
+                
             }
-
-            CompletableFuture<Void> allOf = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
-                    .thenRunAsync(() -> {
-                        self.setLessonsReadyTrue(lecture);
-                    });
         }
     }
+
+
+
+
+
 
 
     @Transactional
@@ -130,6 +206,13 @@ public class LessonService {
         Lesson lesson = findById(lessonId).get();
 
         lesson.setLessonLength((int) originalDuration);
+    }
+
+    @Transactional
+    public void setLessonReadyTrue(long lessonId){
+        Lesson lesson = findById(lessonId).get();
+
+        lesson.setLessonReady(true);
     }
 
     @Transactional
@@ -168,6 +251,5 @@ public class LessonService {
         return lessonRepository.findByLectureId_Id(id);
 
     }
-
 
 }
