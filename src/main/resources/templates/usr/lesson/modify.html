@@ -2,7 +2,19 @@
 
 <head>
     <title th:text="|강의 - ${lecture.subject}|"></title>
+    <style>
+
+        @media (max-width: 767px) {
+            body:after {
+                content: 'mobile';
+                display: none;
+                visibility: hidden;
+            }
+        }
+
+    </style>
 </head>
+
 
 <body>
 
@@ -108,14 +120,37 @@
         <div class="card bg-base-100 shadow-xl " >
             <div class="card-body">
                 <div class="detail grid grid-rows-[repeat(auto-fit,minmax(70px,1fr))] gap-3">
-                    <div th:each="lesson : ${lessons}" class="text-left my-4">
-                        <span class="btn btn-active btn-neutral" th:text="|${lesson.sortNo} 강 |"></span>
-                        <button type="button" class="btn btn-primary w-[200px]"
+
+                    <div class="flex justify-end">
+                        <a th:href="|/usr/lesson/${lecture.id}/modifySortNo|" class="modifySortNoTag btn btn-sm btn-outline btn-primary">커리큘럼 순서 바꾸기</a>
+                    </div>
+
+
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function() {
+                            const isMobile = getComputedStyle(document.body, ':after').getPropertyValue('content') === '"mobile"';
+
+                            document.querySelector(".modifySortNoTag").addEventListener("click", function(e) {
+                                if (isMobile) {
+                                    e.preventDefault();
+                                    rejectMobile(); // 원하는 함수를 호출
+                                }
+                            });
+                        });
+
+                        function rejectMobile() {
+                            toastWarning('모바일 환경에서는 지원하지 않습니다.');
+                        }
+                    </script>
+
+                    <div th:each="lesson : ${lessons}" class="text-left my-2 flex">
+                        <span class="btn btn-active btn-neutral flex-none mr-2 -ml-4" th:text="|${lesson.sortNo} 강 |"></span>
+                        <button type="button" class="btn btn-primary flex-grow max-w-[160px] mr-2 "
                                 th:attr="onclick=${lesson.lessonReady} ? 'modifyFormModal'+${lesson.id}+'.showModal()'
                                  : 'toastWarning(\'해당 수업은 동영상 변환 작업중 입니다. 현재 수정이 불가능합니다.\')'"
                                 th:text="${lesson.subject}">
                         </button>
-                        <span class="btn btn-active btn-neutral" th:text="${lesson.lessonLengthForPrint}"></span>
+                        <span class="btn btn-active btn-neutral flex-none mr-2" th:text="${lesson.lessonLengthForPrint}"></span>
 
                         <dialog th:id="'modifyFormModal' + ${lesson.id}" class="modal">
                             <form class="modal-box" method="POST" enctype="multipart/form-data"
@@ -178,8 +213,8 @@
                             </form>
                         </dialog>
 
-                        <div id="loadingOverlay" style="display:none;" class="fixed top-0 left-0 w-full h-full bg-white bg-opacity-80 z-50">
-                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <div id="loadingOverlay" style="display:none;" class="fixed top-0 left-0 w-full h-full bg-white bg-opacity-90 z-50">
+                            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-20">
 
                                 <p>동영상이 업로드 중 입니다. 잠시만 기다려주세요.</p>
 
@@ -200,7 +235,7 @@
                                     <br>
 
                                     <li>
-                                        업로드가 완료되면 동영상의 변환작이 시작됩니다.
+                                        업로드가 완료되면 동영상의 변환작업이 시작됩니다.
                                     </li>
                                     <li>
                                         동영상 변환이 진행되는 동안은 작성을 완료한 커리큘럼이라도 노출이 되지 않습니다.
@@ -296,17 +331,13 @@
                                     if (rs.success) {
                                         let lectureId = rs.data;
                                         setTimeout(() => {
-                                            window.location.href = `/usr/lesson/${lectureId}/modify`;
+                                            window.location.href = `/usr/lesson/${lectureId}/modify?msg=${encodeURIComponent(lectureId + '번 강의가 수정되었습니다.')}&ttl=1698804504756`
                                         }, 5000);
-                                    } else {
-                                        window.location.href = `/usr/lesson/${lectureId}/modify`;
-                                        toastWarning('동영상 업로드에 실패했습니다. 다시한번 시도해주세요.');
                                     }
                                 })
 
                                 submitModifyFormDone = true;
                             }
-
                         </script>
 
                     </div>
@@ -427,7 +458,9 @@
                                 // 요청 성공 시 수행할 로직 (예: 페이지 리디렉션)
                                 if (rs.success) {
                                     let lectureId = rs.data;
-                                    window.location.href = `/usr/lesson/${lectureId}/modify`;
+                                    setTimeout(() => {
+                                        window.location.href = `/usr/lesson/${lectureId}/modify?msg=${encodeURIComponent(lectureId + '번 강의가 수정되었습니다.')}&ttl=1698804504756`
+                                    }, 5000);
                                 }
                             })
 
@@ -444,7 +477,7 @@
                     <div class="text-center">
                         <a th:if="${@lectureService.checkProducerCanModify(@rq.member, lecture).success}"
                            class="btn btn-link"
-                           th:href="|/usr/lesson/${lecture.id}/write|">커리큘럼 수정</a>
+                           th:href="|/usr/lecture/detail/${lecture.id}|">수정 완료</a>
                     </div>
                 </div>
             </div>
@@ -452,6 +485,7 @@
     </div>
 
 </div>
+
 
 </body>
 

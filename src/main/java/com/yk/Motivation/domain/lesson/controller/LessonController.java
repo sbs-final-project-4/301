@@ -143,18 +143,10 @@ public class LessonController {
             @PathVariable Long lectureId,
             @RequestParam List<Long> order
     ) {
-        lessonService.modifySortNo(lectureId, order);
+        RsData<Lecture> modifySortNoRs = lessonService.modifySortNo(lectureId, order);
 
-        return "redirect:/usr/lesson/" + lectureId + "/modify";
+        return rq.redirectOrBack("/usr/lesson/" + lectureId + "/modify", modifySortNoRs);
     }
-
-
-
-
-
-
-
-
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/{lectureId}/remove/{lessonId}")
@@ -166,14 +158,14 @@ public class LessonController {
     ) {
         Lecture lecture = lectureService.findById(lectureId).get();
 
-        lessonService.remove(lectureId, lessonId);
+        RsData<Lecture> removeRs = lessonService.remove(lectureId, lessonId);
 
         List<Lesson> lessons = lecture.getLessons();
 
         model.addAttribute("lecture", lecture);
         model.addAttribute("lessons", lessons);
 
-        return "redirect:/usr/lecture/detail/" + lectureId;
+        return rq.redirectOrBack("/usr/lesson/" + lectureId + "/modify", removeRs);
     }
 
     @PreAuthorize("isAuthenticated()")

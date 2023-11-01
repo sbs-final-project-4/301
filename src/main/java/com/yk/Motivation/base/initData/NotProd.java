@@ -13,6 +13,7 @@ import com.yk.Motivation.domain.member.service.MemberService;
 import com.yk.Motivation.domain.post.entity.Post;
 import com.yk.Motivation.domain.post.service.PostService;
 import com.yk.Motivation.domain.postKeyword.entity.PostKeyword;
+import com.yk.Motivation.domain.system.service.SystemService;
 import com.yk.Motivation.standard.util.Ut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,15 +45,20 @@ public class NotProd {
     private PostService postService;
     @Autowired
     private LectureService lectureService;
-
+    @Autowired
+    private SystemService systemService;
     @Autowired
     private BookService bookService;
 
     @Bean
     public ApplicationRunner initNotProd() {
         return args -> {
-            self.work1();
-            self.work2();
+            if (systemService.isNotProdInitDataConfigured() == false) {
+                self.work1();
+                self.work2();
+
+                systemService.setNotProdInitDataConfigured(true);
+            }
         };
     }
 

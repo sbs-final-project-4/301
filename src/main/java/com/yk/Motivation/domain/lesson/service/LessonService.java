@@ -11,6 +11,7 @@ import com.yk.Motivation.domain.lecture.repository.LectureRepository;
 import com.yk.Motivation.domain.lecture.service.LectureService;
 import com.yk.Motivation.domain.lesson.entity.Lesson;
 import com.yk.Motivation.domain.lesson.repository.LessonRepository;
+import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -124,11 +125,12 @@ public class LessonService {
             });
         } else {
             setLessonsReadyTrue(lecture);
+            setLessonReadyTrue(lesson.getId());
         }
     }
 
     @Transactional
-    public void remove(Long lectureId, Long lessonId) {
+    public RsData<Lecture> remove(Long lectureId, Long lessonId) {
 
         Lecture lecture = lectureService.findById(lectureId).get();
         List<Lesson> lessons = lecture.getLessons();
@@ -147,6 +149,8 @@ public class LessonService {
 
         removeVideoFile(lesson, 1);
         lessonRepository.delete(lesson);
+
+        return RsData.of("S-1", "%d 번 강의가 수정되었습니다.".formatted(lecture.getId()), lecture);
     }
 
     @Transactional
@@ -180,7 +184,7 @@ public class LessonService {
     }
 
     @Transactional
-    public void modifySortNo(Long lectureId, List<Long> order) {
+    public RsData<Lecture> modifySortNo(Long lectureId, List<Long> order) {
         Lecture lecture = lectureService.findById(lectureId).get();
 
         List<Lesson> lessons = lecture.getLessons();
@@ -192,6 +196,8 @@ public class LessonService {
                 
             }
         }
+
+        return RsData.of("S-1", "%d 번 강의가 수정되었습니다.".formatted(lecture.getId()), lecture);
     }
 
 

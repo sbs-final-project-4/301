@@ -53,8 +53,9 @@
 
         </form>
 
-        <div id="loadingOverlay" style="display:none;" class="fixed top-0 left-0 w-full h-full bg-white bg-opacity-80 z-50">
-            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+        <div id="loadingOverlay" style="display:none;"
+             class="fixed top-0 left-0 w-full h-full bg-white bg-opacity-90 z-50">
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white bg-opacity-20">
 
                 <p>동영상이 업로드 중 입니다. 잠시만 기다려주세요.</p>
 
@@ -64,7 +65,7 @@
 
                 <br>
 
-                <ul class="mt-4 list-disc mx-5 text-gray-400">
+                <ul class="mt-4 list-disc mx-5 text-gray-400 ">
                     <li>
                         동영상 업로드가 완료되면 페이지가 이동 됩니다.
                     </li>
@@ -75,7 +76,7 @@
                     <br>
 
                     <li>
-                        업로드가 완료되면 동영상의 변환작이 시작됩니다.
+                        업로드가 완료되면 동영상의 변환작업이 시작됩니다.
                     </li>
                     <li>
                         동영상 변환이 진행되는 동안은 작성을 완료한 커리큘럼이라도 노출이 되지 않습니다.
@@ -163,7 +164,9 @@
                     // 요청 성공 시 수행할 로직 (예: 페이지 리디렉션)
                     if (rs.success) {
                         let lectureId = rs.data;
-                        window.location.href = `/usr/lecture/detail/${lectureId}`;
+                        setTimeout(() => {
+                            window.location.href = `/usr/lecture/detail/${lectureId}`;
+                        }, 5000);
                     }
                 })
 
@@ -172,48 +175,49 @@
         </script>
 
         <script th:inline="javascript">
-            let counter = 2;
-
             document.addEventListener('DOMContentLoaded', function() {
                 const addButtons = document.querySelectorAll('.addBlockButton');
                 const formElement = document.getElementById('myForm');
 
                 addButtons.forEach(button => {
                     button.addEventListener('click', function() {
-                        const blockHtml = `
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text">수업 <span>${counter}</span><span> 제목</span></span>
-                                    <button type="button" class="btn btn-square btn-outline w-[40px]" onclick="removeElements(this)">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                                    </button>
-                                </label>
-                                <input class="input input-bordered" maxlength="100"
-                                       name="subjects" placeholder="제목" type="text" autofocus>
-                            </div>
-
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text">수업 <span>${counter}</span><span> 영상</span></span>
-                                </label>
-                                <input class="file-input file-input-bordered"
-                                       name="videos"
-                                       type="file">
-                            </div>
-                        `;
-
-                        const container = document.createElement('div');
-                        let referenceElement = document.getElementById('last');
-                        container.innerHTML = blockHtml;
-
-                        formElement.insertBefore(container, referenceElement);
-
-                        counter++;
-
+                        addBlock();
                     });
                 });
             });
+
+            function addBlock() {
+                const formElement = document.getElementById('myForm');
+                const container = document.createElement('div');
+                const blockCount = formElement.querySelectorAll('.form-control').length / 2 + 1; // 각 수업에는 두 개의 .form-control이 있으므로 2로 나눔
+
+                const blockHtml = `
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">수업 <span>${blockCount}</span><span> 제목</span></span>
+                            <button type="button" class="btn btn-square btn-outline w-[40px]" onclick="removeElements(this)">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </label>
+                        <input class="input input-bordered" maxlength="100" name="subjects" placeholder="제목" type="text" autofocus>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">수업 <span>${blockCount}</span><span> 영상</span></span>
+                        </label>
+                        <input class="file-input file-input-bordered" name="videos" type="file">
+                    </div>
+                `;
+
+                container.innerHTML = blockHtml;
+                let referenceElement = document.getElementById('last');
+                formElement.insertBefore(container, referenceElement);
+
+                // 번호 재정렬
+                reorderBlocks();
+            }
 
             function removeElements(btn) {
                 // 버튼이 속한 container div 찾기 (더 상위의 div)
@@ -221,7 +225,25 @@
 
                 // container div 제거
                 containerDiv.remove();
-                counter--;
+
+                // 번호 재정렬
+                reorderBlocks();
+            }
+
+            function reorderBlocks() {
+                const formElement = document.getElementById('myForm');
+                const blocks = formElement.querySelectorAll('.form-control');
+                let blockCount = 1; // 기본 블록의 시작 번호는 2이므로, 1로 초기화합니다.
+
+                blocks.forEach((block, index) => {
+                    const numberSpan = block.querySelector('label .label-text span');
+                    if (numberSpan) {
+                        if (index % 2 == 0) { // 각 블록 묶음의 첫 번째 블록에만 번호를 부여합니다.
+                            blockCount++;
+                        }
+                        numberSpan.textContent = blockCount;
+                    }
+                });
             }
         </script>
 
