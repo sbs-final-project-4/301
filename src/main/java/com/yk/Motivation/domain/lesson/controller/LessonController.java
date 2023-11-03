@@ -12,6 +12,7 @@ import com.yk.Motivation.domain.lecture.controller.LectureController;
 import com.yk.Motivation.domain.lecture.entity.Lecture;
 import com.yk.Motivation.domain.lecture.service.LectureService;
 import com.yk.Motivation.domain.lesson.entity.Lesson;
+import com.yk.Motivation.domain.lesson.entity.LessonPlaybackTime;
 import com.yk.Motivation.domain.lesson.service.LessonService;
 import com.yk.Motivation.standard.util.Ut;
 import jakarta.validation.Valid;
@@ -191,6 +192,17 @@ public class LessonController {
         private MultipartFile video;
     }
 
+    @PostMapping("/{lessonId}/playbackTime")
+    @ResponseBody
+    public void receivePlaybackTime(
+            @PathVariable Long lessonId,
+            @RequestParam("currentTime") double currentTime
+            ) {
+            Lesson lesson = lessonService.findById(lessonId).get();
+
+            lessonService.saveLessonPlaybackTime(rq.getMember(), lesson, currentTime);
+    }
+
 
 
 
@@ -199,12 +211,17 @@ public class LessonController {
     @GetMapping("/hls/{lessonId}")
     public String videoHls(
             Model model,
-            @PathVariable long lessonId
+            @PathVariable Long lessonId
             ) {
 
         String masterPlayListPath = getHlsSourcePath(lessonId, "master.m3u8");
+        Lesson lesson = lessonService.findById(lessonId).get();
+
+        Optional<LessonPlaybackTime> playbackTimeOpt = lessonService.findPlaybackTimeByMember(rq.getMember(), lesson);
+        Integer playbackTime = playbackTimeOpt.map(LessonPlaybackTime::getPlaybackTime).orElse(null);
 
         model.addAttribute("videoUrl", masterPlayListPath);
+        model.addAttribute("playbackTime",playbackTime);
         return "usr/lesson/hls";
     }
 

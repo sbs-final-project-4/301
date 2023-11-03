@@ -10,6 +10,8 @@ import com.yk.Motivation.domain.lecture.entity.Lecture;
 import com.yk.Motivation.domain.lecture.repository.LectureRepository;
 import com.yk.Motivation.domain.lecture.service.LectureService;
 import com.yk.Motivation.domain.lesson.entity.Lesson;
+import com.yk.Motivation.domain.lesson.entity.LessonPlaybackTime;
+import com.yk.Motivation.domain.lesson.repository.LessonPlaybackTimeRepository;
 import com.yk.Motivation.domain.lesson.repository.LessonRepository;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.standard.util.Ut;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.swing.text.html.Option;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,6 +43,7 @@ public class LessonService {
 
     private final LessonRepository lessonRepository;
     private final LectureRepository lectureRepository;
+    private final LessonPlaybackTimeRepository lessonPlaybackTimeRepository;
     private final LectureService lectureService;
     private final GenFileService genFileService;
     private final FfmpegService ffmpegService;
@@ -200,6 +204,25 @@ public class LessonService {
         return RsData.of("S-1", "%d 번 강의가 수정되었습니다.".formatted(lecture.getId()), lecture);
     }
 
+    @Transactional
+    public void saveLessonPlaybackTime(Member member, Lesson lesson, double currentTime) {
+
+        Optional<LessonPlaybackTime> opPlaybackTime = findPlaybackTimeByMember(member, lesson);
+
+        opPlaybackTime.ifPresentOrElse(
+                existingPlaybackTime -> existingPlaybackTime.setPlaybackTime((int)currentTime),
+                () -> {
+                    LessonPlaybackTime playbackTime = LessonPlaybackTime.builder()
+                            .lesson(lesson)
+                            .member(member)
+                            .playbackTime((int)currentTime)
+                            .build();
+
+                    lessonPlaybackTimeRepository.save(playbackTime);
+                }
+        );
+    }
+
 
 
 
@@ -257,5 +280,10 @@ public class LessonService {
         return lessonRepository.findByLectureId_Id(id);
 
     }
+
+    public Optional<LessonPlaybackTime> findPlaybackTimeByMember(Member member, Lesson lesson) {
+        return lessonPlaybackTimeRepository.findByMemberIdAndLessonId(member.getId(), lesson.getId());
+    }
+
 
 }

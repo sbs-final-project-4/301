@@ -91,8 +91,9 @@ public class SecurityConfig {
                                 .loginPage("/usr/member/login")
                 )
                 .csrf((csrf) -> csrf
-                        .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**")))
-                .headers((headers) -> headers
+                        .ignoringRequestMatchers(new AntPathRequestMatcher("/h2-console/**"))
+                        .ignoringRequestMatchers(new AntPathRequestMatcher("/usr/lesson/**/playbackTime")))
+                        .headers((headers) -> headers
                         .addHeaderWriter(new XFrameOptionsHeaderWriter(
                                 XFrameOptionsHeaderWriter.XFrameOptionsMode.SAMEORIGIN)))
                 .formLogin((formLogin) -> formLogin
@@ -128,16 +129,3 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 }
-
-//    public LogoutHandler oAuth2LogoutHandler() {
-//        return (request, response, authentication) -> {
-//            if (authentication instanceof OAuth2AuthenticationToken) {
-//                String kakaoLogoutURL = "https://kauth.kakao.com/oauth/logout?client_id=61f551ef34c13cdb5bf18c6fa42e4d20&logout_redirect_uri=https://localhost:8090/usr/member/logout";
-//                try {
-//                    response.sendRedirect(kakaoLogoutURL);
-//                } catch (IOException e) {
-//                    throw new RuntimeException(e);
-//                }
-//            }
-//        };
-//    }
