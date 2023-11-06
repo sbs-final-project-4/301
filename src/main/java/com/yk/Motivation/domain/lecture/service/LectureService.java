@@ -131,6 +131,10 @@ public class LectureService {
         return lectureRepository.findByLectureTags_contentAndIsPublicTrue(tagContent, pageable);
     }
 
+    public List<Lecture> findAllByProducerId(Long id) {
+        return lectureRepository.findByProducerId(id);
+    }
+
 
 
 
@@ -149,5 +153,4 @@ public class LectureService {
     public RsData<?> checkProducerCanRemove(Member producer, Lecture lecture) {
         return checkProducerCanModify(producer, lecture);
     }
-
 }
