@@ -16,7 +16,7 @@
         <form th:action method="POST" class="flex flex-col gap-3"
               onsubmit="submitWriteForm(this); return false;">
 
-            <div class="form-control">
+            <div>
                 <label class="label">
                     <span class="label-text">강의</span>
                 </label>
@@ -51,7 +51,7 @@
 
             <div class="grid grid-cols-2 mt-2 gap-2">
                 <input class="btn btn-primary" type="submit" value="강의 등록">
-                <button type="button" onclick="history.back();" class="btn btn-secondary btn-outline">취소</button>
+                <a type="button" href="/usr/lecture/list" class="btn btn-secondary btn-outline">취소</a>
             </div>
         </form>
 
@@ -60,15 +60,6 @@
 
             function submitWriteForm(form) {
                 if (submitWriteFormDone) {
-                    return;
-                }
-
-                form.subject.value = form.subject.value.trim();
-
-                if (form.subject.value.length == 0) {
-                    toastWarning("제목을 입력해주세요.");
-                    form.subject.focus();
-
                     return;
                 }
 

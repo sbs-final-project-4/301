@@ -29,7 +29,7 @@ public class Member extends BaseEntity {
     @Column(unique = true)
     private String producerName;
     private String email;
-
+    private long restCash;
 
     public boolean isAdmin() {
         return "admin".equals(username);

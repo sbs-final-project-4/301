@@ -1,8 +1,8 @@
-package com.yk.Motivation.domain.product.entity;
+package com.yk.Motivation.domain.cart.entity;
 
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
-import com.yk.Motivation.domain.lecture.entity.Lecture;
 import com.yk.Motivation.domain.member.entity.Member;
+import com.yk.Motivation.domain.product.entity.Product;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
@@ -18,23 +18,11 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @SuperBuilder
 @ToString(callSuper = true)
-public class Product extends BaseEntity {
+public class CartItem extends BaseEntity {
 
     @ManyToOne(fetch = LAZY)
-    private Member producer;
-
+    private Member buyer;
     @ManyToOne(fetch = LAZY)
-    private Lecture lecture;
+    private Product product;
 
-    private int price;
-
-    private boolean isFree;
-
-    public int getSalePrice() {
-        return getPrice();
-    }
-
-    public boolean isOrderable() {
-        return true;
-    }
 }

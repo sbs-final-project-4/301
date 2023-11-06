@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -29,5 +30,9 @@ public class ProductService {
         productRepository.save(product);
 
         return new RsData<>("S-1", lecture.getId() + "번 강의가 등록되었습니다.", lecture);
+    }
+
+    public Optional<Product> findByLectureId(Long id) {
+        return productRepository.findByLectureId(id);
     }
 }

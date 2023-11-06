@@ -3,6 +3,8 @@ package com.yk.Motivation.domain.member.service;
 import com.yk.Motivation.base.app.AppConfig;
 import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.attr.service.AttrService;
+import com.yk.Motivation.domain.cash.entity.CashLog;
+import com.yk.Motivation.domain.cash.service.CashService;
 import com.yk.Motivation.domain.email.service.EmailService;
 import com.yk.Motivation.domain.emailVerification.service.EmailVerificationService;
 import com.yk.Motivation.domain.genFile.entity.GenFile;
@@ -10,6 +12,8 @@ import com.yk.Motivation.domain.genFile.service.GenFileService;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.repository.MemberRepository;
 import com.yk.Motivation.standard.util.Ut;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,6 +37,7 @@ public class MemberService {
     private final EmailService emailService;
     private final EmailVerificationService emailVerificationService;
     private final AttrService attrService;
+    private final CashService cashService;
 
     private final MemberRepository memberRepository;
 
@@ -300,6 +305,28 @@ public class MemberService {
                 });
 
         return RsData.of("S-1", "활동명이 적용되었습니다.");
+    }
+
+    @Transactional
+    public RsData<AddCashRsDataBody> addCash(Member member, long price, String eventType) {
+        CashLog cashLog = cashService.addCash(member, price, eventType);
+
+        long newRestCash = member.getRestCash() + cashLog.getPrice();
+        member.setRestCash(newRestCash);
+        memberRepository.save(member);
+
+        return RsData.of(
+                "S-1",
+                "성공",
+                new AddCashRsDataBody(cashLog, newRestCash)
+        );
+    }
+
+    @Data
+    @AllArgsConstructor
+    public static class AddCashRsDataBody {
+        CashLog cashLog;
+        long newRestCash;
     }
 
 }

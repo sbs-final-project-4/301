@@ -15,6 +15,10 @@
             <span th:text="|${lecture.subject} 대시보드|"></span>
         </h1>
 
+        <div class="flex flex-row justify-start sticky top-[64px] bg-white z-50">
+            <a class="btn btn-primary m-4" th:href="|/usr/cart/write/lecture/${lecture.id}">수강신청</a>
+        </div>
+
         <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
                 <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3">
@@ -85,6 +89,7 @@
                         </a>
                     </div>
                 </div>
+
                 <div class="mt-6">
                     <div class="text-center">
                         <a th:if="${@lectureService.checkProducerCanModify(@rq.member, lecture).success}"
