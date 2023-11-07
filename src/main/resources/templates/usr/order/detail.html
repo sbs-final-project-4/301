@@ -32,8 +32,14 @@
                         주문번호 : [[${order.id}]]
                     </div>
 
-                    <div>
-                        주문날짜 : [[${order.createDate}]]
+                    <div class="flex flex-row">
+                        <div>
+                            주문일시 :&nbsp;
+                        </div>
+                        <div>
+                            <div th:text="${#temporals.format(order.createDate, 'yyyy-MM-dd')}"></div>
+                            <div th:text="${#temporals.format(order.createDate, 'HH:mm:ss')}"></div>
+                        </div>
                     </div>
 
                     <div>
@@ -41,26 +47,25 @@
                     </div>
 
                     <div>
-                        주문가격 : [[${order.calculatePayPrice}]]
+                        주문가격 : <span th:text="${#numbers.formatDecimal(order.calculatePayPrice, 0, 'COMMA', 0, 'POINT')}"></span> 원
                     </div>
 
                     <div>
                         <div th:each="orderItem : ${order.orderItems}">
                             <div>
-                                강의명 : [[${orderItem.product.lecture.subject}]] /
-                                강사명 : [[${orderItem.product.producer.producerName}]] /
-                                가격 : [[${orderItem.salePrice}]]
+                                강의명 : <span th:text="${orderItem.product.lecture.subject}"></span> /
+                                강사명 : <span th:text="${orderItem.product.producer.producerName}"></span> /
+                                가격 : <span th:text="${#numbers.formatDecimal(orderItem.salePrice, 0, 'COMMA', 0, 'POINT')}"></span> 원
                             </div>
                         </div>
                     </div>
 
                     <div th:if="${order.payable}">
-                        <button th:if="${order.payable}" onclick="payment();" class="btn btn-sm btn-primary">카드결제</button>
+                        <button th:if="${order.payable}" onclick="payment();" class="btn btn-primary">카드결제</button>
                         <span th:if="${order.isPaid}">결제완료</span>
-                        <div>
-                            <span>PG결제가격 : </span>
-                            <span id="PaymentForm__pgPayPriceDisplay">
-                        </span>
+                        <div class="mt-4">
+                            <span>최종 결제가격 : </span>
+                            <span id="PaymentForm__pgPayPriceDisplay"></span>
                         </div>
                     </div>
                 </div>
@@ -72,9 +77,13 @@
 
             const pgPayPrice = orderPayPrice;
 
-            $PaymentForm__pgPayPriceDisplay.text(pgPayPrice);
+            $PaymentForm__pgPayPriceDisplay.text(formatPrice(pgPayPrice));
 
             const tossPayments = TossPayments("클라이언트 키");
+
+            function formatPrice(value) {
+                return new Intl.NumberFormat('ko-KR').format(value) + ' 원';
+            }
 
             function payment() {
                 const method = "카드"; // "카드" 혹은 "가상계좌"

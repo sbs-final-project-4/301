@@ -110,12 +110,12 @@ public class OrderController {
 
             orderService.payByTossPayments(order, paymentKey);
 
-            return rq.redirectOrBack("usr/order/%d".formatted(order.getId()), RsData.of("S-1","결제가 완료되었습니다."));
+            return rq.redirectOrBack("/usr/order/%d".formatted(order.getId()), RsData.of("S-1","결제가 완료되었습니다."));
         } else {
             JsonNode failNode = responseEntity.getBody();
             model.addAttribute("message", failNode.get("message").asText());
             model.addAttribute("code", failNode.get("code").asText());
-            return "order/fail";
+            return "usr/order/fail";
         }
     }
 
@@ -123,7 +123,7 @@ public class OrderController {
     public String failPayment(@RequestParam String message, @RequestParam String code, Model model) {
         model.addAttribute("message", message);
         model.addAttribute("code", code);
-        return "order/fail";
+        return "usr/order/fail";
     }
 
     @PostMapping("/makeOrder")
