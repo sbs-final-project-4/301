@@ -1,5 +1,6 @@
 package com.yk.Motivation.domain.order.service;
 
+import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.cart.entity.CartItem;
 import com.yk.Motivation.domain.cart.service.CartService;
 import com.yk.Motivation.domain.member.entity.Member;
@@ -71,12 +72,15 @@ public class OrderService {
     }
 
     @Transactional
-    public void refund(Order order) {
+    public RsData<Order> refund(Order order, String refundReason) {
         int payPrice = order.getPayPrice();
-        memberService.addCash(order.getBuyer(), payPrice, "주문__%d__환불__예치금".formatted(order.getId()));
+        memberService.addCash(order.getBuyer(), payPrice, "주문__%d__환불__토스페이먼츠".formatted(order.getId()));
 
         order.setRefundDone();
+        order.setRefundReason(refundReason);
         orderRepository.save(order);
+
+        return RsData.of("S-1", "%d번 주문의 환불이 처리되었습니다.".formatted(order.getId()), order);
     }
 
     public boolean memberCanSee(Member member, Order order) {

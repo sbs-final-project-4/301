@@ -311,14 +311,16 @@ public class MemberService {
     public RsData<AddCashRsDataBody> addCash(Member member, long price, String eventType) {
         CashLog cashLog = cashService.addCash(member, price, eventType);
 
-        long newRestCash = member.getRestCash() + cashLog.getPrice();
-        member.setRestCash(newRestCash);
-        memberRepository.save(member);
+        if ( !eventType.contains("환불__토스페이먼츠") ) {
+            long newRestCash = member.getRestCash() + cashLog.getPrice();
+            member.setRestCash(newRestCash);
+            memberRepository.save(member);
+        }
 
         return RsData.of(
                 "S-1",
                 "성공",
-                new AddCashRsDataBody(cashLog, newRestCash)
+                new AddCashRsDataBody(cashLog)
         );
     }
 
@@ -326,7 +328,6 @@ public class MemberService {
     @AllArgsConstructor
     public static class AddCashRsDataBody {
         CashLog cashLog;
-        long newRestCash;
     }
 
 }

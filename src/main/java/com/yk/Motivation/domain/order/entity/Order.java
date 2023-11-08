@@ -35,6 +35,7 @@ public class Order extends BaseEntity {
     private boolean isCanceled; // 취소여부
     private boolean isRefunded; // 환불여부
     private String paymentKey;
+    private String refundReason;
 
     @Builder.Default
     @OneToMany(mappedBy = "order", cascade = ALL, orphanRemoval = true)

@@ -56,16 +56,24 @@
                             </div>
                         </div>
                     </div>
-                    <div th:if="${order.payable}">
-                        <button th:if="${order.payable}" onclick="payment();" class="btn btn-primary">카드결제</button>
-                        <div class="mt-4">
-                            <span>최종 결제가격 : </span>
-                            <span id="PaymentForm__pgPayPriceDisplay"></span>
-                        </div>
+
+                    <div class="mt-4">
+                        <span>최종 환불가격 : </span>
+                        <span id="PaymentForm__pgPayPriceDisplay"></span>
                     </div>
-                    <div>
-                        <a th:if="${order.isPaid}" href="/" class="btn btn-primary btn">홈으로 이동</a>
-                    </div>
+
+                    <form method="post" th:action>
+                        <select name="refundReason" class="select select-primary w-full max-w-xs mr-4" required>
+                            <option value="" disabled selected>환불사유</option>
+                            <option>강의 주제가 예상과달라서</option>
+                            <option>강의의 난이도가 맞지않아서</option>
+                            <option>강의의 질이 낮아서</option>
+                            <option>단순 변심</option>
+                        </select>
+
+                        <input class="btn btn-primary" type="submit" value="환불 요청">
+                    </form>
+
                 </div>
             </div>
         </section>
@@ -77,25 +85,8 @@
 
             $PaymentForm__pgPayPriceDisplay.text(formatPrice(pgPayPrice));
 
-            const tossPayments = TossPayments("클라이언트 키");
-
             function formatPrice(value) {
                 return new Intl.NumberFormat('ko-KR').format(value) + ' 원';
-            }
-
-            function payment() {
-                const method = "카드"; // "카드" 혹은 "가상계좌"
-
-                const paymentData = {
-                    amount: orderPayPrice,
-                    orderId: "order__" + orderId + "__" + (Math.random() + "").substring(2),
-                    orderName,
-                    customerName: buyerName,
-                    successUrl: window.location.origin + "/usr/order/" + orderId + "/success",
-                    failUrl: window.location.origin + "/usr/order/" + orderId + "/fail"
-                };
-
-                tossPayments.requestPayment(method, paymentData);
             }
         </script>
 

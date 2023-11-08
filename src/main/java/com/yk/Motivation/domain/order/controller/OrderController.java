@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.ResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
@@ -133,15 +135,39 @@ public class OrderController {
         return rq.redirectOrBack("/usr/order/%d".formatted(order.getId()), RsData.of("S-1", "%d번 주문이 생성되었습니다.".formatted(order.getId())));
     }
 
-    @RequestMapping("/refund/{id}")
-    @ResponseBody
-    public RsData refund(
-            @PathVariable Long id
+    @GetMapping("/refund/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public String showRefund(
+            @PathVariable long id,
+            Model model
+    ) {
+        Order order = orderService.findForPrintById(id).get();
+        Member member = rq.getMember();
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime cancelLimit = now.minusHours(3);
+
+        System.out.println("createDate : " + order.getCreateDate());
+
+        if( !order.getCreateDate().isAfter(cancelLimit) )
+            return rq.historyBack(RsData.of("F-1", "결제취소요청 기한이 지났습니다."));
+
+        if (orderService.memberCanSee(member, order) == false)
+            throw new MemberCanNotSeeOrderException();
+
+        model.addAttribute("order", order);
+
+        return "usr/order/refundDetail";
+    }
+
+    @PostMapping("/refund/{id}")
+    public String refund(
+            @PathVariable Long id,
+            @RequestParam String refundReason
     ) throws Exception {
 
         Order order = orderService.findForPrintById(id).get();
         String paymentKey = order.getPaymentKey();
-        String reason = "단순 변심";
 
         // 요청 URL
         String url = "https://api.tosspayments.com/v1/payments/" + paymentKey + "/cancel";
@@ -153,7 +179,7 @@ public class OrderController {
 
         // 요청 본문 데이터 생성
         Map<String, String> body = new HashMap<>();
-        body.put("cancelReason", "단순 변심");
+        body.put("cancelReason", refundReason);
 
         // HttpEntity 객체 생성 (헤더 + 본문)
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(body, headers);
@@ -161,18 +187,16 @@ public class OrderController {
         // RestTemplate 생성 및 요청 보내기
         RestTemplate restTemplate = new RestTemplate();
 
-        try {
-            ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
+        ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, String.class);
 
-            // 상태 코드, 헤더, 본문 출력
-            System.out.println("Status Code: " + responseEntity.getStatusCode());
-            System.out.println("Headers: " + responseEntity.getHeaders());
-            System.out.println("Response Body: " + responseEntity.getBody());
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            RsData<Order> refundRs = orderService.refund(order, refundReason);
+
+            return rq.redirectOrBack("/usr/member/myPayments", refundRs);
+        } else {
+
+            return rq.redirectOrBack("/usr/member/myPayments", RsData.of("F-1", "환불요청에 실패했습니다. 관리팀에 문의하세요."));
         }
-
-        return RsData.of("S-1", "성공했으면 좋겠다...", null);
     }
 }
