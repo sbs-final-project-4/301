@@ -5,6 +5,8 @@ import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.exception.EmailNotVerifiedAccessDeniedException;
 import com.yk.Motivation.domain.member.service.MemberService;
+import com.yk.Motivation.domain.order.entity.Order;
+import com.yk.Motivation.domain.order.service.OrderService;
 import com.yk.Motivation.standard.util.Ut;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -13,6 +15,7 @@ import org.hibernate.validator.constraints.Length;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,12 +23,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/usr/member")
 @RequiredArgsConstructor
 @Validated
 public class MemberController {
     private final MemberService memberService;
+    private final OrderService orderService;
     private final Rq rq;
 
     @PreAuthorize("isAnonymous()")
@@ -244,4 +250,14 @@ public class MemberController {
         return rq.redirectOrBack("/usr/member/me", rs);
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/myPayments")
+    public String showPaymentsList(Model model) {
+
+        List<Order> orders = orderService.findByBuyerIdAndIsPaidTrue(rq.getMember().getId());
+
+        model.addAttribute("orders", orders);
+
+        return "usr/member/myPayments";
+    }
 }

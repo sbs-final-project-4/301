@@ -79,16 +79,8 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    public Optional<Order> findForPrintById(long id) {
-        return findById(id);
-    }
-
-    private Optional<Order> findById(long id) {
-        return orderRepository.findById(id);
-    }
-
-    public boolean actorCanSee(Member actor, Order order) {
-        return actor.getId().equals(order.getBuyer().getId());
+    public boolean memberCanSee(Member member, Order order) {
+        return member.getId().equals(order.getBuyer().getId());
     }
 
     @Transactional
@@ -104,12 +96,24 @@ public class OrderService {
         orderRepository.save(order);
     }
 
-    public boolean actorCanPayment(Member actor, Order order) {
-        return actorCanSee(actor, order);
+    public boolean actorCanPayment(Member member, Order order) {
+        return memberCanSee(member, order);
     }
 
     public List<OrderItem> findAllByPayDateBetweenOrderByIdAsc(LocalDateTime fromDate, LocalDateTime toDate) {
         return orderItemRepository.findAllByPayDateBetween(fromDate, toDate);
+    }
+
+    public Optional<Order> findForPrintById(long id) {
+        return findById(id);
+    }
+
+    private Optional<Order> findById(long id) {
+        return orderRepository.findById(id);
+    }
+
+    public List<Order> findByBuyerIdAndIsPaidTrue(long id) {
+        return orderRepository.findByBuyerIdAndIsPaidTrue(id);
     }
 
 }

@@ -10,13 +10,11 @@ import com.yk.Motivation.domain.order.entity.Order;
 import com.yk.Motivation.domain.order.exception.MemberCanNotSeeOrderException;
 import com.yk.Motivation.domain.order.exception.OrderIdNotMatchedException;
 import com.yk.Motivation.domain.order.service.OrderService;
-import com.yk.Motivation.standard.util.Ut;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -49,7 +47,7 @@ public class OrderController {
 
         Member member = rq.getMember();
 
-        if (orderService.actorCanSee(member, order) == false) {
+        if (orderService.memberCanSee(member, order) == false) {
             throw new MemberCanNotSeeOrderException();
         }
 

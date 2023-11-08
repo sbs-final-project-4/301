@@ -43,6 +43,13 @@
                 <div class="mt-2 text-sm"></div>
             </div>
 
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">정산 예정 금액</span>
+                </label>
+                <div class="restCash badge badge-lg badge-ghost" th:text="${@rq.member.restCash}"></div>
+            </div>
+
             <div>
                 <button class="btn btn-block btn-primary gap-1">
                     <i class="fa-brands fa-product-hunt"></i>
@@ -57,6 +64,22 @@
                 </div>
             </div>
         </form>
+
+        <script>
+
+            document.addEventListener('DOMContentLoaded', function() {
+              var restCashElement = document.querySelector('.restCash');
+
+              if (restCashElement) {
+                var restCashValue = parseInt(restCashElement.textContent, 10);
+
+                if (!isNaN(restCashValue)) {
+                  restCashElement.textContent = restCashValue.toLocaleString('ko-KR') + ' 원';
+                }
+              }
+            });
+
+        </script>
 
         <script>
             const beProducerForm = document['be-producer-form'];
