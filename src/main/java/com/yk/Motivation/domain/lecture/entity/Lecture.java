@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
@@ -50,6 +51,9 @@ public class Lecture extends BaseEntity implements DocumentHavingTags {
     @OrderBy("sortNo")
     private List<Lesson> lessons = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "lectures", fetch = LAZY)
+    private List<Member> members;
+
     // DocumentHavingTags 의 추상메서드
     // 태그기능을 사용하려면 필요하다.
     @Override
@@ -74,6 +78,13 @@ public class Lecture extends BaseEntity implements DocumentHavingTags {
 
     public String getPublicHanName() {
         return isPublic ? "공개" : "비공개";
+    }
+
+    public Long getTotalLessonLength() {
+
+        return lessons.stream()
+                .mapToLong(Lesson::getLessonLength)
+                .sum();
     }
 
 }

@@ -1,8 +1,8 @@
 package com.yk.Motivation.domain.member.entity;
 
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import com.yk.Motivation.domain.lecture.entity.Lecture;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +11,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import java.util.ArrayList;
 import java.util.List;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
@@ -30,6 +31,15 @@ public class Member extends BaseEntity {
     private String producerName;
     private String email;
     private long restCash;
+
+    @ManyToMany(fetch = LAZY)
+    @JoinTable(
+            name = "member_lecture",
+            joinColumns = @JoinColumn(name = "member_id"),
+            inverseJoinColumns = @JoinColumn(name = "lecture_id")
+    )
+    @Builder.Default
+    private List<Lecture> lectures = new ArrayList<>();
 
     public boolean isAdmin() {
         return "admin".equals(username);

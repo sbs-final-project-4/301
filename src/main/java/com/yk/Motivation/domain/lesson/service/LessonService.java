@@ -1,6 +1,7 @@
 package com.yk.Motivation.domain.lesson.service;
 
 import com.yk.Motivation.base.app.AppConfig;
+import com.yk.Motivation.base.rq.Rq;
 import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.article.entity.Article;
 import com.yk.Motivation.domain.ffmpeg.service.FfmpegService;
@@ -42,11 +43,11 @@ public class LessonService {
     private LessonService self;
 
     private final LessonRepository lessonRepository;
-    private final LectureRepository lectureRepository;
     private final LessonPlaybackTimeRepository lessonPlaybackTimeRepository;
     private final LectureService lectureService;
     private final GenFileService genFileService;
     private final FfmpegService ffmpegService;
+    private final Rq rq;
 
 
 
@@ -215,6 +216,7 @@ public class LessonService {
                     LessonPlaybackTime playbackTime = LessonPlaybackTime.builder()
                             .lesson(lesson)
                             .member(member)
+                            .lecture(lesson.getLecture())
                             .playbackTime((int)currentTime)
                             .build();
 
@@ -278,11 +280,24 @@ public class LessonService {
 
     public List<Lesson> findByLectureId(Long id) {
         return lessonRepository.findByLectureId_Id(id);
-
     }
 
     public Optional<LessonPlaybackTime> findPlaybackTimeByMember(Member member, Lesson lesson) {
         return lessonPlaybackTimeRepository.findByMemberIdAndLessonId(member.getId(), lesson.getId());
+    }
+
+    public Integer getSumPlaybackTime(Lecture lecture) {
+        return sumPlaybackTime(lecture.getId(), rq.getMember().getId());
+    }
+
+    public Integer sumPlaybackTime(Long lectureId, Long memberId) {
+//        return lessonPlaybackTimeRepository.sumPlaybackTimeByLectureIdAndMemberId(lectureId, memberId);
+
+        List<LessonPlaybackTime> lptList = lessonPlaybackTimeRepository.findByLectureIdAndMemberId(lectureId, memberId);
+
+        return lptList.stream()
+                .mapToInt(LessonPlaybackTime::getPlaybackTime)
+                .sum();
     }
 
 

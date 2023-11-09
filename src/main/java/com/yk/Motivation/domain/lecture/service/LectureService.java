@@ -9,6 +9,9 @@ import com.yk.Motivation.domain.genFile.entity.GenFile;
 import com.yk.Motivation.domain.genFile.service.GenFileService;
 import com.yk.Motivation.domain.lecture.entity.Lecture;
 import com.yk.Motivation.domain.lecture.repository.LectureRepository;
+import com.yk.Motivation.domain.lesson.entity.Lesson;
+import com.yk.Motivation.domain.lesson.entity.LessonPlaybackTime;
+import com.yk.Motivation.domain.lesson.service.LessonService;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
@@ -77,7 +80,6 @@ public class LectureService {
 
         return new RsData<>("S-1", lecture.getId() + "번 게시물이 삭제되었습니다.", null);
     }
-
 
 
 

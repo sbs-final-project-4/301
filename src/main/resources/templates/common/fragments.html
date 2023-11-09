@@ -518,9 +518,9 @@
             </a>
 
             <a
-                    th:href="@{|${queryStrBase}page=${itemPage.number + 1 - pageArmSize - 1}|}"
-                    th:if="${itemPage.number + 1 - pageArmSize > 2}"
-                    class="join-item btn"
+                th:href="@{|${queryStrBase}page=${itemPage.number + 1 - pageArmSize - 1}|}"
+                th:if="${itemPage.number + 1 - pageArmSize > 2}"
+                class="join-item btn"
             >...</a>
 
             <th:block th:if="${2 <= itemPage.totalPages - 1}">

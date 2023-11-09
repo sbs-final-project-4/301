@@ -13,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 
+import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
 
 @Entity
@@ -24,7 +25,7 @@ import static lombok.AccessLevel.PROTECTED;
 @ToString(callSuper = true)
 public class Lesson extends BaseEntity {
 
-    @ManyToOne
+    @ManyToOne(fetch = LAZY)
     private Lecture lecture;
 
     private String subject;

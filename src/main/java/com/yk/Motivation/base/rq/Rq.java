@@ -1,6 +1,7 @@
 package com.yk.Motivation.base.rq;
 
 import com.yk.Motivation.base.rsData.RsData;
+import com.yk.Motivation.domain.cart.service.CartService;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.service.MemberService;
 import com.yk.Motivation.standard.util.Ut;
@@ -18,14 +19,16 @@ import org.springframework.web.context.annotation.RequestScope;
 @RequestScope // 빈의 생명주기가 HTTP 요청의 생명주기와 동일하게
 public class Rq {
     private final MemberService memberService;
+    private final CartService cartService;
     private final HttpServletRequest req;
     private final HttpServletResponse resp;
     private final HttpSession session;
     private Member member = null;
     private final User user; // principal
 
-    public Rq(MemberService memberService, HttpServletRequest req, HttpServletResponse resp, HttpSession session) {
+    public Rq(MemberService memberService, CartService cartService, HttpServletRequest req, HttpServletResponse resp, HttpSession session) {
         this.memberService = memberService;
+        this.cartService = cartService;
         this.req = req;
         this.resp = resp;
         this.session = session;
@@ -283,6 +286,10 @@ public class Rq {
         if (listUrl.startsWith("/usr/" + domainName + "/listByTag")) return listByTagPageBaseUrl;
 
         return "/usr/post/myListByTag";
+    }
+
+    public Long getUsersCartItems() {
+        return cartService.findItemCountById(getMember().getId());
     }
 }
 

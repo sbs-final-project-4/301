@@ -65,7 +65,13 @@ public class CartService {
         return cartItemRepository.findById(id);
     }
 
+    public Long findItemCountById(Long id) {
+        return cartItemRepository.countByBuyerId(id);
+    }
+
     public boolean actorCanDelete(Member buyer, CartItem cartItem) {
         return buyer.getId().equals(cartItem.getBuyer().getId());
     }
+
+
 }

@@ -108,6 +108,10 @@ public class OrderService {
         return orderItemRepository.findAllByPayDateBetween(fromDate, toDate);
     }
 
+    public List<OrderItem> findOrderItemByOrderId(long id) {
+        return orderItemRepository.findAllByOrderId(id);
+    }
+
     public Optional<Order> findForPrintById(long id) {
         return findById(id);
     }
@@ -117,7 +121,7 @@ public class OrderService {
     }
 
     public List<Order> findByBuyerIdAndIsPaidTrue(long id) {
-        return orderRepository.findByBuyerIdAndIsPaidTrue(id);
+        return orderRepository.findByBuyerIdAndIsPaidTrueOrderByIdDesc(id);
     }
 
 }

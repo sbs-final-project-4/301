@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yk.Motivation.base.rq.Rq;
 import com.yk.Motivation.base.rsData.RsData;
+import com.yk.Motivation.domain.lecture.service.LectureService;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.service.MemberService;
 import com.yk.Motivation.domain.order.entity.Order;
+import com.yk.Motivation.domain.order.entity.OrderItem;
 import com.yk.Motivation.domain.order.exception.MemberCanNotSeeOrderException;
 import com.yk.Motivation.domain.order.exception.OrderIdNotMatchedException;
 import com.yk.Motivation.domain.order.service.OrderService;
@@ -16,6 +18,7 @@ import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -34,9 +38,9 @@ import java.util.Map;
 @Validated
 public class OrderController {
     private final OrderService orderService;
+    private final MemberService memberService;
     private final RestTemplate restTemplate = new RestTemplate();
     private final ObjectMapper objectMapper;
-    private final MemberService memberService;
     private final Rq rq;
 
     @GetMapping("/{id}")
@@ -109,6 +113,8 @@ public class OrderController {
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
 
             orderService.payByTossPayments(order, paymentKey);
+            List<OrderItem> itemList = orderService.findOrderItemByOrderId(order.getId());
+            memberService.addLecture(itemList);
 
             return rq.redirectOrBack("/usr/order/%d".formatted(order.getId()), RsData.of("S-1","결제가 완료되었습니다."));
         } else {
@@ -146,8 +152,6 @@ public class OrderController {
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime cancelLimit = now.minusHours(3);
-
-        System.out.println("createDate : " + order.getCreateDate());
 
         if( !order.getCreateDate().isAfter(cancelLimit) )
             return rq.historyBack(RsData.of("F-1", "결제취소요청 기한이 지났습니다."));

@@ -260,4 +260,15 @@ public class MemberController {
 
         return "usr/member/myPayments";
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/myLectures")
+    public String showLectureList(Model model) {
+
+        Member member = memberService.findById(rq.getMember().getId()).get();
+
+        model.addAttribute("lectures", member.getLectures());
+
+        return "usr/member/myLectures";
+    }
 }

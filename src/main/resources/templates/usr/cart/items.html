@@ -13,7 +13,7 @@
             <span th:text="|수강 바구니|"></span>
         </h1>
 
-        <div class="flex flex-row justify-between">
+        <div class="flex flex-row justify-between" >
             <div class="flex flex-row items-center">
                 <input type="checkbox" class="cartItemCheckboxAll checkbox m-4">
                 <div>전체 선택</div>
@@ -22,7 +22,7 @@
             <a href="/usr/lecture/list" class="btn btn-primary btn-sm">강의 더 둘러보기</a>
         </div>
 
-        <div class="">
+        <div class="" >
             <table class="table">
                 <!-- head -->
                 <thead>
@@ -82,7 +82,7 @@
                 const $checked = $('.cartItemCheckbox:checked');
 
                 if ($checked.length == 0) {
-                    alert('삭제할 장바구니 품목을 선택해주세요.');
+                    toastWarning('삭제할 장바구니 품목을 선택해주세요.');
                     return;
                 }
 

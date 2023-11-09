@@ -1,6 +1,7 @@
 package com.yk.Motivation.domain.member.service;
 
 import com.yk.Motivation.base.app.AppConfig;
+import com.yk.Motivation.base.rq.Rq;
 import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.attr.service.AttrService;
 import com.yk.Motivation.domain.cash.entity.CashLog;
@@ -11,6 +12,10 @@ import com.yk.Motivation.domain.genFile.entity.GenFile;
 import com.yk.Motivation.domain.genFile.service.GenFileService;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.repository.MemberRepository;
+import com.yk.Motivation.domain.order.entity.Order;
+import com.yk.Motivation.domain.order.entity.OrderItem;
+import com.yk.Motivation.domain.order.service.OrderService;
+import com.yk.Motivation.domain.product.entity.Product;
 import com.yk.Motivation.standard.util.Ut;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -38,6 +44,7 @@ public class MemberService {
     private final EmailVerificationService emailVerificationService;
     private final AttrService attrService;
     private final CashService cashService;
+    private final Rq rq;
 
     private final MemberRepository memberRepository;
 
@@ -322,6 +329,19 @@ public class MemberService {
                 "성공",
                 new AddCashRsDataBody(cashLog)
         );
+    }
+
+    @Transactional
+    public void addLecture(List<OrderItem> itemList) {
+
+        Member member = findById(rq.getMember().getId()).get();
+
+        itemList.stream()
+                .map(OrderItem::getProduct)
+                .map(Product::getLecture)
+                .forEach(member.getLectures()::add);
+
+        memberRepository.save(member);
     }
 
     @Data

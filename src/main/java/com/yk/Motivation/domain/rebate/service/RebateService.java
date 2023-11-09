@@ -36,25 +36,31 @@ public class RebateService {
         LocalDateTime fromDate = Ut.date.parse(fromDateStr);
         LocalDateTime toDate = Ut.date.parse(toDateStr);
 
+        // 정산데이터 생성과 클라이언트의 환불요청이 동시에 발생할 경우를 대비하여
+        // 정산데이터는 환불기한이 지난 order (즉, payDate 가 3시간이 초과한 Order) 에 대해서만 행해지도록
+        if (toDate.isAfter(LocalDateTime.now())) { 
+            toDate = LocalDateTime.now().minusHours(3);
+        }
+
         // 데이터 가져오기
         List<OrderItem> orderItems = orderService.findAllByPayDateBetweenOrderByIdAsc(fromDate, toDate);
         List<RebateOrderItem> oldRebateOrderItems = findRebateOrderItemsByPayDateIn(yearMonth);
 
         // 변환하기
         Set<Long> oldProductIds = oldRebateOrderItems.stream()
-                .map(RebateOrderItem::getProduct) // RebateOrderItem으로부터 Product 객체를 가져옵니다.
-                .map(Product::getId) // Product 객체로부터 id를 가져옵니다.
+                .map(RebateOrderItem::getOrderItem)
+                .map(OrderItem::getId)
                 .collect(Collectors.toSet());
 
         List<RebateOrderItem> rebateOrderItems = orderItems.stream()
-                .filter(orderItem -> !oldProductIds.contains(orderItem.getProduct().getId()))
+                .filter(orderItem -> !oldProductIds.contains(orderItem.getId()))
                 .map(this::toRebateOrderItem)
                 .collect(Collectors.toList());
 
         // 저장하기
         rebateOrderItems.forEach(this::makeRebateOrderItem);
 
-        if(rebateOrderItems.isEmpty()) return RsData.of("S-2", "추가된 정산 데이터가 없습니다.");
+        if (rebateOrderItems.isEmpty()) return RsData.of("S-2", "추가된 정산 데이터가 없습니다.");
 
         return RsData.of("S-1", "정산데이터가 성공적으로 생성되었습니다.");
     }
