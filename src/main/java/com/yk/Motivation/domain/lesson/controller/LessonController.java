@@ -50,6 +50,23 @@ public class LessonController {
     private final GenFileService genFileService;
     private final Rq rq;
 
+    @GetMapping("/list/{id}")
+    public String showDetail(
+            Model model,
+            @PathVariable long id
+    ) {
+        Lecture lecture = lectureService.findById(id).get();
+        List<Lesson> lessons = lecture.getLessons();
+
+        Map<String, GenFile> filesMap = lectureService.findGenFilesMapKeyByFileNo(lecture, "common", "attachment");
+
+        model.addAttribute("lecture", lecture);
+        model.addAttribute("lessons", lessons);
+        model.addAttribute("filesMap", filesMap);
+
+        return "usr/lesson/list";
+    }
+
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/{lectureId}/write")
     public String showWrite(

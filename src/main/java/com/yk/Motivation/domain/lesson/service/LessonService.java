@@ -291,7 +291,6 @@ public class LessonService {
     }
 
     public Integer sumPlaybackTime(Long lectureId, Long memberId) {
-//        return lessonPlaybackTimeRepository.sumPlaybackTimeByLectureIdAndMemberId(lectureId, memberId);
 
         List<LessonPlaybackTime> lptList = lessonPlaybackTimeRepository.findByLectureIdAndMemberId(lectureId, memberId);
 
@@ -300,5 +299,10 @@ public class LessonService {
                 .sum();
     }
 
+    public boolean isLessonCompleted(Long lessonId, Integer lessonLength) {
+        return lessonPlaybackTimeRepository.findByMemberIdAndLessonId(rq.getMember().getId(), lessonId)
+                .map(lessonPlaybackTime -> lessonPlaybackTime.getPlaybackTime() >= lessonLength)
+                .orElse(false);
+    }
 
 }

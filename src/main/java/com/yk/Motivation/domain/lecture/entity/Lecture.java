@@ -87,4 +87,7 @@ public class Lecture extends BaseEntity implements DocumentHavingTags {
                 .sum();
     }
 
+    public Integer getProgressRate(Integer sumPlaybackTime) {
+        return (int) (((double) sumPlaybackTime / getTotalLessonLength() ) * 100 );
+    }
 }
