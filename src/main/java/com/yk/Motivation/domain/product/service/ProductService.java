@@ -35,4 +35,8 @@ public class ProductService {
     public Optional<Product> findByLectureId(Long id) {
         return productRepository.findByLectureId(id);
     }
+
+    public boolean isLectureFree(Long lectureId) {
+        return productRepository.findByLectureId(lectureId).get().isFree();
+    }
 }

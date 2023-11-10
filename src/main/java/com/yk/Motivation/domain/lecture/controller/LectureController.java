@@ -95,7 +95,7 @@ public class LectureController {
         if (Ut.file.exists(writeForm.getAttachment__2()))
             lectureService.saveAttachmentFile(rsData.getData(), writeForm.getAttachment__2(), 2);
 
-        return rq.redirectOrBack("/usr/lecture/detail/%d".formatted(rsData.getData().getId()), rsData);
+        return rq.redirectOrBack("/usr/lesson/%d/write".formatted(rsData.getData().getId()), rsData);
     }
 
     @Setter
@@ -198,9 +198,6 @@ public class LectureController {
 
         return "usr/lecture/listByTag";
     }
-
-
-
 
 }
 

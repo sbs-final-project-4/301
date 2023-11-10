@@ -55,7 +55,7 @@ public class LectureService {
 
         documentService.updateTempGenFilesToInBody(lecture);
 
-        return new RsData<>("S-1", lecture.getId() + "번 게시물이 생성되었습니다.", lecture);
+        return new RsData<>("S-1", lecture.getId() + "번 강의가 생성되었습니다.", lecture);
     }
 
     @Transactional
@@ -155,4 +155,5 @@ public class LectureService {
     public RsData<?> checkProducerCanRemove(Member producer, Lecture lecture) {
         return checkProducerCanModify(producer, lecture);
     }
+
 }

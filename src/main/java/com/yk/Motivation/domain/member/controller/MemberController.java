@@ -17,10 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -270,5 +267,18 @@ public class MemberController {
         model.addAttribute("lectures", member.getLectures());
 
         return "usr/member/myLectures";
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/enroll/{id}")
+    public String showLectureList(
+            @PathVariable Long id
+    ) {
+
+        Member member = memberService.findById(rq.getMember().getId()).get();
+
+        memberService.addFreeLecture(id);
+
+        return rq.redirectOrBack("/usr/member/myLectures", RsData.of("S-1", "%d번 강의가 추가되었습니다.".formatted(id)));
     }
 }

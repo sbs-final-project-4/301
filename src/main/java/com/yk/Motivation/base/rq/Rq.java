@@ -2,6 +2,7 @@ package com.yk.Motivation.base.rq;
 
 import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.cart.service.CartService;
+import com.yk.Motivation.domain.lecture.entity.Lecture;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.service.MemberService;
 import com.yk.Motivation.standard.util.Ut;
@@ -290,6 +291,12 @@ public class Rq {
 
     public Long getUsersCartItems() {
         return cartService.findItemCountById(getMember().getId());
+    }
+
+    public boolean isMemberEnrolledInLecture(Long lectureId) {
+        Member member = memberService.findByUsername(getLoginedMemberUsername()).get();
+        return member.getLectures().stream()
+                .anyMatch(lecture -> lecture.getId().equals(lectureId));
     }
 }
 

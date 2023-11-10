@@ -10,6 +10,8 @@ import com.yk.Motivation.domain.email.service.EmailService;
 import com.yk.Motivation.domain.emailVerification.service.EmailVerificationService;
 import com.yk.Motivation.domain.genFile.entity.GenFile;
 import com.yk.Motivation.domain.genFile.service.GenFileService;
+import com.yk.Motivation.domain.lecture.entity.Lecture;
+import com.yk.Motivation.domain.lecture.service.LectureService;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.repository.MemberRepository;
 import com.yk.Motivation.domain.order.entity.Order;
@@ -44,6 +46,7 @@ public class MemberService {
     private final EmailVerificationService emailVerificationService;
     private final AttrService attrService;
     private final CashService cashService;
+    private final LectureService lectureService;
     private final Rq rq;
 
     private final MemberRepository memberRepository;
@@ -340,6 +343,17 @@ public class MemberService {
                 .map(OrderItem::getProduct)
                 .map(Product::getLecture)
                 .forEach(member.getLectures()::add);
+
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public void addFreeLecture(Long lectureId) {
+
+        Member member = findById(rq.getMember().getId()).get();
+        Lecture lecture = lectureService.findById(lectureId).get();
+
+        member.getLectures().add(lecture);
 
         memberRepository.save(member);
     }
