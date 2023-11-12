@@ -7,6 +7,7 @@ import com.yk.Motivation.domain.rebate.service.RebateService;
 import com.yk.Motivation.standard.util.Ut;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,11 +28,13 @@ public class RebateController {
     private final RebateService rebateService;
     private final Rq rq;
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/makeData")
     public String showMakeData() {
         return "adm/rebate/makeData";
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping("/makeData")
     public String makeData(String yearMonth) {
         RsData makeDateRsData = rebateService.makeDate(yearMonth);
@@ -39,6 +42,7 @@ public class RebateController {
         return rq.redirectOrBack("/adm/rebate/rebateOrderItemList?yearMonth=" + yearMonth, makeDateRsData);
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/rebateOrderItemList")
     public String showRebateOrderItemList(String yearMonth, Model model) {
         if (yearMonth == null) {
@@ -53,6 +57,7 @@ public class RebateController {
         return "adm/rebate/rebateOrderItemList";
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping("/rebateOne/{orderItemId}/{yearMonth}")
     public String rebateOne(
             @PathVariable long orderItemId,
@@ -65,6 +70,7 @@ public class RebateController {
         return rq.redirectOrBack("/adm/rebate/rebateOrderItemList?yearMonth=" + yearMonth, rebateRsData);
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping("/rebate/{yearMonth}")
     public String rebate(
             @PathVariable String yearMonth,

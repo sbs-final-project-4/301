@@ -165,6 +165,7 @@ public class OrderController {
     }
 
     @PostMapping("/refund/{id}")
+    @PreAuthorize("isAuthenticated()")
     public String refund(
             @PathVariable Long id,
             @RequestParam String refundReason
@@ -196,6 +197,8 @@ public class OrderController {
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
 
             RsData<Order> refundRs = orderService.refund(order, refundReason);
+            List<OrderItem> itemList = orderService.findOrderItemByOrderId(order.getId());
+            memberService.subtractLecture(itemList);
 
             return rq.redirectOrBack("/usr/member/myPayments", refundRs);
         } else {

@@ -1,15 +1,17 @@
-package com.yk.Motivation.domain.post.controller;
+package com.yk.Motivation.domain.series.controller;
 
 import com.yk.Motivation.base.rq.Rq;
 import com.yk.Motivation.base.rsData.RsData;
-import com.yk.Motivation.domain.genFile.entity.GenFile;
 import com.yk.Motivation.domain.post.entity.Post;
+import com.yk.Motivation.domain.series.entity.Series;
+import com.yk.Motivation.domain.series.service.SeriesService;
+import com.yk.Motivation.domain.genFile.entity.GenFile;
+import com.yk.Motivation.domain.genFile.service.GenFileService;
 import com.yk.Motivation.domain.post.service.PostService;
 import com.yk.Motivation.domain.postKeyword.entity.PostKeyword;
 import com.yk.Motivation.standard.util.Ut;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -31,12 +33,14 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/usr/post")
+@RequestMapping("/usr/series")
 @RequiredArgsConstructor
 @Validated
-public class PostController {
-    private final PostService postService;
+public class SeriesController {
+    private final SeriesService seriesService;
     private final Rq rq;
+    private final GenFileService genFileService;
+    private final PostService postService;
 
     @GetMapping("/list")
     public String showList(
@@ -48,12 +52,13 @@ public class PostController {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
-        Page<Post> postPage = postService.findByKw(kwType, kw, true, pageable);
-        model.addAttribute("postPage", postPage);
+        Page<Series> seriesPage = seriesService.findByKw(kwType, kw, true, pageable);
+        model.addAttribute("seriesPage", seriesPage);
 
-        return "usr/post/list";
+        return "usr/series/list";
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/myList")
     public String showMyList(
             Model model,
@@ -64,44 +69,10 @@ public class PostController {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
-        Page<Post> postPage = postService.findByKw(rq.getMember(), kwType, kw, pageable);
-        model.addAttribute("postPage", postPage);
+        Page<Series> seriesPage = seriesService.findByKw(rq.getMember(), kwType, kw, pageable);
+        model.addAttribute("seriesPage", seriesPage);
 
-        return "usr/post/myList";
-    }
-
-    @GetMapping("/detail/{id}")
-    public String showDetail(
-            Model model,
-            @PathVariable long id
-    ) {
-        Post post = postService.findById(id).get();
-
-        Map<String, GenFile> filesMap = postService.findGenFilesMapKeyByFileNo(post, "common", "attachment");
-
-        model.addAttribute("post", post);
-        model.addAttribute("filesMap", filesMap);
-
-        return "usr/post/detail";
-    }
-
-    @GetMapping("/listByKeyword/{postKeywordId}")
-    public String showListByTag(
-            Model model,
-            @PathVariable long postKeywordId,
-            @RequestParam(defaultValue = "1") int page
-    ) {
-        PostKeyword postKeyword = postService.findPostKeywordById(postKeywordId).get();
-
-        model.addAttribute("author", postKeyword.getAuthor());
-        model.addAttribute("tagContent", postKeyword.getContent());
-        List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.asc("postTags.sortNo"));
-        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
-        Page<Post> postPage = postService.findByTag(postKeyword.getAuthor(), postKeyword.getContent(), true, pageable);
-        model.addAttribute("postPage", postPage);
-
-        return "usr/post/listByKeyword";
+        return "usr/series/myList";
     }
 
     @GetMapping("/listByTag/{tagContent}")
@@ -113,10 +84,10 @@ public class PostController {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
-        Page<Post> postPage = postService.findByTag(tagContent, true, pageable);
-        model.addAttribute("postPage", postPage);
+        Page<Series> seriesPage = seriesService.findByTag(tagContent, pageable, true);
+        model.addAttribute("seriesPage", seriesPage);
 
-        return "usr/post/listByTag";
+        return "usr/series/listByTag";
     }
 
     @GetMapping("/myListByTag/{tagContent}")
@@ -126,39 +97,59 @@ public class PostController {
             @RequestParam(defaultValue = "1") int page
     ) {
         List<Sort.Order> sorts = new ArrayList<>();
-        sorts.add(Sort.Order.asc("postTags.sortNo"));
+        sorts.add(Sort.Order.desc("id"));
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(sorts));
-        Page<Post> postPage = postService.findByTag(rq.getMember(), tagContent, pageable);
-        model.addAttribute("postPage", postPage);
+        Page<Series> seriesPage = seriesService.findByTag(rq.getMember(), tagContent, pageable);
+        model.addAttribute("seriesPage", seriesPage);
 
-        return "usr/post/myListByTag";
+        return "usr/series/myListByTag";
+    }
+
+    @GetMapping("/detail/{id}")
+    public String showDetail(
+            Model model,
+            @PathVariable long id
+    ) {
+        Series series = seriesService.findById(id).get();
+
+        Map<String, GenFile> filesMap = seriesService.findGenFilesMapKeyByFileNo(series, "common", "attachment");
+
+        model.addAttribute("series", series);
+        model.addAttribute("filesMap", filesMap);
+
+        return "usr/series/detail";
     }
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/write")
-    public String showWrite() {
-        return "usr/post/write";
+    public String showWrite(Model model) {
+        List<PostKeyword> postKeywords = postService.findPostKeywordsByMemberId(rq.getMember());
+
+        model.addAttribute("postKeywords", postKeywords);
+
+        return "usr/series/write";
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/write")
     public String write(
-            @Valid PostController.PostWriteForm writeForm
+            @Valid SeriesController.SeriesWriteForm writeForm
     ) {
-        RsData<Post> rsData = postService.write(rq.getMember(), writeForm.getSubject(), writeForm.getTagsStr(), writeForm.getBody(), writeForm.getBodyHtml(), writeForm.isPublic());
+        RsData<Series> rsData = seriesService.write(rq.getMember(), writeForm.getPostKeywordId(), writeForm.getSubject(), writeForm.getTagsStr(), writeForm.getBody(), writeForm.getBodyHtml(), writeForm.isPublic());
 
         if (Ut.file.exists(writeForm.getAttachment__1()))
-            postService.saveAttachmentFile(rsData.getData(), writeForm.getAttachment__1(), 1);
+            seriesService.saveAttachmentFile(rsData.getData(), writeForm.getAttachment__1(), 1);
         if (Ut.file.exists(writeForm.getAttachment__1()))
-            postService.saveAttachmentFile(rsData.getData(), writeForm.getAttachment__2(), 2);
+            seriesService.saveAttachmentFile(rsData.getData(), writeForm.getAttachment__2(), 2);
 
-        return rq.redirectOrBack("/usr/post/detail/%d".formatted(rsData.getData().getId()), rsData);
+        return rq.redirectOrBack("/usr/series/detail/%d".formatted(rsData.getData().getId()), rsData);
     }
 
     @Getter
     @Setter
-    public static class PostWriteForm {
+    public static class SeriesWriteForm {
         private boolean isPublic;
+        private long postKeywordId;
         @NotBlank
         @Length(min = 2)
         private String subject;
@@ -177,43 +168,46 @@ public class PostController {
             Model model,
             @PathVariable long id
     ) {
-        Post post = postService.findById(id).get();
+        Series series = seriesService.findById(id).get();
 
-        Map<String, GenFile> filesMap = postService.findGenFilesMapKeyByFileNo(post, "common", "attachment");
+        Map<String, GenFile> filesMap = seriesService.findGenFilesMapKeyByFileNo(series, "common", "attachment");
+        List<PostKeyword> postKeywords = postService.findPostKeywordsByMemberId(rq.getMember());
 
-        model.addAttribute("post", post);
+        model.addAttribute("postKeywords", postKeywords);
+        model.addAttribute("series", series);
         model.addAttribute("filesMap", filesMap);
 
-        return "usr/post/modify";
+        return "usr/series/modify";
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{id}")
     public String modify(
             @PathVariable long id,
-            @Valid PostModifyForm modifyForm
+            @Valid SeriesController.SeriesModifyForm modifyForm
     ) {
-        Post post = postService.findById(id).get();
+        Series series = seriesService.findById(id).get();
 
-        RsData<Post> rsData = postService.modify(post, modifyForm.getSubject(), modifyForm.getTagsStr(), modifyForm.getBody(), modifyForm.getBodyHtml(), modifyForm.isPublic());
+        RsData<Series> rsData = seriesService.modify(series, modifyForm.getPostKeywordId(), modifyForm.getSubject(), modifyForm.getTagsStr(), modifyForm.getBody(), modifyForm.getBodyHtml(), modifyForm.isPublic());
 
         if (modifyForm.attachmentRemove__1)
-            postService.removeAttachmentFile(rsData.getData(), 1);
+            seriesService.removeAttachmentFile(rsData.getData(), 1);
 
         if (modifyForm.attachmentRemove__2)
-            postService.removeAttachmentFile(rsData.getData(), 2);
+            seriesService.removeAttachmentFile(rsData.getData(), 2);
 
         if (Ut.file.exists(modifyForm.getAttachment__1()))
-            postService.saveAttachmentFile(rsData.getData(), modifyForm.getAttachment__1(), 1);
+            seriesService.saveAttachmentFile(rsData.getData(), modifyForm.getAttachment__1(), 1);
         if (Ut.file.exists(modifyForm.getAttachment__2()))
-            postService.saveAttachmentFile(rsData.getData(), modifyForm.getAttachment__2(), 2);
+            seriesService.saveAttachmentFile(rsData.getData(), modifyForm.getAttachment__2(), 2);
 
-        return rq.redirectOrBack("/usr/post/detail/%d".formatted(rsData.getData().getId()), rsData);
+        return rq.redirectOrBack("/usr/series/detail/%d".formatted(rsData.getData().getId()), rsData);
     }
 
     @Getter
     @Setter
-    public static class PostModifyForm {
+    public static class SeriesModifyForm {
+        private long postKeywordId;
         @NotBlank
         @Length(min = 2)
         private String subject;
@@ -234,18 +228,29 @@ public class PostController {
     public String remove(
             @PathVariable long id
     ) {
-        Post post = postService.findById(id).get();
+        Series series = seriesService.findById(id).get();
 
-        RsData<?> rsData = postService.remove(post);
+        RsData<?> rsData = seriesService.remove(series);
 
-        return rq.redirectOrBack("/usr/post/myList", rsData);
+        return rq.redirectOrBack("/usr/series/myList", rsData);
+    }
+
+    public boolean assertActorCanWrite() {
+        seriesService.checkActorCanWrite(rq.getMember())
+                .optional()
+                .filter(RsData::isFail)
+                .ifPresent(rsData -> {
+                    throw new AccessDeniedException(rsData.getMsg());
+                });
+
+        return true;
     }
 
     public boolean assertActorCanModify() {
-        long postId = rq.getPathVariableAsLong(3);
-        Post post = postService.findById(postId).get();
+        long seriesId = rq.getPathVariableAsLong(3);
+        Series series = seriesService.findById(seriesId).get();
 
-        postService.checkActorCanModify(rq.getMember(), post)
+        seriesService.checkActorCanModify(rq.getMember(), series)
                 .optional()
                 .filter(RsData::isFail)
                 .ifPresent(rsData -> {
@@ -256,10 +261,10 @@ public class PostController {
     }
 
     public boolean assertActorCanRemove() {
-        long postId = rq.getPathVariableAsLong(3);
-        Post post = postService.findById(postId).get();
+        long seriesId = rq.getPathVariableAsLong(3);
+        Series series = seriesService.findById(seriesId).get();
 
-        postService.checkActorCanRemove(rq.getMember(), post)
+        seriesService.checkActorCanRemove(rq.getMember(), series)
                 .optional()
                 .filter(RsData::isFail)
                 .ifPresent(rsData -> {

@@ -5,8 +5,7 @@ import com.yk.Motivation.domain.article.entity.Article;
 import com.yk.Motivation.domain.article.service.ArticleService;
 import com.yk.Motivation.domain.board.entity.Board;
 import com.yk.Motivation.domain.board.service.BoardService;
-import com.yk.Motivation.domain.book.service.BookService;
-import com.yk.Motivation.domain.lecture.entity.Lecture;
+import com.yk.Motivation.domain.series.service.SeriesService;
 import com.yk.Motivation.domain.lecture.service.LectureService;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.service.MemberService;
@@ -16,7 +15,6 @@ import com.yk.Motivation.domain.postKeyword.entity.PostKeyword;
 import com.yk.Motivation.domain.system.service.SystemService;
 import com.yk.Motivation.standard.util.Ut;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -48,7 +46,7 @@ public class NotProd {
     @Autowired
     private SystemService systemService;
     @Autowired
-    private BookService bookService;
+    private SeriesService seriesService;
 
     @Bean
     public ApplicationRunner initNotProd() {
@@ -112,10 +110,10 @@ public class NotProd {
         Post post5 = postService.write(member2, "제목 5", "#Java #JSP", "내용 5", false).getData();
         Post post6 = postService.write(member2, "제목 6", "#CSS #Hungry #Python", "내용 6", true).getData();
 
-        bookService.write(member1, postKeywordHtml, "HTML 기초", "#HTML #프론트 엔드", "내용 1", Ut.markdown.toHtml("내용 1"), true);
+        seriesService.write(member1, postKeywordHtml, "HTML 기초", "#HTML #프론트 엔드", "내용 1", Ut.markdown.toHtml("내용 1"), true);
 
-        lectureService.write(member1, "제목1", "#HTML", "내용1", true);
-        lectureService.write(member1, "제목2", "#HTML", "내용1", true);
+//        lectureService.write(member1, "제목1", "#HTML", "내용1", true);
+//        lectureService.write(member1, "제목2", "#HTML", "내용1", true);
 
 
     }

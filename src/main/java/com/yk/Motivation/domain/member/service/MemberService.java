@@ -33,8 +33,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -304,7 +306,7 @@ public class MemberService {
         // profileImgUrl 에서 download 해서 temp 에 저장, 그 path 를 return
         String filePath = Ut.str.hasLength(profileImgUrl) ? Ut.file.downloadFileByHttp(profileImgUrl, AppConfig.getTempDirPath()) : "";
 
-        return join(username, "", nickname, "", filePath).getData();
+        return join(username, "1234", nickname, "", filePath).getData();
     }
 
     @Transactional
@@ -356,6 +358,20 @@ public class MemberService {
         member.getLectures().add(lecture);
 
         memberRepository.save(member);
+    }
+
+    @Transactional
+    public void subtractLecture(List<OrderItem> itemList) {
+
+        Member member = findById(rq.getMember().getId()).get();
+
+        Set<Long> orderItemProductIds = itemList.stream()
+                .map(orderItem -> orderItem.getProduct().getId())
+                .collect(Collectors.toSet());
+
+        member.setLectures(member.getLectures().stream()
+                .filter(lecture -> !orderItemProductIds.contains(lecture.getProduct().getId()))
+                .collect(Collectors.toList()));
     }
 
     @Data

@@ -1,7 +1,7 @@
-package com.yk.Motivation.domain.bookTag.entity;
+package com.yk.Motivation.domain.SeriesTag.entity;
 
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
-import com.yk.Motivation.domain.book.entity.Book;
+import com.yk.Motivation.domain.series.entity.Series;
 import com.yk.Motivation.domain.document.standard.DocumentTag;
 import com.yk.Motivation.domain.member.entity.Member;
 import jakarta.persistence.Entity;
@@ -20,12 +20,12 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @SuperBuilder
 @ToString(callSuper = true)
-public class BookTag extends BaseEntity implements DocumentTag {
+public class SeriesTag extends BaseEntity implements DocumentTag {
     @ManyToOne
     private Member author;
 
     @ManyToOne
-    private Book book;
+    private Series series;
 
     private String content;
 
@@ -34,7 +34,7 @@ public class BookTag extends BaseEntity implements DocumentTag {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        BookTag that = (BookTag) o;
+        SeriesTag that = (SeriesTag) o;
 
         return Objects.equals(content, that.content);
     }
@@ -43,7 +43,7 @@ public class BookTag extends BaseEntity implements DocumentTag {
     public int hashCode() {
         int result = 0;
         result = 31 * result + (author != null ? author.hashCode() : 0);
-        result = 31 * result + (book != null ? book.hashCode() : 0);
+        result = 31 * result + (series != null ? series.hashCode() : 0);
         result = 31 * result + (content != null ? content.hashCode() : 0);
         return result;
     }

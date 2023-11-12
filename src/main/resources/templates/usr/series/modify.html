@@ -1,7 +1,7 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title th:text="|글쓰기|"></title>
+    <title th:text="|시리즈 수정|"></title>
 </head>
 
 <body>
@@ -11,25 +11,27 @@
 
     <div class="container w-full px-4">
         <h1 class="mb-4">
-            <i class="fa-solid fa-pen"></i>
-            <span th:text="|책쓰기|"></span>
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span th:text="|시리즈 수정|"></span>
         </h1>
 
-        <form class="flex flex-col gap-6" enctype="multipart/form-data" method="POST"
-              onsubmit="submitWriteForm(this); return false;"
+        <form class="flex flex-col gap-6" method="POST" enctype="multipart/form-data"
+              onsubmit="submitModifyForm(this); return false;"
               th:action>
             <input type="hidden" name="body">
             <input type="hidden" name="bodyHtml">
 
             <div class="form-control">
                 <label class="cursor-pointer label">
-                    <span class="label-text">책 본문</span>
+                    <span class="label-text">시리즈 본문</span>
                 </label>
 
                 <select name="postKeywordId" class="select select-bordered">
-                    <option selected disabled>-- 책 본문 --</option>
+                    <option selected disabled>-- 시리즈 본문 --</option>
                     <option th:each="postKeyword : ${postKeywords}" th:value="${postKeyword.id}"
-                            th:text="|${postKeyword.content}(${postKeyword.total})|"></option>                </select>
+                            th:selected="${postKeyword.id == series.postKeyword.id}"
+                            th:text="|${postKeyword.content}(${postKeyword.total})|"></option>
+                </select>
             </div>
 
             <div class="form-control">
@@ -37,7 +39,8 @@
                     <span class="label-text">공개여부</span>
                 </label>
 
-                <input type="checkbox" name="public" value="true" class="toggle toggle-primary">
+                <input type="checkbox" name="public" value="true" th:checked="${series.public}"
+                       class="toggle toggle-primary"/>
             </div>
 
             <div class="form-control">
@@ -45,7 +48,7 @@
                     <span class="label-text">제목</span>
                 </label>
                 <input class="input input-bordered" maxlength="100"
-                       name="subject" placeholder="제목" type="text" autofocus>
+                       name="subject" placeholder="제목" type="text" th:value="${series.subject}">
             </div>
 
             <div class="form-control">
@@ -53,9 +56,7 @@
                     <span class="label-text">태그</span>
                 </label>
                 <input class="input input-bordered" maxlength="100"
-                       name="tagsStr"
-                       placeholder="#IT #HTML #..."
-                       type="text">
+                       name="tagsStr" placeholder="구분자는 `#` 과 `,` 입니다." type="text" th:value="${series.tagsStr}">
             </div>
 
             <div class="form-control">
@@ -63,36 +64,59 @@
                     <span class="label-text">내용</span>
                 </label>
 
-                <div class="toast-ui-editor" height="calc(100vh - 200px)" placeholder="내용"></div>
+                <div class="toast-ui-editor" height="calc(100vh - 200px)" placeholder="내용">
+                    <script type="text/x-template" th:utext="${series.bodyForEditor}"></script>
+                </div>
             </div>
 
-            <div th:each="i : ${#numbers.sequence(1, 2)}" class="form-control">
-                <label class="label">
-                    <span class="label-text">첨부파일 <span th:text="${i}"></span></span>
-                </label>
-                <input class="file-input file-input-bordered"
-                       th:name="'attachment__' + ${i}"
-                       type="file">
-            </div>
+            <th:block th:each="i : ${#numbers.sequence(1, 2)}" th:with="genFile = ${filesMap[i + '']}">
+
+                <div th:if="${genFile != null}" class="form-control col-span-full">
+                    <label class="label">
+                        <span class="label-text">기존 첨부파일 <span th:text="${i}"></span> 삭제</span>
+                    </label>
+
+                    <div class="flex items-center gap-3">
+                        <input type="checkbox" class="checkbox" th:name="'attachmentRemove__' + ${i}" value="true">
+
+                        <a th:href="|${genFile.downloadUrl}|" class="link mt-2">
+                            <i class="fa-regular fa-file"></i>
+                            첨부파일
+                            <span th:text="${i}"></span>
+                            (<span th:text="${genFile.originFileName}"></span>)
+                            다운로드
+                        </a>
+                    </div>
+                </div>
+
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">새 첨부파일 <span th:text="${i}"></span></span>
+                    </label>
+                    <input class="file-input file-input-bordered"
+                           th:name="'attachment__' + ${i}"
+                           type="file">
+                </div>
+            </th:block>
 
             <div class="flex flex-col gap-2">
                 <button class="btn btn-block btn-primary gap-1">
-                    <i class="fa-solid fa-pen"></i>
-                    <span>책쓰기</span>
+                    <i class="fa-solid fa-pen-to-square"></i>
+                    <span>글수정</span>
                 </button>
 
                 <div class="text-center">
-                    <a th:with="listUrl = ${param.listUrl != null ? param.listUrl : '/usr/book/list'}"
+                    <a th:with="listUrl = ${param.listUrl != null ? param.listUrl : '/usr/series/list'}"
                        class="btn btn-link" th:href="${listUrl}">목록</a>
                 </div>
             </div>
         </form>
 
         <script>
-            let submitWriteFormDone = false;
+            let submitModifyFormDone = false;
 
-            function submitWriteForm(form) {
-                if (submitWriteFormDone) return;
+            function submitModifyForm(form) {
+                if (submitModifyFormDone) return;
 
                 form.subject.value = form.subject.value.trim();
 
@@ -139,7 +163,7 @@
                 }
 
                 form.submit();
-                submitWriteFormDone = true;
+                submitModifyFormDone = true;
             }
         </script>
     </div>

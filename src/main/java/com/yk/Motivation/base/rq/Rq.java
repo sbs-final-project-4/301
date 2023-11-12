@@ -286,7 +286,7 @@ public class Rq {
         if (listUrl.startsWith("/usr/" + domainName + "/list")) return listByTagPageBaseUrl;
         if (listUrl.startsWith("/usr/" + domainName + "/listByTag")) return listByTagPageBaseUrl;
 
-        return "/usr/post/myListByTag";
+        return "/usr/" + domainName + "/myListByTag";
     }
 
     public Long getUsersCartItems() {

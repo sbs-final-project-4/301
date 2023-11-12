@@ -5,6 +5,7 @@ import com.yk.Motivation.domain.document.standard.DocumentHavingTags;
 import com.yk.Motivation.domain.document.standard.DocumentTag;
 import com.yk.Motivation.domain.lesson.entity.Lesson;
 import com.yk.Motivation.domain.member.entity.Member;
+import com.yk.Motivation.domain.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -37,6 +38,9 @@ public class Lecture extends BaseEntity implements DocumentHavingTags {
     private String bodyHtml;
 
     private boolean isPublic;
+
+    @OneToOne(fetch = LAZY)
+    private Product product;
 
     private boolean isLessonsReady;
 

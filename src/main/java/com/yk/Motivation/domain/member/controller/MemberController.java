@@ -2,6 +2,8 @@ package com.yk.Motivation.domain.member.controller;
 
 import com.yk.Motivation.base.rq.Rq;
 import com.yk.Motivation.base.rsData.RsData;
+import com.yk.Motivation.domain.lecture.entity.Lecture;
+import com.yk.Motivation.domain.lecture.service.LectureService;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.member.exception.EmailNotVerifiedAccessDeniedException;
 import com.yk.Motivation.domain.member.service.MemberService;
@@ -29,6 +31,7 @@ import java.util.List;
 public class MemberController {
     private final MemberService memberService;
     private final OrderService orderService;
+    private final LectureService lectureService;
     private final Rq rq;
 
     @PreAuthorize("isAnonymous()")
@@ -271,7 +274,7 @@ public class MemberController {
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/enroll/{id}")
-    public String showLectureList(
+    public String showLectureListAfterEnroll(
             @PathVariable Long id
     ) {
 
@@ -280,5 +283,16 @@ public class MemberController {
         memberService.addFreeLecture(id);
 
         return rq.redirectOrBack("/usr/member/myLectures", RsData.of("S-1", "%d번 강의가 추가되었습니다.".formatted(id)));
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/myEnrolledLectures")
+    public String showEnrolledLectureList(Model model) {
+
+        List<Lecture> myEnrolledLectures = lectureService.findAllByProducerId(rq.getMember().getId());
+
+        model.addAttribute("lectures", myEnrolledLectures);
+
+        return "usr/member/myEnrolledLectures";
     }
 }

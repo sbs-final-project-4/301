@@ -5,6 +5,7 @@ import com.yk.Motivation.domain.lecture.entity.Lecture;
 import com.yk.Motivation.domain.member.entity.Member;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -23,7 +24,7 @@ public class Product extends BaseEntity {
     @ManyToOne(fetch = LAZY)
     private Member producer;
 
-    @ManyToOne(fetch = LAZY)
+    @OneToOne(fetch = LAZY)
     private Lecture lecture;
 
     private int price;

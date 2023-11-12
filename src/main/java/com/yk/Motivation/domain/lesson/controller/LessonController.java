@@ -13,7 +13,12 @@ import com.yk.Motivation.domain.lecture.entity.Lecture;
 import com.yk.Motivation.domain.lecture.service.LectureService;
 import com.yk.Motivation.domain.lesson.entity.Lesson;
 import com.yk.Motivation.domain.lesson.entity.LessonPlaybackTime;
+import com.yk.Motivation.domain.lesson.exception.InvalidAccessAttempError;
 import com.yk.Motivation.domain.lesson.service.LessonService;
+import com.yk.Motivation.domain.member.entity.Member;
+import com.yk.Motivation.domain.member.service.MemberService;
+import com.yk.Motivation.domain.order.entity.OrderItem;
+import com.yk.Motivation.domain.order.service.OrderService;
 import com.yk.Motivation.standard.util.Ut;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -48,6 +53,8 @@ public class LessonController {
     private final LessonService lessonService;
     private final LectureService lectureService;
     private final GenFileService genFileService;
+    private final OrderService orderService;
+    private final MemberService memberService;
     private final Rq rq;
 
     @GetMapping("/list/{id}")
@@ -223,16 +230,38 @@ public class LessonController {
 
 
 
-
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/hls/{lessonId}")
     public String videoHls(
             Model model,
             @PathVariable Long lessonId
             ) {
 
-        String masterPlayListPath = getHlsSourcePath(lessonId, "master.m3u8");
         Lesson lesson = lessonService.findById(lessonId).get();
+        Member member = memberService.findById(rq.getMember().getId()).get();
+
+        member.getLectures().stream()
+                .filter(lecture -> lecture.getId() == lesson.getLecture().getId())
+                .findFirst()
+                .orElseThrow(() -> new InvalidAccessAttempError("올바르지 않은 접근입니다."));
+
+//        결제 데이터 뒤져보는 코드
+
+//        if( !lesson.getLecture().getProduct().isFree()) {
+//
+//            Long productId = lesson.getLecture().getProduct().getId();
+//            List<OrderItem> orderItemList = orderService.findAllByProductId(productId);
+//
+//            orderItemList.stream()
+//                    .filter(orderItem -> orderItem.getOrder().isPaid()
+//                            && !orderItem.getOrder().isRefunded()
+//                            && orderItem.getOrder().getBuyer().getId() == rq.getMember().getId())
+//                    .findFirst()
+//                    .orElseThrow(() -> new InvalidAccessAttempError("올바르지 않은 접근입니다."));
+//
+//        }
+
+        String masterPlayListPath = getHlsSourcePath(lessonId, "master.m3u8");
 
         Optional<LessonPlaybackTime> playbackTimeOpt = lessonService.findPlaybackTimeByMember(rq.getMember(), lesson);
         Integer playbackTime = playbackTimeOpt.map(LessonPlaybackTime::getPlaybackTime).orElse(null);

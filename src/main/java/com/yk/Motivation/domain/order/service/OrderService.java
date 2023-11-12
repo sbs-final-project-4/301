@@ -124,4 +124,8 @@ public class OrderService {
         return orderRepository.findByBuyerIdAndIsPaidTrueOrderByIdDesc(id);
     }
 
+    public List<OrderItem> findAllByProductId(long productId) {
+        return orderItemRepository.findAllByProductId(productId);
+    }
+
 }

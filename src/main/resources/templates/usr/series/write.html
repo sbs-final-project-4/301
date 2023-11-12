@@ -1,43 +1,18 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title th:text="|강의 생성|"></title>
+    <title th:text="|시리즈 만들기|"></title>
 </head>
-
 
 <body>
 
-<div class="flex-1 flex flex-row items-center justify-center" layout:fragment="content">
-
-    <div class="flex flex-col fixed top-[264px] left-0 self-start ml-4 side" >
-        <span class="text-xl mb-4">강의 제작</span>
-        <ul class="steps steps-vertical">
-            <li class="step step-primary">강의 소개 작성</li>
-            <li class="step">수업 영상 등록</li>
-            <li class="step">강의 가격 설정</li>
-        </ul>
-    </div>
-
-    <script>
-        function updateDivVisibility() {
-            const divElement = document.querySelector('.side');
-            if (window.innerWidth <= 1860) { // 화면 넓이가 768px 이하인지 확인
-                divElement.classList.add('hidden'); // hidden 클래스 추가
-            } else {
-                divElement.classList.remove('hidden'); // hidden 클래스 제거
-            }
-        }
-
-        window.addEventListener('resize', updateDivVisibility); // 화면 크기가 변경될 때마다 함수 호출
-        updateDivVisibility(); // 페이지 로딩 시 함수를 초기 호출하여 적절한 상태 설정
-    </script>
-
+<div class="flex-1 flex items-center justify-center" layout:fragment="content">
     <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
 
     <div class="container w-full px-4">
         <h1 class="mb-4">
-            <i class="fa-solid fa-file-pen"></i>
-            <span th:text="|내 강의 만들기|"></span>
+            <i class="fa-solid fa-pen"></i>
+            <span th:text="|시리즈 만들기|"></span>
         </h1>
 
         <form class="flex flex-col gap-6" enctype="multipart/form-data" method="POST"
@@ -45,6 +20,17 @@
               th:action>
             <input type="hidden" name="body">
             <input type="hidden" name="bodyHtml">
+
+            <div class="form-control">
+                <label class="cursor-pointer label">
+                    <span class="label-text">시리즈 본문</span>
+                </label>
+
+                <select name="postKeywordId" class="select select-bordered">
+                    <option selected disabled>-- 시리즈 본문 --</option>
+                    <option th:each="postKeyword : ${postKeywords}" th:value="${postKeyword.id}"
+                            th:text="|${postKeyword.content}(${postKeyword.total})|"></option>                </select>
+            </div>
 
             <div class="form-control">
                 <label class="cursor-pointer label">
@@ -67,7 +53,9 @@
                     <span class="label-text">태그</span>
                 </label>
                 <input class="input input-bordered" maxlength="100"
-                       name="tagsStr" placeholder="#IT #HTML #..." type="text">
+                       name="tagsStr"
+                       placeholder="#IT #HTML #..."
+                       type="text">
             </div>
 
             <div class="form-control">
@@ -80,7 +68,7 @@
 
             <div th:each="i : ${#numbers.sequence(1, 2)}" class="form-control">
                 <label class="label">
-                    <span class="label-text">강의자료 첨부 <span th:text="${i}"></span></span>
+                    <span class="label-text">첨부파일 <span th:text="${i}"></span></span>
                 </label>
                 <input class="file-input file-input-bordered"
                        th:name="'attachment__' + ${i}"
@@ -90,10 +78,14 @@
             <div class="flex flex-col gap-2">
                 <button class="btn btn-block btn-primary gap-1">
                     <i class="fa-solid fa-pen"></i>
-                    <span>작성완료</span>
+                    <span>시리즈만들기</span>
                 </button>
-            </div>
 
+                <div class="text-center">
+                    <a th:with="listUrl = ${param.listUrl != null ? param.listUrl : '/usr/series/list'}"
+                       class="btn btn-link" th:href="${listUrl}">목록</a>
+                </div>
+            </div>
         </form>
 
         <script>
@@ -150,8 +142,6 @@
                 submitWriteFormDone = true;
             }
         </script>
-
-
     </div>
 </div>
 

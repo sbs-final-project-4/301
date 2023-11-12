@@ -1,7 +1,7 @@
-package com.yk.Motivation.domain.book.entity;
+package com.yk.Motivation.domain.series.entity;
 
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
-import com.yk.Motivation.domain.bookTag.entity.BookTag;
+import com.yk.Motivation.domain.SeriesTag.entity.SeriesTag;
 import com.yk.Motivation.domain.document.standard.DocumentHavingTags;
 import com.yk.Motivation.domain.document.standard.DocumentTag;
 import com.yk.Motivation.domain.member.entity.Member;
@@ -22,7 +22,7 @@ import static lombok.AccessLevel.PROTECTED;
 @NoArgsConstructor(access = PROTECTED)
 @SuperBuilder
 @ToString(callSuper = true)
-public class Book extends BaseEntity implements DocumentHavingTags {
+public class Series extends BaseEntity implements DocumentHavingTags {
     @ManyToOne
     private PostKeyword postKeyword;
 
@@ -39,29 +39,29 @@ public class Book extends BaseEntity implements DocumentHavingTags {
 
     private boolean isPublic;
 
-    @OneToMany(mappedBy = "book", orphanRemoval = true, cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "series", orphanRemoval = true, cascade = {CascadeType.ALL})
     @Builder.Default
     @ToString.Exclude
-    private Set<BookTag> bookTags = new HashSet<>();
+    private Set<SeriesTag> seriesTags = new HashSet<>();
 
     // DocumentHavingTags 의 추상메서드
     // 태그기능을 사용하려면 필요하다.
     @Override
     public Set<? extends DocumentTag> _getTags() {
-        return bookTags;
+        return seriesTags;
     }
 
     // DocumentHavingTags 의 추상메서드
     // 태그기능을 사용하려면 필요하다.
     @Override
     public DocumentTag _addTag(String tagContent) {
-        BookTag tag = BookTag.builder()
+        SeriesTag tag = SeriesTag.builder()
                 .author(author)
-                .book(this)
+                .series(this)
                 .content(tagContent)
                 .build();
 
-        bookTags.add(tag);
+        seriesTags.add(tag);
 
         return tag;
     }

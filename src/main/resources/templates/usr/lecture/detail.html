@@ -18,10 +18,14 @@
         </h1>
 
         <div th:if="${@rq.login}" class="flex flex-row justify-start sticky top-[64px] bg-white z-50">
-            <a class="btn btn-primary m-4"
+            <a class="btn btn-primary m-4 flex flex-col"
                 th:unless="${@rq.isMemberEnrolledInLecture(lecture.id)} or ${@lectureService.checkProducerCanModify(@rq.member, lecture).success}"
-               th:attr="href=${@productService.isLectureFree(lecture.id)} ? '/usr/member/enroll/' + ${lecture.id} : '/usr/cart/write/lecture/' + ${lecture.id}">
-                수강신청</a>
+                th:attr="href=${@productService.isLectureFree(lecture.id)} ? '/usr/member/enroll/' + ${lecture.id} : '/usr/cart/write/lecture/' + ${lecture.id}">
+                <div th:unless="${lecture.product.free}" th:text="${#numbers.formatDecimal(lecture.product.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"></div>
+                <div >
+                    수강신청
+                </div>
+            </a>
             <a th:if="${@lectureService.checkProducerCanModify(@rq.member, lecture).success}"
                class="btn btn-primary btn-sm m-4"
                th:href="|/usr/lecture/modify/${lecture.id}|">강의 정보 수정</a>
@@ -57,6 +61,14 @@
                             <span class="label-text">상태</span>
                         </label>
                         <div th:text="${lecture.publicHanName}"></div>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">가격</span>
+                        </label>
+                        <div th:unless="${lecture.product.free}" th:text="${#numbers.formatDecimal(lecture.product.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"></div>
+                        <div th:if="${lecture.product.free}">무료강의</div>
                     </div>
 
                     <div class="form-control col-span-full">
@@ -103,8 +115,8 @@
 
         <h1 class="my-4 mt-8">
             <span class="text-lg">커리큘럼</span>
-            <button th:if="${@lectureService.checkProducerCanModify(@rq.member, lecture).success}"
-                    class="btn btn-sm btn-primary ml-16">커리큘럼 수정하기</button>
+            <a th:href="|/usr/lesson/${lecture.id}/modify|" th:if="${@lectureService.checkProducerCanModify(@rq.member, lecture).success} and ${lecture.lessonsReady}"
+                    class="btn btn-sm btn-primary ml-16">커리큘럼 수정하기</a>
         </h1>
 
         <div class="" th:if="${lecture.lessonsReady}">
@@ -140,6 +152,9 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 <span>강의가 업로드 중 입니다.</span>
+            </div>
+            <div class="flex justify-center mt-8">
+                <a class="btn btn-link" th:href="|/usr/lecture/list|">목록</a>
             </div>
         </div>
     </div>

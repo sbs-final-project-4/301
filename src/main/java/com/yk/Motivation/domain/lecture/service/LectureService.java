@@ -13,6 +13,7 @@ import com.yk.Motivation.domain.lesson.entity.Lesson;
 import com.yk.Motivation.domain.lesson.entity.LessonPlaybackTime;
 import com.yk.Motivation.domain.lesson.service.LessonService;
 import com.yk.Motivation.domain.member.entity.Member;
+import com.yk.Motivation.domain.product.entity.Product;
 import com.yk.Motivation.standard.util.Ut;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -56,6 +57,12 @@ public class LectureService {
         documentService.updateTempGenFilesToInBody(lecture);
 
         return new RsData<>("S-1", lecture.getId() + "번 강의가 생성되었습니다.", lecture);
+    }
+
+    @Transactional
+    public void addProduct(Long lectureId, Product product) {
+        Lecture lecture = findById(lectureId).get();
+        lecture.setProduct(product);
     }
 
     @Transactional
