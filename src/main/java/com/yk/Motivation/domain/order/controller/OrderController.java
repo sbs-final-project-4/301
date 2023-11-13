@@ -200,10 +200,10 @@ public class OrderController {
             List<OrderItem> itemList = orderService.findOrderItemByOrderId(order.getId());
             memberService.subtractLecture(itemList);
 
-            return rq.redirectOrBack("/usr/member/myPayments", refundRs);
+            return rq.redirectOrBack("/usr/member/me", refundRs);
         } else {
 
-            return rq.redirectOrBack("/usr/member/myPayments", RsData.of("F-1", "환불요청에 실패했습니다. 관리팀에 문의하세요."));
+            return rq.redirectOrBack("/usr/member/me", RsData.of("F-1", "환불요청에 실패했습니다. 관리팀에 문의하세요."));
         }
     }
 }

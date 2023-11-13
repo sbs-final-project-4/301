@@ -9,10 +9,16 @@
 <div class="flex-1 flex items-center justify-center" layout:fragment="content">
 
     <div class="container w-full px-4">
-        <h1 class="my-4">
-            <i class="fa-solid fa-chalkboard-user"></i>
-            <span th:text="|${lecture.subject} 커리큘럼|"></span>
-        </h1>
+        <div class="flex flex-row justify-between">
+            <h1 class="my-4">
+                <i class="fa-solid fa-chalkboard-user"></i>
+                <span th:text="|${lecture.subject} 커리큘럼|"></span>
+            </h1>
+            <a th:if="${@lectureService.checkProducerCanModify(@rq.member, lecture).success}"
+               class="btn btn-primary btn-sm m-4"
+               th:href="|/usr/lecture/modify/${lecture.id}|">강의 정보 수정</a>
+        </div>
+
 
         <div class="form-control col-span-full" th:each="fileEntry : ${filesMap}">
             <label class="label">

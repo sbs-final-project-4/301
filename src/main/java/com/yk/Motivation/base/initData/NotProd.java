@@ -22,6 +22,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.stream.IntStream;
+
 
 @Configuration
 @Profile("!prod")  // 이 구성은 'prod' 프로파일이 활성화되지 않은 경우에만 적용된다.
@@ -57,6 +59,8 @@ public class NotProd {
 
                 systemService.setNotProdInitDataConfigured(true);
             }
+
+//            self.work3();
         };
     }
 
@@ -122,5 +126,17 @@ public class NotProd {
     public void work2() {
         Article article1 = articleService.findById(1L).get();
         articleService.modify(article1, "제목 1 수정", "#자바2 #HTML", "내용 1\n수정", "내용 1<br />수정");
+    }
+
+
+    @Transactional
+    public void work3() {
+
+        Board board = boardService.findByCode("free1").get();
+        Member member = memberService.findById(2).get();
+
+        IntStream.rangeClosed(1, 100).forEach(i -> {
+            articleService.write(board, member, "제목" + i, "dummy", "내용" + i);
+        });
     }
 }

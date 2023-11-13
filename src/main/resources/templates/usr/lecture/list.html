@@ -95,7 +95,7 @@
                 <div th:replace="common/fragments :: pagination(${lecturePage}, ${queryStrBase}, 1)"></div>
             </div>
 
-            <ul class="mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[20px]">
+            <ul class="mt-3 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-[20px]">
                 <li th:each="lecture : ${lecturePage.content}">
                     <div th:replace="common/fragments :: lectureListItemCard(${lecture})"></div>
                 </li>

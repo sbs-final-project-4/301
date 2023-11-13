@@ -37,44 +37,49 @@
             <span th:text="|내 강의 만들기|"></span>
         </h1>
 
-        <form th:action method="POST" class="flex flex-col gap-3"
+        <form th:action method="POST" class="flex flex-col items-center gap-3"
               onsubmit="submitWriteForm(this); return false;">
 
-            <div>
-                <label class="label">
-                    <span class="label-text">강의</span>
-                </label>
-                <div th:text="${lecture.subject}"></div>
-            </div>
 
-            <ul class="mt-4 list-disc mx-5 text-red-500 ">
-                <li>
-                    무료공개를 원하시면 체크박스 체크와 가격을 0원으로 작성해주세요.
-                </li>
-            </ul>
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <div class="justify-start">
+                        <label class="label">
+                            <span class="label-text">강의</span>
+                        </label>
+                        <div th:text="${lecture.subject}"></div>
+                    </div>
 
-            <div class="form-control">
-                <label class="cursor-pointer label">
-                    <span class="label-text">무료공개 여부</span>
-                </label>
+                    <ul class="mt-4 list-disc mx-5 text-red-500 ">
+                        <li>
+                            무료공개를 원하시면 체크박스 체크와 가격을 0원으로 작성해주세요.
+                        </li>
+                    </ul>
 
-                <input type="checkbox" name="free" value="true" class="checkbox checkbox-primary">
-            </div>
+                    <div class="form-control">
+                        <label class="cursor-pointer label">
+                            <span class="label-text">무료공개 여부</span>
+                        </label>
 
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">가격 설정</span>
-                </label>
-                <div class="flex flex-row items-center border-b-2 border-solid border-black inline-flex" style="width: fit-content;">
-                    <span class="m-2">₩</span>
-                    <input type="number" name="price" placeholder="가격" class="input" style="outline: none;"
-                           maxlength="50" min="0">
-                    <span class="m-2 text-red-500">가격을 설정해주세요.</span>
+                        <input type="checkbox" name="free" value="true" class="checkbox checkbox-primary">
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">가격 설정</span>
+                        </label>
+                        <div class="flex flex-row items-center border-b-2 border-solid border-black inline-flex" style="width: fit-content;">
+                            <span class="m-2">₩</span>
+                            <input type="number" name="price" placeholder="가격" class="input" style="outline: none;"
+                                   maxlength="50" min="0">
+                            <span class="m-2 text-red-500">가격을 설정해주세요.</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-4 mt-8 gap-2">
+                        <input class="btn btn-primary" type="submit" value="강의 등록">
+                    </div>
                 </div>
-            </div>
-
-            <div class="grid grid-cols-4 mt-8 gap-2">
-                <input class="btn btn-primary" type="submit" value="강의 등록">
             </div>
         </form>
 

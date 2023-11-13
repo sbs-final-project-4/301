@@ -47,8 +47,20 @@ public class EmailVerificationService {
 
     private String genEmailVerificationUrl(long memberId) {
         String code = genEmailVerificationCode(memberId);
+        String verificationUrl = AppConfig.getSiteBaseUrl() + "/emailVerification/verify?memberId=%d&code=%s".formatted(memberId, code);
 
-        return AppConfig.getSiteBaseUrl() + "/emailVerification/verify?memberId=%d&code=%s".formatted(memberId, code);
+        // HTML 이메일 본문을 생성합니다.
+        String htmlEmailBody = String.format(
+                "<html>" +
+                        "    <body>" +
+                        "        <p>이메일 주소를 확인하려면 다음 링크를 클릭하세요: " +
+                        "            <a href='%s'>이메일 인증하기</a>" +
+                        "        </p>" +
+                        "    </body>" +
+                        "</html>",
+                verificationUrl);
+
+        return htmlEmailBody;
     }
 
     private String genEmailVerificationCode(long memberId) {
