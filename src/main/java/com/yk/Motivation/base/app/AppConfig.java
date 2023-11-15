@@ -18,7 +18,7 @@ public class AppConfig { // application.yml - custom
     public static String genFileDirPath; // c:/temp/motivation
 
     @Getter
-    public static String siteName; // 모티베이션
+    public static String siteName; // 삼공일
 
     @Getter
     public static String siteBaseUrl; // ( localhost:8090 -> 도메인으로 변경 )

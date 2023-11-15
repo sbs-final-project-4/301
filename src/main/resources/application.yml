@@ -26,7 +26,7 @@ spring:
       enabled: always
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/motivation?useUnicode=true&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://localhost:3306/threezeroone?useUnicode=true&serverTimezone=Asia/Seoul
     username: root
     password:
   security:
@@ -63,7 +63,7 @@ logging:
 custom:
   tempDirPath: c:/temp/motivation/temp
   site:
-    name: 모티베이션
+    name: 삼공일
     baseUrl: "http://localhost:8090"
   genFile:
     dirPath: c:/temp/motivation
