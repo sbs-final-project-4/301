@@ -228,7 +228,6 @@ public class MemberController {
         @NotBlank
         @Length(min = 4)
         private String nickname;
-        @Length(min = 4)
         private String password;
         private MultipartFile profileImg;
     }
