@@ -4,6 +4,7 @@ import com.yk.Motivation.standard.util.Ut;
 
 import java.util.Arrays;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 // HavingTags 가 접미사로 붙은 이유
@@ -53,12 +54,15 @@ public interface DocumentHavingTags extends Document {
         if (_getTags().isEmpty()) return "-";
 
         final String _linkTemplate = __linkTemplate.replace("`", "\"");
+        int[] index = {0};
 
-        return _getTags()
-                .stream()
-                .map(tag -> _linkTemplate
-                        .formatted(urlTemplate.formatted(Ut.url.encode(tag.getContent())), tag.getContent()))
-                .sorted()
+        return _getTags().stream()
+                .map(tag -> {
+                    String bgColorClass = index[0]++ % 2 == 0 ? "bg-blue-200" : "bg-pink-200";
+                    String modifiedLinkTemplate = _linkTemplate.replaceFirst("class=\"", "class=\"" + bgColorClass + " ");
+                    return modifiedLinkTemplate
+                            .formatted(urlTemplate.formatted(Ut.url.encode(tag.getContent())), tag.getContent());
+                })
                 .collect(Collectors.joining(" "));
     }
 }

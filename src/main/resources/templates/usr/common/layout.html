@@ -3,32 +3,14 @@
 
 <head>
 
-
 </head>
 
 <body>
 
-
-<header layout:fragment="header">
-    <div class="navbar bg-base-100">
-        <div class="navbar-start">
-            <a class="btn btn-ghost btn-circle" href="/usr/member/me">
-                <img alt="" class="w-[30px] h-[30px] rounded-full object-cover"
-                     th:if="${@rq.login}" th:src="${@rq.profileImgUrl}">
-            </a>
-
-        </div>
-        <div class="navbar-center">
-            <a class="btn btn-ghost normal-case text-xl" href="/">모티베이션</a>
-        </div>
-        <div class="navbar-end">
-            <a class="btn btn-ghost btn-circle" th:href="|/usr/cart/items|" th:if="${@rq.login}">
-                <div class="indicator">
-                    <span class="indicator-item badge badge-secondary badge-xs -mt-[10px]" th:text="${@rq.usersCartItems}"></span>
-                    <i class="fa-solid fa-cart-shopping fa-xl"></i>
-                </div>
-            </a>
-            <div class="dropdown relative">
+<header class="w-full lg:w-3/4 mx-auto border-b border-gray-400" layout:fragment="header">
+    <div class="navbar flex">
+        <div class="navbar-center  lg:hidden">
+            <div class="dropdown dropdown-bottom relative">
                 <label class="btn btn-ghost btn-circle" tabindex="0">
                     <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
                          xmlns="http://www.w3.org/2000/svg">
@@ -36,7 +18,7 @@
                               stroke-width="2"/>
                     </svg>
                 </label>
-                <ul class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52 right-0"
+                <ul class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
                     tabindex="0">
                     <li th:if="${@rq.admin}"><a href="/adm/home/main"><i class="fa-solid fa-gauge-high"></i> 관리자</a></li>
                     <li th:if="${@rq.logout}"><a href="/usr/member/login"><i
@@ -50,17 +32,15 @@
                             <span th:text="${@rq.producerPageName}"></span>
                         </a>
                     </li>
-                    <li><a href="/usr/lecture/list"><i class="fa-solid fa-person-chalkboard"></i> 강의장</a>
-                    </li>
-                    <li th:if="${@rq.login}"><a href="/usr/member/myLectures"><i class="fa-solid fa-chalkboard-user"></i> 나의 강의장</a>
+                    <li th:if="${@rq.login}"><a href="/usr/post/myList"><i class="fa-regular fa-file-lines"></i> 내 글</a>
                     </li>
                     <li><a href="/usr/post/list"><i class="fa-regular fa-rectangle-list"></i> 글</a>
                     </li>
-                    <li th:if="${@rq.login}"><a href="/usr/post/myList"><i class="fa-regular fa-file-lines"></i> 내 글</a>
+                    <li th:if="${@rq.producer}"><a href="/usr/book/myList"><i class="fa-solid fa-book-open"></i> 내가 쓴 책</a>
                     </li>
-                    <li><a href="/usr/series/list"><i class="fa-solid fa-book-open"></i> 시리즈</a>
-                    </li>
-                    <li th:if="${@rq.producer}"><a href="/usr/series/myList"><i class="fa-solid fa-book-open-reader"></i> 내 시리즈</a>
+                    <li><a href="/usr/book/list"><i class="fa-solid fa-book-open-reader"></i> 내가 구매한 책</a>
+
+                    <li><a href="/usr/book/list"><i class="fa-solid fa-book"></i> 책</a>
                     </li>
                     <li><a href="/usr/article/notice1/list"><i class="fa-regular fa-flag"></i> 공지사항 게시판</a></li>
                     <li><a href="/usr/article/free1/list"><i class="fa-solid fa-face-grin-tears"></i> 자유 게시판</a></li>
@@ -72,6 +52,48 @@
                 </ul>
             </div>
         </div>
+        <a class="mx-auto lg:flex" href="/">
+            <img class="h-8" src="https://ifh.cc/g/Rrmt4A.png" alt="">
+        </a>
+        <div class="ml-8 flex-grow">
+            <ul class="flex text-md hidden lg:flex items-center space-x-3">
+                <li><a class="p-4 relative before:content-[''] before:absolute
+          before:h-[6px] before:right-1/2 before:bottom-0 before:w-0 before:bg-[#312F95] before:transition before:duration-500 before:transition-all before:z-[-1]
+                   after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:bg-[#312F95] after:transition after:duration-500 after:z-[-1] after:transition-all after:h-[6px]
+                   hover:after:w-1/2 hover:before:w-1/2" href="/usr/lecture/list">전체강좌</a></li>
+                <li><a class="p-4 relative before:content-[''] before:absolute
+          before:h-[6px] before:right-1/2 before:bottom-0 before:w-0 before:bg-[#312F95] before:transition before:duration-500 before:transition-all before:z-[-1]
+                   after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:bg-[#312F95] after:transition after:duration-500 after:z-[-1] after:transition-all after:h-[6px]
+                   hover:after:w-1/2 hover:before:w-1/2" href="/usr/series/list">시리즈</a></li>
+                <li><a class="p-4 relative before:content-[''] before:absolute
+          before:h-[6px] before:right-1/2 before:bottom-0 before:w-0 before:bg-[#312F95] before:transition before:duration-500 before:transition-all before:z-[-1]
+                   after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:bg-[#312F95] after:transition after:duration-500 after:z-[-1] after:transition-all after:h-[6px]
+                   hover:after:w-1/2 hover:before:w-1/2" href="#">QNA</a></li>
+                <li><a class="p-4 relative before:content-[''] before:absolute
+          before:h-[6px] before:right-1/2 before:bottom-0 before:w-0 before:bg-[#312F95] before:transition before:duration-500 before:transition-all before:z-[-1]
+                   after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:bg-[#312F95] after:transition after:duration-500 after:z-[-1] after:transition-all after:h-[6px]
+                   hover:after:w-1/2 hover:before:w-1/2" href="/usr/article/free1/list">커뮤니티</a></li>
+            </ul>
+        </div>
+        <div class="justify-end">
+            <a class="btn btn-ghost btn-circle" th:href="|/usr/cart/items|" th:if="${@rq.login}">
+                <div class="indicator">
+                    <span class="indicator-item badge badge-secondary badge-xs -mt-[10px]" th:text="${@rq.usersCartItems}"></span>
+                    <i class="fa-solid fa-cart-shopping fa-xl"></i>
+                </div>
+            </a>
+            <div>
+                <a class="btn btn-ghost btn-circle" href="/usr/member/me" th:if="${@rq.login}">
+                    <img alt="" class="w-[30px] h-[30px] rounded-full object-cover"
+                         th:src="${@rq.profileImgUrl}">
+                </a>
+                <div>
+                    <a th:unless="${@rq.login}" class="py-1 px-2 text-sm border border-gray-300 bg-gray-200 rounded-lg hover:bg-gray-300"
+                       href="/usr/member/login">로그인</a>
+                </div>
+            </div>
+        </div>
+
     </div>
 </header>
 

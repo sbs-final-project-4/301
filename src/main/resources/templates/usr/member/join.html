@@ -1,7 +1,7 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title>회원가입</title>
+    <title th:text="회원가입"></title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
 </head>
@@ -9,81 +9,67 @@
 <body>
 
 <div class="flex-1 flex items-center justify-center" layout:fragment="content">
-    <div class="max-w-2xl w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-solid fa-user-plus"></i>
-            회원가입
-        </h1>
-
-        <form class="flex flex-col gap-6" enctype="multipart/form-data" method="POST" name="join-form"
-              onsubmit="submitJoinForm(this); return false;"
-              th:action>
-            <div class="form-control">
+    <div class="wrap">
+        <form th:action method="post" enctype="multipart/form-data" name="join-form"
+              onsubmit="submitJoinForm(this); return false;">
+            <div class="title">
+                <h1 class=" text-center py-6 text-xl sm:text-3xl">회원가입</h1>
+            </div>
+            <div class="id_box form-control">
                 <label class="label">
-                    <span class="label-text">아이디</span>
+                    <span class="label-text mt-2 mx-12 sm:-mx-1">아이디</span>
                 </label>
-                <input autofocus class="input input-bordered" maxlength="30" name="username" onchange="$(this).keyup();"
+                <input class="p-2 border-b-2 border-gray-400 mx-10 w-3/4 sm:w-full sm:-mx-1 focus:border-blue-800 focus:outline-none"
+                       autofocus maxlength="30" name="username" onchange="$(this).keyup();"
                        onkeyup="checkUsernameDupDebounce();" onpaste="setTimeoutZero(() => $(this).keyup());"
-                       placeholder="아이디"
                        type="text">
-                <div class="mt-2 text-sm"></div>
+                <div class="pl-2 mt-2 text-sm mx-10 w-3/4 sm:w-full sm:-mx-1"></div>
             </div>
-
-            <div class="form-control">
+            <div class="pw_box">
                 <label class="label">
-                    <span class="label-text">비밀번호</span>
+                    <span class="label-text mt-2 mx-12 sm:-mx-1">비밀번호</span>
                 </label>
-                <input class="input input-bordered" maxlength="30" name="password" placeholder="비밀번호" type="password">
+                <input class=" p-2 border-b-2 border-gray-400 mx-10 w-3/4 sm:w-full sm:-mx-1 focus:border-blue-800 focus:outline-none"
+                       maxlength="30" name="password" type="password">
             </div>
-
-            <div class="form-control">
+            <div class="pwck_box">
                 <label class="label">
-                    <span class="label-text">비밀번호 확인</span>
+                    <span class="label-text mt-2 mx-12 sm:-mx-1">비밀번호 확인</span>
                 </label>
-                <input class="input input-bordered" maxlength="30" name="passwordConfirm" placeholder="비밀번호 확인"
-                       type="password">
+                <input class=" p-2 border-b-2 border-gray-400 mx-10 w-3/4 sm:w-full sm:-mx-1 focus:border-blue-800 focus:outline-none"
+                       maxlength="30" name="passwordConfirm" type="password">
             </div>
-
-            <div class="form-control">
+            <div class="nick_box">
                 <label class="label">
-                    <span class="label-text">별명</span>
+                    <span class="label-text mt-2 mx-12 sm:-mx-1">닉네임</span>
                 </label>
-                <input class="input input-bordered" maxlength="30" name="nickname" placeholder="별명"
-                       type="text">
+                <input class=" p-2 border-b-2 border-gray-400 mx-10 w-3/4 sm:w-full sm:-mx-1 focus:border-blue-800 focus:outline-none"
+                       maxlength="30" name="nickname" type="text">
             </div>
-
-            <div class="form-control">
+            <div class="email_box">
                 <label class="label">
-                    <span class="label-text">이메일</span>
+                    <span class="label-text mt-2 mx-12 sm:-mx-1" >이메일</span>
                 </label>
-                <input class="input input-bordered" maxlength="80" name="email" onchange="$(this).keyup();"
+                <input class=" p-2 border-b-2 border-gray-400 mx-10 w-3/4 sm:w-full sm:-mx-1 focus:border-blue-800 focus:outline-none"
+                       maxlength="80" name="email" onchange="$(this).keyup();"
                        onkeyup="checkEmailDupDebounce();" onpaste="setTimeoutZero(() => $(this).keyup());"
-                       placeholder="이메일"
                        type="email">
-                <div class="mt-2 text-sm">
-                </div>
+                <div class="pl-2 mt-2 text-sm mx-10 w-3/4 sm:w-full sm:-mx-1"></div>
             </div>
-
-            <div class="form-control">
+            <div class="profile sm:flex">
                 <label class="label">
-                    <span class="label-text">프로필 이미지</span>
+                    <span class="label-text mt-2 sm:mt-6 mx-3 ml-12 sm:mx-2">프로필 이미지</span>
                 </label>
-                <input accept="image/jpeg, image/png, image/gif" class="file-input file-input-bordered"
-                       name="profileImg"
-                       type="file">
+                <input class=" file-input file-input-bordered file-input-sm w-3/4 ml-10 sm:mt-6 sm:mx-6 sm:w-3/5 max-w-xs"
+                       accept="image/jpeg, image/png, image/gif" name="profileImg" type="file">
             </div>
-
-            <div>
-                <button class="btn btn-block btn-primary gap-1">
-                    <i class="fa-solid fa-user-plus"></i>
-                    <span>회원가입</span>
+            <div class="join_btn">
+                <button class="bg-[#312F95] w-4/5 mx-8 sm:w-full sm:-mx-1 p-2 mt-6 rounded-lg hover:bg-[#112862]">
+                    <span class="text-white ">회원가입</span>
                 </button>
-
-                <div class="text-center">
-                    <a class="btn btn-link" href="/usr/member/login">로그인</a>
-                    <a class="btn btn-link" href="/usr/member/findUsername">아이디 찾기</a>
-                    <a class="btn btn-link" href="/usr/member/findPassword">비밀번호 찾기</a>
-                </div>
+            </div>
+            <div class="text-center mt-4">
+                <a class="" href="/usr/member/login">로그인</a>
             </div>
         </form>
 
@@ -126,14 +112,14 @@
             const checkUsernameDupDebounce = _.debounce(() => checkUsernameDup(joinForm), 500);
 
             function clearUsernameInputMsg() {
-                $(joinForm.username).removeClass('input-accent input-error');
+                $(joinForm.username).removeClass('border-green-500 border-red-400 focus:border-red-400 focus:border-green-500');
                 $(joinForm.username).next().removeClass('text-green-400 text-red-400');
                 $(joinForm.username).next().empty();
             }
 
             function setUsernameInputMsg(isSuccess, msg) {
-                if ( isSuccess ) $(joinForm.username).addClass('input-accent');
-                if ( !isSuccess ) $(joinForm.username).addClass('input-error');
+                if ( isSuccess ) $(joinForm.username).addClass('border-green-500 focus:border-green-500');
+                if ( !isSuccess ) $(joinForm.username).addClass('border-red-400 focus:border-red-400');
 
                 $(joinForm.username).next().addClass(isSuccess ? 'text-green-400' : 'text-red-400');
 
@@ -180,14 +166,14 @@
             const checkEmailDupDebounce = _.debounce(() => checkEmailDup(joinForm), 500);
 
             function clearEmailInputMsg() {
-                $(joinForm.email).removeClass('input-accent input-error');
+                $(joinForm.email).removeClass('border-green-500 border-red-400 focus:border-red-400 focus:border-green-500');
                 $(joinForm.email).next().removeClass('text-green-400 text-red-400');
                 $(joinForm.email).next().empty();
             }
 
             function setEmailInputMsg(isSuccess, msg) {
-                if ( isSuccess ) $(joinForm.email).addClass('input-accent');
-                if ( !isSuccess ) $(joinForm.email).addClass('input-error');
+                if ( isSuccess ) $(joinForm.email).addClass('border-green-500 focus:border-green-500');
+                if ( !isSuccess ) $(joinForm.email).addClass('border-red-400 focus:border-red-400');
 
                 $(joinForm.email).next().addClass(isSuccess ? 'text-green-400' : 'text-red-400');
 
@@ -292,5 +278,4 @@
 </div>
 
 </body>
-
 </html>

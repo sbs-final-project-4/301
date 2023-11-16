@@ -1,68 +1,62 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title>아이디 찾기</title>
+    <title th:text="|아이디 찾기|"></title>
 </head>
 
 <body>
 
 <div class="flex-1 flex items-center justify-center" layout:fragment="content">
-    <div class="max-w-2xl w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-regular fa-address-card"></i>
-            아이디 찾기
-        </h1>
-
-        <form class="flex flex-col gap-6" method="POST" onsubmit="submitFindUsernameForm(this); return false;"
-              th:action>
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">이메일</span>
-                </label>
-                <input autofocus class="input input-bordered" maxlength="80" name="email" placeholder="이메일"
-                       type="email">
+    <form th:action method="post" onsubmit="submitFindUsernameForm(this); return false;">
+        <div class="p-4 mb-48 max-w-2xl">
+            <h1 class="text-xl text-center py-6 sm:text-2xl">아이디 찾기</h1>
+            <div class="email_box">
+                <input class=" mt-2 rounded-lg bg-gray-100 p-2 focus:outline-[#312F95] w-full placeholder:text-sm placeholder:text-[#312F95]"
+                       maxlength="80" name="email" placeholder="이메일" type="email">
             </div>
-
-            <div>
-                <button class="btn btn-block btn-primary gap-1">
-                    <i class="fa-regular fa-address-card"></i>
-                    <span>아이디 찾기</span>
+            <div class="login_btn">
+                <button class="bg-[#312F95] w-full p-2 mt-6 rounded-lg hover:bg-[#112862]">
+                    <span class="text-white ">아이디 찾기</span>
                 </button>
-
-                <div class="text-center">
-                    <a class="btn btn-link" href="/usr/member/join">회원가입</a>
-                    <a class="btn btn-link" href="/usr/member/login">로그인</a>
-                    <a class="btn btn-link" href="/usr/member/findPassword">비밀번호 찾기</a>
-                </div>
             </div>
-        </form>
+            <div class="text_center p-4">
+                <a class="mx-2 text-sm hover:text-[#312F95] hidden sm:inline" href="/usr/member/join">가입하기</a>
+                <span class="hidden sm:inline sm:mr-2">|</span>
+                <a class="ml-8 sm:-ml-1 text-sm hover:text-[#312F95]" href="/usr/member/findPassword">비밀번호 찾기</a>
+                <span>|</span>
+                <a class="mx-2 text-sm hover:text-[#312F95]" href="/usr/member/login">로그인</a>
+            </div>
+            <div class="text_bottom text-center ">
+                <a class="mx-auto bg-[#355DC2] text-white rounded-2xl p-2 px-2 mx-4 text-sm hover:bg-[#112862] sm:hidden sm:w-1/4" href="/usr/member/join">회원가입</a>
+            </div>
+        </div>
+    </form>
 
-        <script>
-            let submitFindUsernameFormDone = false;
-            function submitFindUsernameForm(form) {
-                if ( submitFindUsernameFormDone ) return;
+    <script>
+        let submitFindUsernameFormDone = false;
+        function submitFindUsernameForm(form) {
+            if ( submitFindUsernameFormDone ) return;
 
-                form.email.value = form.email.value.trim();
+            form.email.value = form.email.value.trim();
 
-                if ( form.email.value.length == 0 ) {
-                    form.email.focus();
-                    toastWarning('이메일을 입력해주세요.');
-                    return;
-                }
-
-                if ( form.email.value.length < 4 ) {
-                    form.email.focus();
-                    toastWarning('이메일을 4자 이상 입력해주세요.');
-                    return;
-                }
-
-                form.submit();
-                submitFindUsernameFormDone = true;
+            if ( form.email.value.length == 0 ) {
+                form.email.focus();
+                toastWarning('이메일을 입력해주세요.');
+                return;
             }
-        </script>
-    </div>
+
+            if ( form.email.value.length < 4 ) {
+                form.email.focus();
+                toastWarning('이메일을 4자 이상 입력해주세요.');
+                return;
+            }
+
+            form.submit();
+            submitFindUsernameFormDone = true;
+        }
+    </script>
+
 </div>
 
 </body>
-
 </html>

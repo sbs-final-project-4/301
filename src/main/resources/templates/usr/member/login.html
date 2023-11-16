@@ -1,104 +1,95 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title>로그인</title>
+    <title th:text="로그인"></title>
 </head>
 
 <body>
 
 <div class="flex-1 flex items-center justify-center" layout:fragment="content">
-    <div class="max-w-2xl w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-solid fa-arrow-right-to-bracket"></i>
-            로그인
-        </h1>
-
-        <form class="flex flex-col gap-6" method="POST" onsubmit="submitLoginForm(this); return false;"
-              th:action>
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">아이디</span>
-                </label>
-                <input class="input input-bordered" maxlength="30"
-                       name="username" placeholder="아이디" th:autofocus="${UtThy.inputAttributeAutofocus(param.lastUsername)}"
-                       th:value="${UtThy.value(param.lastUsername)}" type="text">
+    <form method="post" onsubmit="submitLoginForm(this); return false;" th:action>
+        <div class="p-4 mb-48 max-w-2xl">
+            <h1 class="text-3xl text-center py-6">로그인</h1>
+            <div class="id_box">
+                <input class="bg-gray-100 rounded-lg p-2 focus:outline-[#312F95] w-full placeholder:text-sm placeholder:text-[#312F95]"
+                       maxlength="30" type="text" name="username" th:autofocus="${UtThy.inputAttributeAutofocus(param.lastUsername)}"
+                       th:value="${UtThy.value(param.lastUsername)}" placeholder="아이디">
             </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">비밀번호</span>
-                </label>
-                <input class="input input-bordered" maxlength="30"
-                       name="password" placeholder="비밀번호" th:autofocus="${!UtThy.inputAttributeAutofocus(param.lastUsername)}" type="password">
+            <div class="pw_box">
+                <input class=" mt-2 rounded-lg bg-gray-100 p-2 focus:outline-[#312F95] w-full placeholder:text-sm placeholder:text-[#312F95]"
+                       maxlength="30" type="password" name="password"
+                       th:autofocus="${!UtThy.inputAttributeAutofocus(param.lastUsername)}"placeholder="비밀번호">
             </div>
-
-            <div class="flex flex-col gap-2">
-                <button class="btn btn-block btn-primary gap-1">
-                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
-                    <span>로그인</span>
+            <div class="login_btn">
+                <button class="bg-[#312F95] w-full p-2 mt-6 rounded-lg hover:bg-[#112862]">
+                    <span class="text-white ">로그인</span>
                 </button>
-
-                <a href="/oauth2/authorization/kakao" class="btn btn-block btn-outline gap-1">
-                    <i class="fa-solid fa-comment text-[color:#ffe812]"></i>
-                    <span class="normal-case" th:text="|카카오 로그인|"></span>
-                </a>
-
-                <div class="text-center">
-                    <a class="btn btn-link" href="/usr/member/join">회원가입</a>
-                    <a class="btn btn-link" href="/usr/member/findUsername">아이디 찾기</a>
-                    <a class="btn btn-link" href="/usr/member/findPassword">비밀번호 찾기</a>
+            </div>
+            <div class="kakao_btn">
+                <div class="flex flex-row justify-center items-center bg-[#FFEA7C] w-full p-2 mt-3 rounded-lg hover:bg-yellow-300">
+                    <i class="fa-solid fa-comment text-[color:#000000] mr-1"></i>
+                    <a href="/oauth2/authorization/kakao">카카오 로그인</a>
                 </div>
             </div>
-        </form>
+            <div class="text_center p-4">
+                <a class="mx-2 text-sm hover:text-[#312F95] hidden sm:inline" href="/usr/member/join">회원가입</a>
+                <span class="hidden sm:inline">|</span>
+                <a class="mx-2 text-sm hover:text-[#312F95]" href="/usr/member/findUsername">아이디 찾기</a>
+                <span>|</span>
+                <a class="mx-2 text-sm hover:text-[#312F95]" href="/usr/member/findPassword">비밀번호 찾기</a>
+            </div>
+            <div class="text_bottom text-center ">
+                <a class="mx-auto bg-[#355DC2] text-white rounded-2xl p-2 px-2 mx-4 text-sm hover:bg-[#112862] sm:hidden sm:w-1/4" href="/usr/member/join">회원가입</a>
+            </div>
+        </div>
+    </form>
 
-        <script>
-            let submitLoginFormDone = false;
-            function submitLoginForm(form) {
-                if ( submitLoginFormDone ) return;
+    <script>
+        let submitLoginFormDone = false;
+        function submitLoginForm(form) {
+            if ( submitLoginFormDone ) return;
 
-                form.username.value = form.username.value.trim();
+            form.username.value = form.username.value.trim();
 
-                if ( form.username.value.length == 0 ) {
-                    form.username.focus();
-                    toastWarning('아이디를 입력해주세요.');
-                    return;
-                }
-
-                if ( form.username.value.length < 4 ) {
-                    form.username.focus();
-                    toastWarning('아이디를 4자 이상 입력해주세요.');
-                    return;
-                }
-
-                form.password.value = form.password.value.trim();
-
-                if ( form.password.value.length == 0 ) {
-                    form.password.focus();
-                    toastWarning('비밀번호를 입력해주세요.');
-                    return;
-                }
-
-                if ( form.password.value.length < 4 ) {
-                    form.password.focus();
-                    toastWarning('비밀번호를 4자 이상 입력해주세요.');
-                    return;
-                }
-
-                form.passwordConfirm.value = form.passwordConfirm.value.trim();
-
-                if ( form.passwordConfirm.value.length == 0 ) {
-                    form.passwordConfirm.focus();
-                    toastWarning('비밀번호를 확인을 입력해주세요.');
-                    return;
-                }
-
-                form.submit();
-                submitLoginFormDone = true;
+            if ( form.username.value.length == 0 ) {
+                form.username.focus();
+                toastWarning('아이디를 입력해주세요.');
+                return;
             }
-        </script>
-    </div>
+
+            if ( form.username.value.length < 4 ) {
+                form.username.focus();
+                toastWarning('아이디를 4자 이상 입력해주세요.');
+                return;
+            }
+
+            form.password.value = form.password.value.trim();
+
+            if ( form.password.value.length == 0 ) {
+                form.password.focus();
+                toastWarning('비밀번호를 입력해주세요.');
+                return;
+            }
+
+            if ( form.password.value.length < 4 ) {
+                form.password.focus();
+                toastWarning('비밀번호를 4자 이상 입력해주세요.');
+                return;
+            }
+
+            form.passwordConfirm.value = form.passwordConfirm.value.trim();
+
+            if ( form.passwordConfirm.value.length == 0 ) {
+                form.passwordConfirm.focus();
+                toastWarning('비밀번호를 확인을 입력해주세요.');
+                return;
+            }
+
+            form.submit();
+            submitLoginFormDone = true;
+        }
+    </script>
 </div>
 
 </body>
-
 </html>

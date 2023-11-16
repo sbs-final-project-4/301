@@ -294,6 +294,8 @@ public class Rq {
     }
 
     public boolean isMemberEnrolledInLecture(Long lectureId) {
+        if(getMember() == null) return false;
+
         Member member = memberService.findByUsername(getLoginedMemberUsername()).get();
         return member.getLectures().stream()
                 .anyMatch(lecture -> lecture.getId().equals(lectureId));

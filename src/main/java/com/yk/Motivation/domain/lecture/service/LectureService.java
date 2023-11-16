@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +35,24 @@ public class LectureService {
     private final DocumentService documentService;
     private final GenFileService genFileService;
 
+    private static final Map<String, String> thumbnailMap = new LinkedHashMap<>();
+
+    static {
+        thumbnailMap.put("spring", "https://cdn.inflearn.com/wp-content/uploads/spring_ver.2018-1.jpg");
+        thumbnailMap.put("스프링", thumbnailMap.get("spring"));
+        thumbnailMap.put("java", "https://s3.ap-northeast-2.amazonaws.com/grepp-cloudfront/programmers_imgs/learn/thumb-course-java-intermediate.jpg");
+        thumbnailMap.put("자바", thumbnailMap.get("java"));
+        thumbnailMap.put("jsp", "https://cdn.inflearn.com/wp-content/uploads/jsp_ver.2018-1.jpg");
+        thumbnailMap.put("제이에스피", thumbnailMap.get("jsp"));
+        thumbnailMap.put("react", "https://cdn.inflearn.com/public/courses/326905/cover/739f7b4b-1a9f-478f-a6a8-1a13bf58cae3/326905-eng.png");
+        thumbnailMap.put("리액트", thumbnailMap.get("react"));
+        thumbnailMap.put("node", "https://cdn.inflearn.com/public/courses/331324/cover/f09739a9-e3aa-4170-b630-6b9f58134c01/331324-eng.png");
+        thumbnailMap.put("node.js", thumbnailMap.get("node"));
+        thumbnailMap.put("html", "https://cdn.inflearn.com/public/courses/327351/cover/44676d5f-95fc-46eb-baea-6c344bdcb2e2/html-css-tumbnail2.jpg");
+        thumbnailMap.put("css", thumbnailMap.get("html")); // HTML과 CSS는 같은 이미지 사용
+        thumbnailMap.put("php", "https://cdn.inflearn.com/wp-content/uploads/php001.jpg");
+        thumbnailMap.put("c", "https://cdn.inflearn.com/public/courses/330182/cover/e15823cf-d096-43b5-a182-a2345d1fcd7b/330182-eng.jpg");
+    }
 
     @Transactional
     public RsData<Lecture> write(Member author, String subject, String tagsStr, String body, boolean isPublic) {
@@ -112,6 +131,20 @@ public class LectureService {
         genFileService.remove(lecture.getModelName(), lecture.getId(), "common", "attachment", fileNo);
     }
 
+    public String getThumbnailImgUrl(String subject) {
+        String subjectLower = subject.toLowerCase();
+
+        for (Map.Entry<String, String> entry : thumbnailMap.entrySet()) {
+            if (subjectLower.contains(entry.getKey())) {
+                return entry.getValue();
+            }
+        }
+
+        return "https://ifh.cc/g/Rrmt4A.png"; // 기본 섬네일
+    }
+
+
+
     private List<GenFile> findGenFiles(Lecture lecture) {
         return genFileService.findByRelId(lecture.getModelName(), lecture.getId());
     }
@@ -119,14 +152,6 @@ public class LectureService {
     public Map<String, GenFile> findGenFilesMapKeyByFileNo(Lecture lecture, String typeCode, String type2Code) {
         return genFileService.findGenFilesMapKeyByFileNo(lecture.getModelName(), lecture.getId(), typeCode, type2Code);
     }
-
-
-
-
-
-
-
-
 
     public Page<Lecture> findByKw(String kwType, String kw, Pageable pageable) {
         return lectureRepository.findByKw(kwType, kw, pageable);

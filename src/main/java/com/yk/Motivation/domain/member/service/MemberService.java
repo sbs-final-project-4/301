@@ -81,15 +81,15 @@ public class MemberService {
     }
 
     public RsData<String> checkUsernameDup(String username) {
-        if (findByUsername(username).isPresent()) return RsData.of("F-1", "%s(은)는 사용중인 아이디입니다.".formatted(username));
+        if (findByUsername(username).isPresent()) return RsData.of("F-1", "사용중인 아이디입니다.");
 
-        return RsData.of("S-1", "%s(은)는 사용 가능한 아이디 입니다.".formatted(username), username);
+        return RsData.of("S-1", "사용 가능한 아이디 입니다.", username);
     }
 
     public RsData<String> checkEmailDup(String email) {
-        if (findByEmail(email).isPresent()) return RsData.of("F-1", "%s(은)는 사용중인 이메일입니다.".formatted(email));
+        if (findByEmail(email).isPresent()) return RsData.of("F-1", "사용중인 이메일입니다.");
 
-        return RsData.of("S-1", "%s(은)는 사용 가능한 이메일 입니다.".formatted(email), email);
+        return RsData.of("S-1", "사용 가능한 이메일 입니다.", email);
     }
 
     public RsData<String> checkProducerNameDup(Member actor, String producerName) {

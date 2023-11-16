@@ -72,4 +72,17 @@ public class CartController {
 
         return rq.redirectOrBack("/usr/cart/items", rsData);
     }
+
+    @GetMapping("/add/lecture/{id}")
+    public String add(
+            @PathVariable Long id
+    ) {
+        Product product = productService.findByLectureId(id).get();
+
+        RsData<CartItem> rsData = cartService.addItem(rq.getMember(), product);
+
+        return rq.redirectOrBack("/usr/lecture/detail/" + id, rsData);
+    }
+
+
 }

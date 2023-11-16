@@ -7,47 +7,26 @@
 <body>
 
 <div class="flex-1 flex justify-center" layout:fragment="content">
-    <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
     <div class="wrap w-full lg:w-3/4 ">
         <div class="top-box block lg:flex w-full lg:h-96">
             <div class="left-box w-full lg:w-3/5 lg:h-96 h-56 bg-blue-200 -mt-4 lg:mt-0 ">
                 <img class="w-full h-full object-cover" th:src="${@lectureService.getThumbnailImgUrl(lecture.subject)}">
             </div>
             <div style='box-shadow:2px 3px 5px 0px #d9d9d9' class="border-gray-200 bg-white rounded-xl right-box w-full lg:w-2/5 lg:ml-12 h-96 border ">
-                <span th:classappend="${!lecture.new} ? 'invisible' : ''" class="bg-yellow-200 px-2 p-1 ml-4 text-sm whitespace-nowrap rounded-lg">NEW</span>
-                <span class="text-xl ml-4 font-semibold mt-14 inline-block" th:text="${lecture.subject}"></span>
-                <div class="block text-md py-2 ml-20" th:text="${lecture.producer.producerName}"></div>
-                <div class="mt-4"><span class="text-gray-500 ml-20">수강기간</span><span class="ml-2"> 무제한</span></div>
-                <div>
-                    <span class="text-gray-500 ml-20">강의시간</span>
-                    <span class="ml-2">총 <span th:text="${lecture.lessons.size}">10</span> 개 /
-                        <span th:if="${lecture.totalLessonLengthPerHour != 0}" th:text="|${lecture.totalLessonLengthPerHour} 시간 |"></span>
-                        <span th:if="${lecture.totalLessonLengthPerMinute != 0}" th:text="|${lecture.totalLessonLengthPerMinute} 분|"></span>
-                    </span>
-                </div>
-                <div><span class="text-gray-500 ml-20">교재</span><span class="ml-2" th:text="${!filesMap.isEmpty} ? ' 파일제공' : ' 없음'"></span></div>
-                <div><span class="text-gray-500 ml-20">가격</span>
-                    <span class="ml-2" th:unless="${lecture.product.free}" th:text="${#numbers.formatDecimal(lecture.product.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"></span>
-                    <span class="ml-2" th:if="${lecture.product.free}"> 무료강의</span>
-                </div>
-                <a th:unless="${@rq.isMemberEnrolledInLecture(lecture.id)} or ${@lectureService.checkProducerCanModify(@rq.member, lecture).success}"
-                   th:attr="href=${@productService.isLectureFree(lecture.id)} ? '/usr/member/enroll/' + ${lecture.id} : '/usr/cart/write/lecture/' + ${lecture.id}">
-                    <button class="bg-blue-100 w-[95%] mt-6 ml-3 p-3 rounded-lg font-bold hover:bg-blue-200">구매하기</button>
-                </a>
-                <a th:unless="${@rq.isMemberEnrolledInLecture(lecture.id)} or ${@lectureService.checkProducerCanModify(@rq.member, lecture).success}"
-                   th:attr="href=${@productService.isLectureFree(lecture.id)} ? '/usr/member/enroll/' + ${lecture.id} : '/usr/cart/add/lecture/' + ${lecture.id}">
-                    <button class="btn w-[95%] mt-3 ml-3 ">장바구니</button>
-                </a>
+                <a href="#" class="bg-yellow-200 px-2 p-1 ml-4 text-sm whitespace-nowrap rounded-lg">NEW</a><span class="text-xl ml-4 font-semibold mt-14 inline-block">강의 제목</span>
+                <a href="#" class="block text-md py-2 ml-20">강사명</a>
+                <div class="mt-4"><span class="text-gray-500 ml-20">수강기간</span><span class="ml-2">180일</span></div>
+                <div><span class="text-gray-500 ml-20">강의시간</span><span class="ml-2">총 10 개 / 6시간 48분</span></div>
+                <div><span class="text-gray-500 ml-20">교재</span><span class="ml-2">파일제공</span></div>
+                <div><span class="text-gray-500 ml-20">난이도</span><span class="ml-2">중급</span></div>
+                <button class="bg-blue-100 w-[95%] mt-6 ml-3 p-3 rounded-lg font-bold hover:bg-blue-200">구매하기</button>
+                <button class="btn w-[95%] mt-3 ml-3 ">장바구니</button>
             </div>
         </div>
-
         <div class="bottom-box block lg:flex ">
             <div class=" w-full lg:w-3/5 left-box ">
-                <span class="text-xl font-bold p-2 mt-4 mb-8 border-b block border-gray-200">강의소개</span>
-                <div class="toastui-editor-contents"
-                     style="overflow-wrap: break-word;"
-                     th:utext="${lecture.bodyHtmlForPrint}">
-                </div>
+                <span class="text-xl font-bold p-2 mt-4 border-b block border-gray-200">강의소개</span>
+                <div class="mt-4" th:utext="${lecture.bodyHtmlForPrint}"></div>
             </div>
             <div class="right-box w-full lg:w-2/5 lg:ml-12">
                 <span class="inline-block text-xl font-bold p-2 mt-4">커리큘럼</span><span class="text-gray-500 text-center">총 10 개 / 6시간 48분의 수업</span>
@@ -86,9 +65,7 @@
             content.style.display = 'block'; // 닫혀있을 때 엽니다.
           }
         }
-
     </script>
-
 </div>
 
 </body>

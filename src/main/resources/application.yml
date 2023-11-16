@@ -61,16 +61,16 @@ logging:
     org.hibernate.orm.jdbc.extract: TRACE
     org.springframework.transaction.interceptor: TRACE
 custom:
-  tempDirPath: c:/temp/motivation/temp
+  tempDirPath: c:/temp/삼공일/temp
   site:
     name: 삼공일
     baseUrl: "http://localhost:8090"
   genFile:
-    dirPath: c:/temp/motivation
+    dirPath: c:/temp/삼공일
   ffmpeg:
-    path: C:/temp/motivation/bin/ffmpeg/bin/ffmpeg.exe
+    path: C:/temp/삼공일/bin/ffmpeg/bin/ffmpeg.exe
   ffprobe:
-    path: C:/temp/motivation/bin/ffmpeg/bin/ffprobe.exe
+    path: C:/temp/삼공일/bin/ffmpeg/bin/ffprobe.exe
   lesson:
-    dirPath: C:/temp/motivation/lesson
+    dirPath: C:/temp/삼공일/lesson
 

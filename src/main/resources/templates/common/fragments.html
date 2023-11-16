@@ -52,7 +52,7 @@
                     <label class="label">
                         <span class="label-text">태그</span>
                     </label>
-                    <div th:utext="${series.getTagLinks('<a class=`link` href=`%s`>#%s</a>', @rq.getSuitableListByTagPageBaseUrlByCurrentUrl('series') + '/%s')}"></div>
+                    <div th:utext="${series.getTagLinks('<a class=`my-3 px-2 p-1 mr-2 sm:text-sm text-xs whitespace-nowrap rounded-lg inline-block` href=`%s`>#%s</a>', @rq.getSuitableListByTagPageBaseUrlByCurrentUrl('series') + '/%s')}"></div>
                 </div>
             </div>
         </div>
@@ -645,7 +645,7 @@
                     <label class="label">
                         <span class="label-text">태그</span>
                     </label>
-                    <div th:utext="${article.getTagLinks('<a class=`link` href=`%s`>#%s</a>', '/usr/article/listByTag/%s')}"></div>
+                    <div th:utext="${article.getTagLinks('<a class=`my-3 px-2 p-1 mr-2 sm:text-sm text-xs whitespace-nowrap rounded-lg inline-block` href=`%s`>#%s</a>', '/usr/article/listByTag/%s')}"></div>
                 </div>
             </div>
         </div>
@@ -704,7 +704,7 @@
                     <label class="label">
                         <span class="label-text">태그</span>
                     </label>
-                    <div th:utext="${lecture.getTagLinks('<a class=`link` href=`%s`>#%s</a>', '/usr/lecture/listByTag/%s')}"></div>
+                    <div th:utext="${lecture.getTagLinks('<a class=`my-3 px-2 p-1 mr-2 sm:text-sm text-xs whitespace-nowrap rounded-lg inline-block` href=`%s`>#%s</a>', '/usr/lecture/listByTag/%s')}"></div>
                 </div>
             </a>
         </div>

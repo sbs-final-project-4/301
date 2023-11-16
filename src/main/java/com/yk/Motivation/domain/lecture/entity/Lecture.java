@@ -10,6 +10,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -91,8 +93,23 @@ public class Lecture extends BaseEntity implements DocumentHavingTags {
                 .sum();
     }
 
+    public Long getTotalLessonLengthPerHour() {
+
+        return getTotalLessonLength() / 3600;
+    }
+
+    public Long getTotalLessonLengthPerMinute() {
+
+        return getTotalLessonLength() % 3600 / 60;
+    }
+
     public Integer getProgressRate(Integer sumPlaybackTime) {
         return (int) (((double) sumPlaybackTime / getTotalLessonLength() ) * 100 );
     }
 
+    public boolean isNew() {
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(getCreateDate(), now);
+        return duration.toDays() <= 7;
+    }
 }
