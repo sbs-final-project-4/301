@@ -1,0 +1,59 @@
+<html layout:decorate="~{usr/common/layout}">
+
+<head>
+    <title th:text="|QnA 게시판|"></title>
+</head>
+
+<body>
+
+<div th:fragment="qnaContent" class="flex-1 flex items-center justify-center" layout:fragment="content">
+    <div class="container w-full px-4">
+        <h1 class="mb-4">
+            <i class="fa-solid fa-cubes"></i>
+            <span th:text="|QnA 게시판|"></span>
+        </h1>
+
+        <div class="card bg-base-100 shadow-xl">
+            <div class="card-body">
+                <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3" style="border: 1px solid black;">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th style="text-align: left">제목</th>
+                            <th style="text-align: left">상태</th>
+                            <th style="text-align: left">기록</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="question, stat : ${questionPage.content}">
+                            <td>
+                                <a th:href="@{|/usr/qna/q/detail/${question.id}|}" th:text="${question.subject}"></a>
+                            </td>
+                            <td>
+                                <th:block th:if="${hasAnswersByOthersList[stat.index]}">답변 완료</th:block>
+                                <th:block th:if="${!hasAnswersByOthersList[stat.index]}">대기중...</th:block>
+                            </td>
+                            <td>
+                                <h5 th:text="|${#lists.size(question.answerList)}개의 기록이 있습니다.|"></h5>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Page Navigation -->
+                <div class="mt-4" th:if="${questionPage.totalPages > 1}"
+                     th:with="queryStrBase='/usr/qna/q/list?'">
+                    <div th:replace="common/fragments :: pagination(${questionPage}, ${queryStrBase}, 1)"></div>
+                </div>
+
+                <div th:if="${@rq.login}">
+                    <a th:href="@{/usr/qna/q/create}" class="btn btn-primary">질문 등록하기</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -12,9 +12,7 @@ import lombok.experimental.SuperBuilder;
 import com.yk.Motivation.domain.member.entity.Member;
 
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static lombok.AccessLevel.PROTECTED;
@@ -67,4 +65,15 @@ public class Article extends BaseEntity implements DocumentHavingTags {
 
         return tag;
     }
+
+    /*JHG ADD*/
+    // 추천 수
+    private int voteCount = 0; // 초기 값 0
+
+    // 조회 수
+    private int viewCount = 0;
+
+    /*@OneToMany(mappedBy = "article", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();*/
+    /*JHG ADD*/
 }

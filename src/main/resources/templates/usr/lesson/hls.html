@@ -125,6 +125,58 @@
 
     </script>
 
+    <!--JHG ADD - sidebar-->
+    <div id="sidebar-content" style="width: 100%;">
+        <button onclick="showQnA()" style="border: 1px solid black;">QnA</button>
+        <button onclick="showCurriculum()" style="border: 1px solid black;">커리큘럼</button>
+
+        <div id="qna-content" style="display: none; border: 1px solid red;">
+            <p>여기는 QnA 내용입니다.</p>
+            <iframe th:src="'/usr/qna/q/videoInList/' + ${lessonId}" style="width: 100%; height: auto;"></iframe>
+            <button onclick="hideQnA()" style="background-color: green">닫기</button>
+        </div>
+
+        <div id="curriculum-content" style="display: none; display: none; border: 1px solid blue;">
+            <p>여기는 커리큘럼 내용입니다.</p>
+            <button onclick="hideCurriculum()" style="background-color: green">닫기</button>
+        </div>
+    </div>
+
+    <script>
+        function showQnA() {
+            var qnaContent = document.getElementById('qna-content');
+            var curriculumContent = document.getElementById('curriculum-content');
+
+            if (qnaContent.style.display === 'none' || qnaContent.style.display === '') {
+                qnaContent.style.display = 'block';
+                curriculumContent.style.display = 'none';
+            } else {
+                qnaContent.style.display = 'none';
+            }
+        }
+
+        function showCurriculum() {
+            var qnaContent = document.getElementById('qna-content');
+            var curriculumContent = document.getElementById('curriculum-content');
+
+            if (curriculumContent.style.display === 'none' || curriculumContent.style.display === '') {
+                curriculumContent.style.display = 'block';
+                qnaContent.style.display = 'none';
+            } else {
+                curriculumContent.style.display = 'none';
+            }
+        }
+
+        function hideQnA() {
+            document.getElementById('qna-content').style.display = 'none';
+        }
+
+        function hideCurriculum() {
+            document.getElementById('curriculum-content').style.display = 'none';
+        }
+    </script>
+    <!--JHG ADD - sidebar-->
+
 </div>
 
 </body>

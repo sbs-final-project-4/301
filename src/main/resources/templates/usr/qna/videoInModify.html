@@ -1,0 +1,92 @@
+<html layout:decorate="~{common/layout}">
+
+<head>
+    <title th:text="|QnA 게시판 - 수정|"></title>
+    <style>
+        .toast-ui-editor {
+            min-height: 300px; /* 원하는 최소 높이 값 */
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="flex-1 flex items-center justify-center" layout:fragment="content">
+    <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
+
+    <div class="container w-full px-4">
+        <h1 class="mb-4">
+            <i class="fa-solid fa-cubes"></i>
+            <span th:text="|Question modify|"></span>
+        </h1>
+
+        <form class="flex flex-col gap-6" method="POST" th:action="@{/usr/qna/q/videoInModify/{id}(id=${question.id})}" th:object="${question}" onsubmit="submitQuestionForm(this); return false;">
+            <input type="hidden" name="_method" value="PUT" />
+            <input type="hidden" name="body">
+            <input type="hidden" name="bodyHtml">
+            <input type="hidden" name="lessonId" th:value="${lessonId}">
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">제목</span>
+                </label>
+                <input class="input input-bordered" maxlength="100" name="subject" placeholder="제목" th:value="*{subject}" type="text" autofocus>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">내용</span>
+                </label>
+                <div class="toast-ui-editor" th:text="*{body}" height="calc(100vh - 200px)" placeholder="내용"></div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <button class="btn btn-block btn-primary gap-1">
+                    <i class="fa-solid fa-pen"></i>
+                    <span>수정하기</span>
+                </button>
+
+                <div class="text-center">
+                    <a class="btn btn-link" th:href="@{/usr/qna/q/videoInList/{lessonId}(lessonId=${lessonId})}">목록</a>
+                </div>
+            </div>
+        </form>
+
+        <script>
+            function submitQuestionForm(form) {
+                form.subject.value = form.subject.value.trim();
+
+                if (form.subject.value.length == 0) {
+                    form.subject.focus();
+                    toastWarning('제목을 입력해주세요.');
+                    return;
+                }
+
+                if (form.subject.value.length < 2) {
+                    form.subject.focus();
+                    toastWarning('제목을 2자 이상 입력해주세요.');
+                    return;
+                }
+
+                const editor = $(form).find(".toast-ui-editor").data("data-toast-editor");
+
+                const markdown = editor.getMarkdown().trim();
+                const html = editor.getHTML().trim();
+
+                form.body.value = markdown;
+                form.bodyHtml.value = html;
+
+                if (form.body.value.length == 0 || form.bodyHtml.value.length == 0) {
+                    toastWarning("내용을 입력해주세요");
+                    editor.focus();
+                    return;
+                }
+
+                form.submit();
+            }
+        </script>
+    </div>
+</div>
+
+</body>
+</html>

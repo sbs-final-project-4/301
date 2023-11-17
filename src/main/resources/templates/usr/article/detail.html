@@ -2,6 +2,26 @@
 
 <head>
     <title th:text="|글 - ${article.subject}|"></title>
+    <!-- 별점 스타일 -->
+    <style>
+        .rating {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: left;
+            align-items: center;
+        }
+        .rating > input {
+            display: none;
+        }
+        .rating > label {
+            font-size: 2em;
+            color: gray;
+            cursor: pointer;
+        }
+        .rating > input:checked ~ label {
+            color: gold;
+        }
+    </style>
 </head>
 
 <body>
@@ -87,9 +107,137 @@
                            class="btn btn-link"
                            th:href="|/usr/article/${board.code}/remove/${article.id}|" method="POST">삭제</a>
                         <a class="btn btn-link" th:href="|/usr/article/${board.code}/list|">목록</a>
+                        <!--JHG ADD - vote-->
+                        <form th:action="@{/usr/vote/add}" method="post" onsubmit="return confirmVote();">
+                            <input type="hidden" th:if="${@rq.member != null}" th:value="${@rq.member.nickname}" name="nickName" />
+                            <input type="hidden" th:value="${article.id}" name="article" />
+
+                            <div th:if="${@rq.login}">
+                                <!-- 로그인한 사용자에게만 추천 버튼 보여주기 -->
+                                <button type="submit" class="recommend btn btn-sm btn-outline-secondary">추천
+                                    <span th:text="${article.voteCount}" class="badge rounded-pill bg-success"></span>
+                                </button>
+                            </div>
+
+                            <div th:unless="${@rq.login}">
+                                <!-- 비로그인 사용자에게는 추천 수만 보여주기 -->
+                                <a href="#" class="recommend btn btn-sm btn-outline-secondary">추천
+                                    <span class="badge rounded-pill bg-success" th:text="${article.voteCount}"></span>
+                                </a>
+                            </div>
+                        </form>
+                        <!--JHG ADD - vote-->
                     </div>
                 </div>
             </div>
+            <!-- JHG ADD - comment -->
+            <div class="card-body" th:if="${board.name} == '자유'">
+                <!--아이콘 영역-->
+                <h1 class="mb-4">
+                    <i class="fa-regular fa-comment"></i>
+                    <span th:text="|${board.name} 게시판 게시물 댓글|"></span>
+                </h1>
+
+                <!-- 댓글 리스트 -->
+                <span>댓글 리스트</span>
+                <ul th:each="comment : ${commentsPage.content}"> <!-- 페이징 처리된 댓글 목록 사용 -->
+                    <li style="border: 1px solid black; padding: 2px;">
+                        <strong th:text="${comment.nickName}"></strong> <!-- 작성자의 nickName 출력 -->
+                        <div class="rating">
+                            <input type="radio" disabled="true" th:checked="${comment.rating == 5}">
+                            <label>★</label>
+                            <input type="radio" disabled="true" th:checked="${comment.rating == 4}">
+                            <label>★</label>
+                            <input type="radio" disabled="true" th:checked="${comment.rating == 3}">
+                            <label>★</label>
+                            <input type="radio" disabled="true" th:checked="${comment.rating == 2}">
+                            <label>★</label>
+                            <input type="radio" disabled="true" th:checked="${comment.rating == 1}">
+                            <label>★</label>
+                        </div>
+                        <p id="comment-content-${comment.id}" th:text="${comment.content}"></p>
+                        <!-- 로그인된 사용자가 이 댓글의 작성자인 경우 수정 및 삭제 버튼 표시 -->
+                        <div th:if="${@rq.login}">
+                            <div th:if="${@rq.member.nickname} == ${comment.nickName}">
+                                <div th:id="'comment-modify-' + ${comment.id}" class="comment-modify" style="display: none;">
+                                    <form th:action="@{/usr/comment/modify}" method="post">
+                                        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                                        <textarea class="textarea textarea-bordered w-full" name="content"
+                                                  th:attr="placeholder=${comment.content}"></textarea>
+                                        <div class="rating">
+                                            <span>별점:</span>
+                                            <input type="radio" name="rating" value="5" id="edit-star5-${comment.id}" th:checked="${comment.rating == 5}">
+                                            <label for="edit-star5-${comment.id}">★</label>
+                                            <input type="radio" name="rating" value="4" id="edit-star4-${comment.id}" th:checked="${comment.rating == 4}">
+                                            <label for="edit-star4-${comment.id}">★</label>
+                                            <input type="radio" name="rating" value="3" id="edit-star3-${comment.id}" th:checked="${comment.rating == 3}">
+                                            <label for="edit-star3-${comment.id}">★</label>
+                                            <input type="radio" name="rating" value="2" id="edit-star2-${comment.id}" th:checked="${comment.rating == 2}">
+                                            <label for="edit-star2-${comment.id}">★</label>
+                                            <input type="radio" name="rating" value="1" id="edit-star1-${comment.id}" th:checked="${comment.rating == 1}">
+                                            <label for="edit-star1-${comment.id}">★</label>
+                                        </div>
+                                        <input type="hidden" name="commentId" th:value="${comment.id}"/> <!-- 댓글 ID도 서버로 전송 -->
+                                        <button type="submit" class="btn btn-success">수정 완료</button>
+                                    </form>
+                                </div>
+                                <a class="btn btn-warning" th:onclick="'toggleCommentModify(' + ${comment.id} + ');'">수정</a>
+                                <script>
+                                    function toggleCommentModify(commentId) {
+                                        var commentModifyDiv = document.querySelector('#comment-modify-' + commentId);
+
+                                        if(commentModifyDiv.style.display === 'none' || commentModifyDiv.style.display === '') {
+                                            commentModifyDiv.style.display = 'block';
+                                        } else {
+                                            commentModifyDiv.style.display = 'none';
+                                        }
+                                    }
+                                </script>
+                                <a th:href="|/usr/comment/delete/${comment.id}|" class="btn btn-danger" onclick="return confirm('댓글을 삭제 하시겠습니까?');">삭제</a>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+                <div class="mt-4" th:if="${commentsPage.totalPages > 1}"
+                     th:with="queryStrBase='/usr/article/' + ${boardCode} + '/detail/' + ${article.id} + '?'">
+                    <div th:replace="common/fragments :: pagination(${commentsPage}, ${queryStrBase}, 1)"></div>
+                </div>
+
+                <!-- 댓글 작성 폼 -->
+                <div class="form-control col-span-full">
+                    <label class="label">
+                        <span class="label-text">댓글 작성하기</span>
+                    </label>
+                    <!--로그인 상태 확인 / 로그인 상태만 작성 가능-->
+                    <div th:if="${@rq.login}">
+                        <form th:action="@{/usr/comment/write}" method="post">
+                            <input type="hidden" th:value="${@rq.member.nickname}" name="nickName" />
+                            <input type="hidden" th:value="${article.id}" name="article" /> <!-- 게시글 ID -->
+
+                            <!-- 별점 선택 영역 -->
+                            <div class="rating">
+                                <input type="radio" name="rating" value="5" id="star5">
+                                <label for="star5">★</label>
+                                <input type="radio" name="rating" value="4" id="star4">
+                                <label for="star4">★</label>
+                                <input type="radio" name="rating" value="3" id="star3">
+                                <label for="star3">★</label>
+                                <input type="radio" name="rating" value="2" id="star2">
+                                <label for="star2">★</label>
+                                <input type="radio" name="rating" value="1" id="star1">
+                                <label for="star1">★</label>
+                            </div>
+
+                            <!-- 댓글 내용 입력 영역 -->
+                            <textarea class="textarea textarea-bordered w-full" name="content" placeholder="댓글을 입력하세요."></textarea>
+
+                            <!-- 댓글 작성 버튼 -->
+                            <button type="submit" class="btn btn-primary mt-2">댓글 작성</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- JHG ADD - comment -->
         </div>
     </div>
 
