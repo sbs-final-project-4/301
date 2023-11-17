@@ -16,6 +16,7 @@ import static lombok.AccessLevel.PROTECTED;
 @SuperBuilder  // Lombok: Builder 패턴 구현
 @ToString(callSuper = true)  // Lombok: toString 메서드 오버라이드
 public class Comment extends BaseEntity {
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
     private Article article;

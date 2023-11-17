@@ -3,8 +3,10 @@ package com.yk.Motivation.domain.article.entity;
 
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
 import com.yk.Motivation.domain.board.entity.Board;
+import com.yk.Motivation.domain.comment.entity.Comment;
 import com.yk.Motivation.domain.document.standard.DocumentHavingTags;
 import com.yk.Motivation.domain.document.standard.DocumentTag;
+import com.yk.Motivation.domain.lecture.entity.LectureTag;
 import com.yk.Motivation.standard.util.Ut;
 import jakarta.persistence.*;
 import lombok.*;
@@ -43,6 +45,11 @@ public class Article extends BaseEntity implements DocumentHavingTags {
     @Builder.Default
     @ToString.Exclude
     private Set<ArticleTag> articleTags = new HashSet<>();
+
+    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = {CascadeType.ALL})
+    @Builder.Default
+    @ToString.Exclude
+    private List<Comment> comments = new ArrayList<>();
 
     // DocumentHavingTags 의 추상메서드
     // 태그기능을 사용하려면 필요하다.

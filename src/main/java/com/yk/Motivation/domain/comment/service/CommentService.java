@@ -1,5 +1,6 @@
 package com.yk.Motivation.domain.comment.service;
 
+import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.comment.entity.Comment;
 import com.yk.Motivation.domain.comment.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,11 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
 
-    public Comment save(Comment comment) {
-        return commentRepository.save(comment);
+    public RsData<Comment> save(Comment comment) {
+
+        commentRepository.save(comment);
+
+        return RsData.of("S-1", "%d 번 댓글이 작성되었습니다.".formatted(comment.getId()), comment);
     }
 
     public List<Comment> findByArticleId(long id) {
@@ -31,6 +35,8 @@ public class CommentService {
     public void delete(long commentId) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+
+
         commentRepository.delete(comment);
     }
 

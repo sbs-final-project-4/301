@@ -20,7 +20,7 @@
                 <div class="mt-4"><span class="text-gray-500 ml-20">수강기간</span><span class="ml-2"> 무제한</span></div>
                 <div>
                     <span class="text-gray-500 ml-20">강의시간</span>
-                    <span class="ml-2">총 <span th:text="${lecture.lessons.size}">10</span> 개 /
+                    <span class="ml-2">총 <span th:text="${lecture.lessons.size}"></span> 개 /
                         <span th:if="${lecture.totalLessonLengthPerHour != 0}" th:text="|${lecture.totalLessonLengthPerHour} 시간 |"></span>
                         <span th:if="${lecture.totalLessonLengthPerMinute != 0}" th:text="|${lecture.totalLessonLengthPerMinute} 분|"></span>
                     </span>
@@ -50,23 +50,34 @@
                 </div>
             </div>
             <div class="right-box w-full lg:w-2/5 lg:ml-12">
-                <span class="inline-block text-xl font-bold p-2 mt-4">커리큘럼</span><span class="text-gray-500 text-center">총 10 개 / 6시간 48분의 수업</span>
+                <span class="inline-block text-xl font-bold p-2 mt-4">커리큘럼</span>
+                <span th:if="${lecture.lessonsReady}" class="ml-2">총
+                        <span th:text="${lecture.lessons.size}"></span> 개 /
+                        <span th:if="${lecture.totalLessonLengthPerHour != 0}" th:text="|${lecture.totalLessonLengthPerHour} 시간 |"></span>
+                        <span th:if="${lecture.totalLessonLengthPerMinute != 0}" th:text="|${lecture.totalLessonLengthPerMinute} 분|"></span>
+                </span>
+                <span th:unless="${lecture.lessonsReady}" class="ml-2">강의영상이 업로드 중입니다. 잠시후에 확인해주세요.
+                </span>
                 <div id="tab1" class="cont block w-full h-24 border-t border-gray-200" >
                     <div class="w-full mt-3 ">
                         <button id="more_btn" onclick="toggleComment(this)" type="button" class="flex p-4 border-b border-gray-300 w-full">
                             <span class="ml-4">Part 1</span>
-                            <span class="ml-auto text-gray-500 mr-2 text-sm">5강 150분 15초</span>
+                            <span th:if="${lecture.lessonsReady}" class="ml-auto text-gray-500 mr-2 text-sm">총
+                                <span th:text="${lecture.lessons.size}"></span> 강 /
+                                <span th:if="${lecture.totalLessonLengthPerHour != 0}" th:text="|${lecture.totalLessonLengthPerHour} 시간 |"></span>
+                                <span th:if="${lecture.totalLessonLengthPerMinute != 0}" th:text="|${lecture.totalLessonLengthPerMinute} 분|"></span>
+                            </span>
+                            <span th:unless="${lecture.lessonsReady}" class="ml-auto text-gray-500 mr-2 text-sm">강의영상이 업로드 중입니다. 잠시후에 확인해주세요.
+                            </span>
                             <i class="fa-solid fa-angle-down mt-1"></i>
                         </button>
                         <div class="more_tab block">
-                            <div class="more-header cursor-pointer bg-gray-100">
+                            <div class="more-header bg-gray-100">
                                 <div class="fix">
-                                    <a href="#" class="inline-block px-6 p-3 border-b border-gray-300 w-full hover:bg-gray-200">강의 제목 1
-                                        <span class="flex justify-end -mt-6 text-gray-500 text-sm">50분</span>
-                                    </a>
-                                    <a href="#" class="inline-block px-6 p-3 border-b border-gray-300 w-full hover:bg-gray-200">강의 제목 2
-                                        <span class="flex justify-end -mt-6 text-gray-500 text-sm">50분</span>
-                                    </a>
+                                    <div th:each="lesson : ${lessons}" class="flex flex-row items-center justify-between border-b border-gray-300">
+                                        <span class="inline-block px-6 p-3  " th:text="${lesson.subject}"></span>
+                                        <span class="px-6 text-gray-500 text-sm " th:text="${lesson.lessonLengthForPrint}"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -1,5 +1,7 @@
 package com.yk.Motivation.domain.comment.controller;
 
+import com.yk.Motivation.base.rq.Rq;
+import com.yk.Motivation.base.rsData.RsData;
 import com.yk.Motivation.domain.comment.entity.Comment;
 import com.yk.Motivation.domain.comment.service.CommentService;
 import lombok.RequiredArgsConstructor;
@@ -13,11 +15,13 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
 
     private final CommentService commentService;
+    private final Rq rq;
 
     @PostMapping("/write")
     public String write(@ModelAttribute Comment comment) {
-        commentService.save(comment);
-        return "redirect:/usr/article/free1/detail/" + comment.getArticle().getId();  // 댓글을 단 게시글로 리다이렉트
+        RsData<Comment> saveRs = commentService.save(comment);
+
+        return rq.redirectOrBack("/usr/article/free1/detail/%s".formatted(comment.getArticle().getId()), saveRs);
     }
 
     // 댓글 삭제 처리
