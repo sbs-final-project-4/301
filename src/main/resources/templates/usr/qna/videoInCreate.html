@@ -1,0 +1,100 @@
+<html layout:decorate="~{common/layout}">
+
+<head>
+    <title th:text="|QnA 게시판 - 작성|"></title>
+    <style>
+        .toast-ui-editor {
+            min-height: 300px; /* 원하는 최소 높이 값 */
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="flex-1 flex items-center justify-center" layout:fragment="content">
+    <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
+
+    <div class="container w-full px-4">
+        <h1 class="mb-4">
+            <i class="fa-solid fa-cubes"></i>
+            <span th:text="|Question create|"></span>
+            <div>
+                <span th:if="${lectureId != null}" th:text="'Lecture ID: ' + ${lectureId}"></span>
+                <span th:unless="${lectureId != null}" th:text="'해당 id값이 없습니다.'"></span>
+                <br>
+                <span th:if="${lessonId != null}" th:text="'Lesson ID: ' + ${lessonId}"></span>
+                <span th:unless="${lessonId != null}" th:text="'해당 id값이 없습니다.'"></span>
+            </div>
+        </h1>
+
+        <form class="flex flex-col gap-6" method="POST" onsubmit="submitQuestionForm(this); return false;" th:action>
+            <input type="hidden" name="body">
+            <input type="hidden" name="bodyHtml">
+
+            <input type="hidden" name="lecture" th:value="${lectureId != null ? lectureId : 0}">
+            <input type="hidden" name="lesson" th:value="${lessonId != null ? lessonId : 0}">
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">제목</span>
+                </label>
+                <input class="input input-bordered" maxlength="100" name="subject" placeholder="제목" type="text" autofocus>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">내용</span>
+                </label>
+                <div class="toast-ui-editor" height="calc(100vh - 200px)" placeholder="내용"></div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <button class="btn btn-block btn-primary gap-1">
+                    <i class="fa-solid fa-pen"></i>
+                    <span>질문하기</span>
+                </button>
+
+                <div class="text-center">
+                    <a class="btn btn-link" th:href="|/usr/qna/q/videoInList|">목록</a>
+                </div>
+            </div>
+        </form>
+
+        <script>
+            function submitQuestionForm(form) {
+                form.subject.value = form.subject.value.trim();
+
+                if (form.subject.value.length == 0) {
+                    form.subject.focus();
+                    toastWarning('제목을 입력해주세요.');
+                    return;
+                }
+
+                if (form.subject.value.length < 2) {
+                    form.subject.focus();
+                    toastWarning('제목을 2자 이상 입력해주세요.');
+                    return;
+                }
+
+                const editor = $(form).find(".toast-ui-editor").data("data-toast-editor");
+
+                const markdown = editor.getMarkdown().trim();
+                const html = editor.getHTML().trim();
+
+                form.body.value = markdown;
+                form.bodyHtml.value = html;
+
+                if (form.body.value.length == 0 || form.bodyHtml.value.length == 0) {
+                    toastWarning("내용을 입력해주세요");
+                    editor.focus();
+                    return;
+                }
+
+                form.submit();
+            }
+        </script>
+    </div>
+</div>
+
+</body>
+</html>

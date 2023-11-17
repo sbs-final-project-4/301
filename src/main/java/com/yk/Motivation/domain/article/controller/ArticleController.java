@@ -7,6 +7,8 @@ import com.yk.Motivation.domain.article.entity.Article;
 import com.yk.Motivation.domain.article.service.ArticleService;
 import com.yk.Motivation.domain.board.entity.Board;
 import com.yk.Motivation.domain.board.service.BoardService;
+import com.yk.Motivation.domain.comment.entity.Comment;
+import com.yk.Motivation.domain.comment.service.CommentService;
 import com.yk.Motivation.domain.genFile.entity.GenFile;
 import com.yk.Motivation.standard.util.Ut;
 import jakarta.validation.Valid;
@@ -40,6 +42,7 @@ public class ArticleController {
     private final BoardService boardService;
     private final ArticleService articleService;
     private final Rq rq;
+    private final CommentService commentService; // 필드 선언 CommentService 추가
 
     @GetMapping("/{boardCode}/list")
     public String showList(
@@ -192,16 +195,28 @@ public class ArticleController {
     public String showDetail(
             Model model,
             @PathVariable String boardCode,
-            @PathVariable long id
+            @PathVariable long id,
+            @RequestParam(defaultValue = "1") int page, // 페이지 번호 (0부터 시작)
+            @RequestParam(defaultValue = "3") int size // 페이지 당 댓글 수
     ) {
         Board board = boardService.findByCode(boardCode).get();
         Article article = articleService.findById(id).get();
+
+        // 조회수 증가
+        article.setViewCount(article.getViewCount() + 1);
+        articleService.save(article); // 증가된 조회수를 저장
+
+        int pageAdjusted = page - 1; // 페이지 번호 조정 (1부터 시작하는 번호를 0부터 시작하는 번호로 변환)
+
+        Pageable pageable = PageRequest.of(pageAdjusted, size);
+        Page<Comment> commentsPage = commentService.findByArticleIdWithPagination(id, pageable);
 
         Map<String, GenFile> filesMap = articleService.findGenFilesMapKeyByFileNo(article, "common", "attachment");
 
         model.addAttribute("board", board);
         model.addAttribute("article", article);
         model.addAttribute("filesMap", filesMap);
+        model.addAttribute("commentsPage", commentsPage); // 페이징 처리된 댓글 모델에 추가
 
         return "usr/article/detail";
     }

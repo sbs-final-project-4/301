@@ -1,0 +1,94 @@
+<html layout:decorate="~{usr/common/layout}">
+
+<head>
+    <title th:text="|글 - ${question.subject}|"></title> <!-- 타이틀 설정 -->
+</head>
+
+<body>
+
+<div class="flex-1 flex items-center justify-center" layout:fragment="content">
+    <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
+
+    <div class="container w-full px-4"> <!-- 컨테이너 시작 -->
+        <h1 class="mb-4">
+            <i class="fa-regular fa-file-word"></i> <!-- 아이콘 -->
+            <span th:text="|${question.id} 질문|"></span> <!-- 게시판 이름 -->
+        </h1>
+        <div class="card bg-base-100 shadow-xl"> <!-- 카드 스타일 시작 -->
+            <div class="card-body"> <!-- 카드 내용 시작 -->
+                <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3"> <!-- 그리드 레이아웃 시작 -->
+                    <!-- 각 정보 영역 시작: 게시물 번호, 작성일, 작성자, 제목, 태그, 내용, 첨부파일 -->
+                    <!-- (이후의 div들은 유사한 구조를 갖는 정보 영역입니다.) -->
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">질문 번호</span>
+                        </label>
+                        <div th:text="${question.id}"></div>
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">제목</span>
+                        </label>
+                        <div th:text="${question.subject}"></div>
+                    </div>
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">작성자</span>
+                        </label>
+                        <div th:text="${question.member.nickname}"></div>
+                    </div>
+                    <div class="form-control col-span-full">
+                        <label class="label">
+                            <span class="label-text">내용</span>
+                        </label>
+                        <div class="toastui-editor-bodys"
+                             style="overflow-wrap: break-word;"
+                             th:utext="${question.body}">
+                        </div>
+                        <label class="label">
+                            <span class="label-text">내용테스트</span>
+                        </label>
+                        <div class="toastui-editor-bodys"
+                             style="overflow-wrap: break-word;"
+                             th:utext="${question.bodyHtml}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6"> <!-- 버튼 그룹 시작 -->
+                    <div class="text-center"> <!-- 중앙 정렬 -->
+                        <a th:if="${@questionService.checkActorCanModify(@rq.member, question).success}"
+                           class="btn btn-link" th:href="|/usr/qna/q/modify/${question.id}|">수정</a>
+                        <a th:if="${@questionService.checkActorCanModify(@rq.member, question).success}"
+                           onclick="return confirm('정말로 삭제하시겠습니까?');"
+                           class="btn btn-link" th:href="|/usr/qna/q/delete/${question.id}|">삭제</a>
+                        <a class="btn btn-link" th:href="|/usr/qna/q/list|">목록</a>
+                    </div>
+                </div>
+
+                <!--Answer-->
+                <h5 th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
+                <div>
+                    <ul>
+                        <li th:each="answer : ${question.answerList}">
+                            <span th:text="${answer.member.nickname}"></span>
+                            <span th:text="${answer.content}"></span>
+                        </li>
+                    </ul>
+                </div>
+                <div th:if="${@rq.login}">
+                    <div th:if="${@questionService.checkActorCanModify(@rq.member, question).success or @rq.isProducer()}">
+                        <form th:action="@{|/usr/qna/a/create/${question.id}|}" method="post">
+                            <textarea class="textarea textarea-bordered w-full" name="content" placeholder="답변을 입력하세요."></textarea>
+                            <button type="submit" class="btn btn-primary mt-2">답변 등록</button>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

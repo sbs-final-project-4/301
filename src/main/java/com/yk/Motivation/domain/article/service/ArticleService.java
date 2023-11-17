@@ -138,4 +138,11 @@ public class ArticleService {
     public Page<Article> findByTag(String tagContent, Pageable pageable) {
         return articleRepository.findByArticleTags_content(tagContent, pageable);
     }
+
+    /*JHG ADD*/
+    @Transactional
+    public void save(Article article) {
+        articleRepository.save(article);
+    }
+    /*JHG ADD*/
 }
