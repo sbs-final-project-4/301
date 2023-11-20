@@ -1,96 +1,84 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title>내 정보</title>
+    <title th:text="|내 정보|"></title>
 </head>
 
 <body>
 
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
-    <div class="max-w-2xl w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-solid fa-user"></i>
-            내 정보
-        </h1>
-
-        <div class="card bg-base-100 shadow-xl">
-            <div class="card-body">
-                <h2 class="card-title mb-4">프로필 이미지</h2>
-
-                <div class="detail flex flex-col gap-3">
-                    <div class="form-control">
-                        <div class="flex justify-center">
-                            <img class="w-40 h-40 rounded-full" th:src="${@rq.profileImgUrl}">
-                        </div>
+<div class="w-full lg:w-3/4 mx-auto flex justify-center" layout:fragment="content">
+    <div class="min-h-screen flex flex-col mt-3 lg:mt-12 w-[95%] md:w-[50%] 2xl:w-[30%]">
+        <div clsss="my_list">
+            <span class="text-2xl ml-1 lg:ml-3">내 정보</span>
+            <a th:if="${@rq.member.modifyAvailable}" href="/usr/member/checkPassword?redirectUrl=/usr/member/modify">
+                <button class="mx-4 p-2 px-4 bg-white hover:bg-gray-100 text-gray-800 font-semibold py-3 rounded-full shadow-md hover:shadow-lg transition duration-300"><i class="fa-solid fa-pen"></i></button>
+            </a>
+        </div>
+        <div class=" sm:mt-2 -ml-1">
+            <div class="flex justify-center">
+                <img class="w-36 h-36 rounded-3xl mt-6 hidden sm:block" th:src="${@rq.profileImgUrl}">
+            </div>
+            <div>
+                <div class="border-b-2 border-gray-300 p-2 w-full">
+                    <img class="p-4 w-24 rounded-3xl text-sm h-24 mt-6 sm:hidden mx-auto th:src=" th:src="${@rq.profileImgUrl}">
+                    <label class="label">
+                        <span class="label-text text-sm">닉네임</span>
+                    </label>
+                    <div class="text-sm p-2 w-full">
+                        <span th:text="${@rq.member.nickname}"></span>
                     </div>
                 </div>
-            </div>
-
-            <div class="card-body">
-                <h2 class="card-title mb-4">개인정보</h2>
-
-                <div class="detail flex flex-col gap-3">
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">가입일</span>
-                        </label>
-                        <div th:text="${#temporals.format(@rq.member.createDate, 'yy.MM.dd')}"></div>
-                    </div>
-
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">아이디</span>
-                        </label>
-                        <div th:text="${@rq.member.username}"></div>
-                    </div>
-
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">별명</span>
-                        </label>
-                        <div th:text="${@rq.member.nickname}"></div>
-                    </div>
-
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">EMAIL</span>
-                        </label>
-                        <div th:text="${@rq.member.emailForPrint}"></div>
+                <div class="border-b-2 border-gray-300 p-2 w-full">
+                    <label class="label">
+                        <span class="label-text text-sm">아이디</span>
+                    </label>
+                    <div class="text-sm p-2 w-full ">
+                        <span th:text="${@rq.member.username}"></span>
                     </div>
                 </div>
-            </div>
-
-            <div class="card-body">
-                <h2 class="card-title mb-4">제작자 정보</h2>
-
-                <div class="detail flex flex-col gap-3">
-
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">제작자 활동명</span>
-                        </label>
-                        <div th:text="${@rq.member.producerName}"></div>
+                <div class="border-b-2 border-gray-300 p-2 w-full">
+                    <label class="label">
+                        <span class="label-text text-sm">가입일</span>
+                    </label>
+                    <div class="text-sm p-2 w-full ">
+                        <span th:text="${#temporals.format(@rq.member.createDate, 'yy.MM.dd')}"></span>
+                    </div>
+                </div>
+                <div class="border-b-2 border-gray-300 p-2 w-full">
+                    <label class="label">
+                        <span class="label-text text-sm">이메일</span>
+                    </label>
+                    <div class="text-sm p-2 w-full ">
+                        <span th:text="${@rq.member.email}">이메일이 들어갈 자리 입니다.</span>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="mt-6">
-            <div class="text-center">
-                <a class="btn btn-link" href="/usr/member/logout">로그아웃</a>
-                <a th:if="${@rq.member.modifyAvailable}" class="btn btn-link"
-                   href="/usr/member/checkPassword?redirectUrl=/usr/member/modify">회원정보수정</a>
-                <a class="btn btn-link"
-                   href="/usr/member/checkPassword?redirectUrl=/usr/member/beProducer"
-                   th:text="${@rq.producerPageName}"
-                ></a>
-                <a class="btn btn-link" href="/usr/member/checkPassword?redirectUrl=/usr/member/myPayments">내 결제기록(환불신청)</a>
-                <a class="btn btn-link" href="/usr/member/withdrawal">회원탈퇴</a>
+        <div class="inform mt-10 -ml-1">
+            <span class="text-2xl ml-2 sm:ml-4">제작자 정보</span>
+            <a class="btn btn-xs ml-3"
+               href="/usr/member/checkPassword?redirectUrl=/usr/member/beProducer"
+               th:text="${@rq.producerPageName}"
+            ></a>
+            <div class="border-b-2 border-gray-300 p-2 w-full">
+                <label class="label">
+                    <span class="label-text text-sm">활동명</span>
+                </label>
+                <div class="text-sm p-2 w-full ">
+                    <span th:text="${@rq.member.producerName != null ? @rq.member.producerName : '현재 제작자가 아닙니다.'}"></span>
+                </div>
             </div>
+        </div>
+        <div class="x_btn mt-3 mx-auto w-2/3 lg:w-full">
+            <a href="/">
+                <button class="bg-[#312F95] w-full p-2 mt-6 rounded-lg hover:bg-[#112862]">
+                    <i class="fa-solid fa-house text-white mr-2"></i><span class="text-white mr-2">홈으로</span>
+                </button>
+            </a>
+
         </div>
     </div>
 </div>
 
 </body>
-
 </html>

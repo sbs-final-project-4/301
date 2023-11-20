@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html layout:decorate="~{common/layout.html}">
+
+<head>
+
+</head>
+
+<body>
+
+<header class="w-full lg:w-3/4 mx-auto border-b border-gray-400" layout:fragment="header">
+    <div class="navbar flex">
+        <div class="navbar-center  lg:hidden">
+            <div class="dropdown dropdown-bottom relative">
+                <label class="btn btn-ghost btn-circle" tabindex="0">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 6h16M4 12h16M4 18h7" stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="2"/>
+                    </svg>
+                </label>
+                <ul class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+                    tabindex="0">
+                    <li th:if="${@rq.admin}"><a href="/adm/home/main"><i class="fa-solid fa-gauge-high"></i> 관리자</a></li>
+                    <li th:if="${@rq.logout}"><a href="/usr/member/login"><i
+                            class="fa-solid fa-arrow-right-to-bracket"></i> 로그인</a></li>
+                    <li th:if="${@rq.logout}"><a href="/usr/member/join"><i class="fa-solid fa-user-plus"></i> 회원가입</a>
+                    </li>
+                    <li th:if="${@rq.login}"><a href="/usr/member/me"><i class="fa-solid fa-user"></i> 내 정보</a></li>
+                    <li th:if="${@rq.login}">
+                        <a href="/usr/member/checkPassword?redirectUrl=/usr/member/beProducer">
+                            <i class="fa-brands fa-product-hunt"></i>
+                            <span th:text="${@rq.producerPageName}"></span>
+                        </a>
+                    </li>
+                    <li th:if="${@rq.login}"><a href="/usr/post/myList"><i class="fa-regular fa-file-lines"></i> 내 글</a>
+                    </li>
+                    <li><a href="/usr/post/list"><i class="fa-regular fa-rectangle-list"></i> 글</a>
+                    </li>
+                    <li th:if="${@rq.producer}"><a href="/usr/book/myList"><i class="fa-solid fa-book-open"></i> 내가 쓴 책</a>
+                    </li>
+                    <li><a href="/usr/book/list"><i class="fa-solid fa-book-open-reader"></i> 내가 구매한 책</a>
+
+                    <li><a href="/usr/book/list"><i class="fa-solid fa-book"></i> 책</a>
+                    </li>
+                    <li><a href="/usr/article/notice1/list"><i class="fa-regular fa-flag"></i> 공지사항 게시판</a></li>
+                    <li><a href="/usr/article/free1/list"><i class="fa-solid fa-face-grin-tears"></i> 자유 게시판</a></li>
+                    <li th:if="${@rq.login}">
+                        <a href="/usr/member/logout">
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i> 로그아웃
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="mx-auto lg:flex">
+            <img class="h-8" src="https://ifh.cc/g/Rrmt4A.png" alt="">
+        </div>
+        <div class="ml-8 flex-grow">
+            <ul class="flex text-md hidden lg:flex items-center space-x-3">
+                <li><a class="p-4 relative before:content-[''] before:absolute
+          before:h-[6px] before:right-1/2 before:bottom-0 before:w-0 before:bg-[#312F95] before:transition before:duration-500 before:transition-all before:z-[-1]
+                   after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:bg-[#312F95] after:transition after:duration-500 after:z-[-1] after:transition-all after:h-[6px]
+                   hover:after:w-1/2 hover:before:w-1/2" href="#">전체강좌</a></li>
+                <li><a class="p-4 relative before:content-[''] before:absolute
+          before:h-[6px] before:right-1/2 before:bottom-0 before:w-0 before:bg-[#312F95] before:transition before:duration-500 before:transition-all before:z-[-1]
+                   after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:bg-[#312F95] after:transition after:duration-500 after:z-[-1] after:transition-all after:h-[6px]
+                   hover:after:w-1/2 hover:before:w-1/2" href="#">시리즈</a></li>
+                <li><a class="p-4 relative before:content-[''] before:absolute
+          before:h-[6px] before:right-1/2 before:bottom-0 before:w-0 before:bg-[#312F95] before:transition before:duration-500 before:transition-all before:z-[-1]
+                   after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:bg-[#312F95] after:transition after:duration-500 after:z-[-1] after:transition-all after:h-[6px]
+                   hover:after:w-1/2 hover:before:w-1/2" href="#">QNA</a></li>
+                <li><a class="p-4 relative before:content-[''] before:absolute
+          before:h-[6px] before:right-1/2 before:bottom-0 before:w-0 before:bg-[#312F95] before:transition before:duration-500 before:transition-all before:z-[-1]
+                   after:content-[''] after:absolute after:left-1/2 after:bottom-0 after:w-0 after:bg-[#312F95] after:transition after:duration-500 after:z-[-1] after:transition-all after:h-[6px]
+                   hover:after:w-1/2 hover:before:w-1/2" href="#">커뮤니티</a></li>
+            </ul>
+        </div>
+        <div class=" flex-grow justify-end">
+            <a class="btn btn-ghost btn-circle" href="/usr/member/me">
+                <img alt="" class="w-[30px] h-[30px] rounded-full object-cover"
+                     th:if="${@rq.login}" th:src="${@rq.profileImgUrl}">
+            </a>
+            <button class="btn btn-ghost btn-circle ml-3" th:if="${@rq.login}">
+                <div class="indicator">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                         xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                              stroke-linecap="round" stroke-linejoin="round"
+                              stroke-width="2"/>
+                    </svg>
+                    <span class="badge badge-xs badge-primary indicator-item"></span>
+                </div>
+            </button>
+        </div>
+
+    </div>
+</header>
+
+</body>
+
+</html>

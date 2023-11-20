@@ -1,0 +1,57 @@
+<html layout:decorate="~{usr/common/layout}">
+
+<head>
+    <title th:text="게시판"></title>
+</head>
+
+<body>
+
+<div class="flex-1 flex w-full lg:w-3/4 mx-auto" layout:fragment="content">
+    <div class="w-full lg:w-full xl:w-3/4 mx-auto">
+        <div class="border-b border-t border-gray-300 py-4">
+            <span class="text-md lg:text-xl font-bold my-auto ml-6">시리즈 글 제목 입니다.</span>
+            <div class="text-gray-500 ml-5 mt-2 text-sm p-1 my-auto mr-3">2023 / 11 / 17</div>
+            <span class="ml-6">작성자</span>
+        </div>
+        <div class="write-box border-b border-gray-300 p-2 ml-2 lg:ml-4">
+            <p class="w-full md:w-3/4">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an
+                unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+            <div class="flex mt-6 md:mt-0">
+                <span style="background: linear-gradient(180deg, rgba(255,255,255,0) 60%, #FFD0AE 40%);" class="inline-block mt-2 mb-2"><a href="#"># 자바</a></span>
+                <button class="ml-auto">수정</button>
+                <button class="ml-4">삭제</button>
+            </div>
+        </div>
+        <div class="comment-box mt-5 w-[98%] mx-auto lg:ml-4">
+            <form class="comment-form flex mt-6">
+                <textarea placeholder="댓글을 입력해주세요." cols="50" class="placeholder:text-sm  textarea textarea-bordered textarea-lg w-full" ></textarea>
+            </form>
+            <div class=" w-full flex justify-end py-2">
+                <button class="btn btn-sm mr-2 lg:mr-0">댓글 등록</button>
+            </div>
+            <div class="comment text-sm flex sm:border-b border-t border-gray-200 p-2 mt-4 mb-4">
+           <span>
+             <p>댓글 작성 닉네임</p>
+             <p class="text-gray-500 text-center hidden sm:inline">1시간전</p>
+           </span>
+                <span class="ml-16 mt-2 hidden sm:inline">댓글 내용입니다.</span>
+                <!--아래는 댓글 수정 삭제 버튼 입니다.-->
+                <div class=" ml-auto hidden sm:flex mt-1">
+
+                    <button class="btn btn-sm ml-auto ">수정</button>
+                    <button class="btn btn-sm ml-3"><i class="fa-regular fa-trash-can"></i></button>
+                </div>
+            </div>
+            <!--아래는 모바일 환경 댓글 내용과 댓글 수정 삭제 버튼 입니다.-->
+            <span class="ml-2 mt-1 sm:hidden">댓글 내용입니다.</span>
+            <div class=" ml-auto flex sm:hidden border-b border-gray-200 py-2">
+                <button class="btn btn-sm ml-auto ">수정</button>
+                <button class="btn btn-sm ml-2 mr-2"><i class="fa-regular fa-trash-can"></i></button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

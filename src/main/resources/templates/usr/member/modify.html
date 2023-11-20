@@ -1,93 +1,75 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title>회원정보수정</title>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
+    <title th:text="|회원정보 수정|"></title>
 </head>
 
 <body>
 
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
-    <div class="max-w-2xl w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-solid fa-user-pen"></i>
-            회원정보수정
-        </h1>
-
+<div class="w-full lg:w-3/4 mx-auto flex justify-center" layout:fragment="content">
+    <div class="min-h-screen flex flex-col mt-3 lg:mt-12 w-[95%] md:w-[50%] 2xl:w-[30%]">
+        <div class="text-center">
+            <span class="text-2xl">회원정보수정</span>
+        </div>
         <form class="flex flex-col gap-6" enctype="multipart/form-data" method="POST" name="modify-form"
               onsubmit="submitModifyForm(this); return false;"
-              th:action>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">기존 프로필 이미지</span>
-                </label>
+              th:action >
+            <div class=" sm:mt-2">
+                <img class="p-4 w-32 h-32 rounded-3xl text-sm sm:hidden mx-auto th:src=" th:src="${@rq.profileImgUrl}">
                 <div class="flex justify-center">
-                    <img class="w-40 h-40 rounded-full" th:src="${@rq.profileImgUrl}">
+                    <img class="w-36 h-36 rounded-3xl mt-2 hidden sm:block" th:src="${@rq.profileImgUrl}">
                 </div>
-            </div>
-
-            <div class="form-control">
-                <label class="label">
+                <label class="label ml-2">
                     <span class="label-text">새 프로필 이미지</span>
                 </label>
-                <input accept="image/jpeg, image/png, image/gif" class="file-input file-input-bordered"
-                       name="profileImg"
-                       type="file">
-            </div>
+                <div class="flex justify-center">
+                    <input accept="image/jpeg, image/png, image/gif" class="file-input file-input-bordered file-input-sm w-2/3 lg:w-3/5"
+                           name="profileImg"
+                           type="file">
+                </div>
+                <div>
+                    <div class="border-b-2 border-gray-300 p-2 w-full">
 
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">아이디</span>
-                </label>
-                <div class="badge badge-lg badge-ghost" th:text="${@rq.member.username}"></div>
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">새 비밀번호</span>
-                </label>
-                <input class="input input-bordered" maxlength="30" name="password" placeholder="새 비밀번호" type="password">
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">새 비밀번호 확인</span>
-                </label>
-                <input class="input input-bordered" maxlength="30" name="passwordConfirm" placeholder="새 비밀번호 확인"
-                       type="password">
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">별명</span>
-                </label>
-                <input class="input input-bordered" maxlength="30" name="nickname" placeholder="별명"
-                       th:value="${@rq.member.nickname}" type="text">
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">이메일</span>
-                </label>
-                <div class="badge badge-lg badge-ghost" th:text="${@rq.member.email}"></div>
-            </div>
-
-            <div>
-                <button class="btn btn-block btn-primary gap-1">
-                    <i class="fa-solid fa-user-pen"></i>
-                    <span>회원정보수정</span>
-                </button>
-
-                <div class="text-center">
-                    <a class="btn btn-link" href="/usr/member/me">내 정보</a>
-                    <a class="btn btn-link" href="/usr/member/logout">로그아웃</a>
-                    <a class="btn btn-link" href="/usr/member/withdrawal">회원탈퇴</a>
+                        <label class="label">
+                            <span class="label-text text-sm">아이디</span>
+                        </label>
+                        <div class="text-sm p-2 w-full" th:text="${@rq.member.username}"></div>
+                    </div>
+                    <div>
+                        <label class="label">
+                            <span class="label-text mt-2 w-full mt-3 lg:mt-6 max-w-xs ml-2">닉네임</span>
+                        </label>
+                        <input class="text-sm p-2 border-b-2 border-gray-300 w-full focus:border-blue-800 focus:outline-none"
+                               type="text" maxlength="30" name="nickname" th:value="${@rq.member.nickname}">
+                    </div>
+                    <div class="pw_box">
+                        <label class="label">
+                            <span class="label-text mt-2 w-full mt-3 lg:mt-6 max-w-xs ml-2">새 비밀번호</span>
+                        </label>
+                        <input class=" p-2 border-b-2 border-gray-300 w-full focus:border-blue-800 focus:outline-none"
+                               type="password" maxlength="30" name="password">
+                    </div>
+                    <div class="pwck_box">
+                        <label class="label">
+                            <span class="label-text mt-2 w-full mt-3 lg:mt-6 max-w-xs ml-2">새 비밀번호 확인</span>
+                        </label>
+                        <input class="w-full p-2 border-b-2 border-gray-300 focus:border-blue-800 focus:outline-none"
+                               type="password" maxlength="30" name="passwordConfirm" >
+                    </div>
+                    <div class="border-b-2 border-gray-300 p-2 w-full">
+                        <label class="label">
+                            <span class="label-text text-sm">이메일</span>
+                        </label>
+                        <div class="text-sm p-2 w-full " th:text="${@rq.member.email}"></div>
+                    </div>
                 </div>
             </div>
+            <div class="x_btn mt-3 mx-auto w-2/3 lg:w-full">
+                <button class="bg-[#312F95] w-full p-2 mt-6 rounded-lg hover:bg-[#112862]">
+                    <span class="text-white mr-2">수정 완료</span>
+                </button>
+            </div>
         </form>
-
         <script>
             const modifyForm = document['modify-form'];
 
@@ -142,5 +124,4 @@
 </div>
 
 </body>
-
 </html>

@@ -60,6 +60,7 @@ public class NotProd {
                 systemService.setNotProdInitDataConfigured(true);
             }
 
+//            self.work4();
 //            self.work3();
         };
     }
@@ -138,5 +139,16 @@ public class NotProd {
         IntStream.rangeClosed(1, 100).forEach(i -> {
             articleService.write(board, member, "제목" + i, "dummy", "내용" + i);
         });
+    }
+
+    @Transactional
+    public void work4() {
+
+        Member member1 = memberService.join("user4", "1234", "nickname4", "user4@test.com", "").getData();
+        Member member2 = memberService.join("user5", "1234", "nickname5", "user5@test.com", "").getData();
+
+        memberService.setEmailVerified(member1);
+        memberService.setEmailVerified(member2);
+
     }
 }
