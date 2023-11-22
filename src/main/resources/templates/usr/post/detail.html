@@ -1,110 +1,54 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title th:text="|글 - ${post.subject}|"></title>
+    <title th:text="|포스트 - ${post.subject}|"></title>
 </head>
 
 <body>
 
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
+<div class="flex-1 flex w-full lg:w-3/4 mx-auto" layout:fragment="content">
     <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
 
-    <div class="container w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-regular fa-file-word"></i>
-            <span th:text="|글|"></span>
-        </h1>
-
-        <div class="card bg-base-100 shadow-xl">
-            <div class="card-body">
-                <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3">
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">번호</span>
-                        </label>
-                        <div th:text="${post.id}"></div>
-                    </div>
-
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">작성일</span>
-                        </label>
-                        <div th:text="${#temporals.format(post.createDate, 'yy.MM.dd')}"></div>
-                    </div>
-
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">작성자</span>
-                        </label>
-                        <div th:text="${post.author.nickname}"></div>
-                    </div>
-
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">공개여부</span>
-                        </label>
-                        <div th:text="${post.publicHanName}"></div>
-                    </div>
-
-                    <div class="form-control col-span-full">
-                        <label class="label">
-                            <span class="label-text">제목</span>
-                        </label>
-                        <div th:text="${post.subject}"></div>
-                    </div>
-
-                    <div class="form-control col-span-full">
-                        <label class="label">
-                            <span class="label-text">태그</span>
-                        </label>
-                        <div th:utext="${post.getTagLinks('<a class=`link` href=`%s`>#%s</a>', @rq.getSuitableListByTagPageBaseUrlByCurrentUrl('post') + '/%s')}"></div>
-                    </div>
-
-                    <div class="form-control col-span-full">
-                        <label class="label">
-                            <span class="label-text">내용</span>
-                        </label>
-                        <div class="toastui-editor-contents"
-                             style="overflow-wrap: break-word;"
-                             th:utext="${post.bodyHtmlForPrint}">
-                        </div>
-                    </div>
-
-                    <div class="form-control col-span-full" th:each="fileEntry : ${filesMap}">
-                        <label class="label">
-                            <span class="label-text">첨부파일 <span th:text="${fileEntry.key}"></span></span>
-                        </label>
-
-                        <a th:href="|${fileEntry.value.downloadUrl}|" class="link">
-                            <i class="fa-regular fa-file"></i>
-                            첨부파일
-                            <span th:text="${fileEntry.key}"></span>
-                            (<span th:text="${fileEntry.value.originFileName}"></span>)
-                            다운로드
-                        </a>
-                    </div>
-                </div>
-
-                <div class="mt-6">
-                    <div class="text-center">
-                        <a th:if="${@postService.checkActorCanModify(@rq.member, post).success}"
-                           class="btn btn-link"
-                           th:href="|/usr/post/modify/${post.id}|">수정</a>
-                        <a onclick="return confirm('정말로 삭제하시겠습니까?');"
-                           th:if="${@postService.checkActorCanRemove(@rq.member, post).success}"
-                           class="btn btn-link"
-                           th:href="|/usr/post/remove/${post.id}|" method="POST">삭제</a>
-                        <a th:with="listUrl = ${param.listUrl != null ? param.listUrl : '/usr/post/list'}"
-                           class="btn btn-link" th:href="${listUrl}">목록</a>
-                    </div>
+    <div class="w-full lg:w-full xl:w-3/4 mx-auto mt-8">
+        <div class="border-b border-t border-gray-300 py-4">
+            <span class="text-md lg:text-xl font-bold my-auto ml-6" th:text="${post.subject}"></span>
+            <div class="text-gray-500 ml-5 mt-2 text-sm p-1 my-auto mr-3" th:text="${#temporals.format(post.createDate, 'yy / MM / dd')}"></div>
+            <div class="flex flex-row items-center justify-between">
+                <span class="ml-6" th:text="${post.author.nickname}"></span>
+                <a class="btn btn-sm mr-4"
+                   th:with="listUrl = ${param.listUrl != null ? param.listUrl : '/usr/post/list'}"
+                   th:href="${listUrl}">목록</a>
+            </div>
+        </div>
+        <div class="write-box border-b border-gray-300 p-2 ml-2 lg:ml-4">
+            <p class="w-full md:w-3/4 toastui-editor-contents" th:utext="${post.bodyHtmlForPrint}"></p>
+            <div class="flex flex-row justify-between items-center mt-6 md:mt-0">
+                <span class="inline-block mt-2 mb-2" th:utext="${post.getTagLinks('<a class=`hashtag inline-block mt-2 ml-3 lg:ml-2` href=`%s`>#%s</a>', @rq.getSuitableListByTagPageBaseUrlByCurrentUrl('post') + '/%s')}"></span>
+                <div class="mr-4">
+                    <a class="ml-auto" th:if="${@postService.checkActorCanModify(@rq.member, post).success}"
+                       th:href="|/usr/post/modify/${post.id}|">수정</a>
+                    <a class="ml-4" onclick="return confirm('정말로 삭제하시겠습니까?');"
+                       th:if="${@postService.checkActorCanRemove(@rq.member, post).success}"
+                       th:href="|/usr/post/remove/${post.id}|" method="POST">삭제</a>
                 </div>
             </div>
         </div>
 
-    </div>
+        <style>
+            .hashtag:nth-child(3n+1) {
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, #FFD0AE 40%);
+            }
 
+            .hashtag:nth-child(3n+2) {
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, #D9D9D9 40%);
+            }
+
+            .hashtag:nth-child(3n+3) {
+                background: linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, #BEEFFE 40%);
+            }
+        </style>
+    </div>
 </div>
 
 </body>
-
 </html>

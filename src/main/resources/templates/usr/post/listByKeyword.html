@@ -13,9 +13,10 @@
         <span class="inline-block title ml-4 lg:ml-0 text-xl lg:text-2xl font-bold">시리즈</span>
         <span class="ml-3 mt-1 text-md lg:text-lg text-gray-500">Series</span>
     </div>
-    <div>
+    <div class="flex flex-row justify-between items-center">
         <span style="background: linear-gradient(180deg, rgba(255,255,255,0) 60%, #D9D9D9 40%);" class="inline-block mt-2 ml-4 lg:ml-2"
               th:text="|${author.nickname}님의 `${tagContent}` 태그 시리즈|"></span>
+        <a href="/usr/series/list" class="btn btn-sm mr-4">목록</a>
     </div>
     <div th:each="post : ${postPage.content}">
         <div class="main-box w-full mt-4 lg:mt-12 ">
@@ -34,7 +35,7 @@
                         <p class="toastui-editor-contents" th:utext="${post.bodyHtmlForPrint}"></p>
                     </div>
                     <a class="flex items-end invisible 2xl:hidden ml-3 mt-2" th:href="|/usr/post/detail/${post.id}?listUrl=${@rq.encodedCurrentUrl}|">더보기</a>
-                    <div th:utext="${post.getTagLinks('<a class=`hashtag inline-block mt-2 ml-3 lg:ml-2` href=`%s`>#%s</a>', @rq.getSuitableListByTagPageBaseUrlByCurrentUrl('series') + '/%s')}"></div>
+                    <div th:utext="${post.getTagLinks('<a class=`hashtag inline-block mt-2 ml-3 lg:ml-2` href=`%s`>#%s</a>', @rq.getSuitableListByTagPageBaseUrlByCurrentUrl('post') + '/%s')}"></div>
                 </div>
                 <div class="right-box flex items-center flex-col my-auto ml-auto mr-2">
                     <span class="text-md" th:text="${post.author.nickname}"></span>

@@ -1,7 +1,7 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title th:text="|강의 수정 - ${lecture.subject}|"></title>
+    <title th:text="STUDIO"></title>
     <style>
 
         @media (max-width: 767px) {
@@ -15,132 +15,198 @@
     </style>
 </head>
 
-
 <body>
-
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
-
-    <div class="container w-full px-4">
-
-        <h1 class="my-4">
-            <i class="fa-solid fa-arrows-rotate"></i>
-            <span th:text="|${lecture.subject} 커리큘럼 수정|"></span>
-        </h1>
-
-        <div class="alert shadow-lg mb-8">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+<div class="lg:flex w-full lg:w-3/4 mt-2 lg:mt-10 mx-auto" layout:fragment="content">
+    <div class="menu-box w-full lg:w-52 flex lg:block">
+        <div class="nick-box ml-2 lg:border-b border-gray-300 ">
+            <P class="text-lg inline lg:block">크리에이터</P>
+            <p class="py-2 inline lg:block" th:text="|${@rq.member.producerName} 님|"></p>
+        </div>
+        <!--아래는 모바일 드롭다운 메뉴 입니다.-->
+        <div class="dropdown dropdown-bottom dropdown-end ml-auto px-2 lg:invisible">
+            <label tabindex="0" class="btn btn-sm "><i class="fa-solid fa-angle-left"></i></label>
+            <ul tabindex="0" class="inline-block lg:hidden dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                <li><a>내가 올린 강의</a></li>
+                <li><a>STUDIO</a></li>
+                <li><a>정산내역</a></li>
+                <li><a>프로필</a></li>
+                <li><a>크리에이터 정보</a></li>
+            </ul>
+        </div>
+        <!--아래는 데스크탑 메뉴 입니다.-->
+        <div class="activity -mt-6 hidden lg:block">
+            <button  onclick="toggleComment(this)" class="p-2">내 활동<i class="fa-solid fa-chevron-down p-2 "></i></button>
             <div>
-                <h3 class="font-bold">수업의 제목, 영상, 순서를 변경해보세요!</h3>
-                <ul th:fragment="postTagInputDesc" class="mt-4 list-disc mx-5 text-gray-400 ">
-                    <li>
-                        수정을 원하는 수업의 <span class="text-red-400">제목</span> 을 클릭하여 삭제, 수정이 가능합니다.
-                    </li>
-                    <li>
-                        우측상단의 <span class="text-red-400">커리큘럼 순서 바꾸기</span> 를 눌러 순서를 바꿀 수 있습니다.
-                    </li>
-                    <li>
-                        우측하단의 <span class="text-red-400">수업 추가</span> 를 눌러 순서를 바꿀 수 있습니다.
-                    </li>
-                </ul>
+                <div onclick="changeColor(this)" class="rounded-md p-2 mx-2 hover:bg-gray-200 hover:rounded-md  cursor-pointer ">
+                    <a  class="" href="#">내가 올린 강의</a>
+                </div>
+                <div onclick="changeColor(this)" class="p-2 mx-2 hover:bg-gray-200 hover:rounded-md rounded-md cursor-pointer">
+                    <a href="#">STUDIO</a>
+                </div>
+                <div onclick="changeColor(this)" class="rounded-md p-2 mx-2 hover:bg-gray-200 hover:rounded-md non-click cursor-pointer">
+                    <a href="#">정산내역</a>
+                </div>
+
             </div>
         </div>
+        <div class="mypage p-2 hidden lg:block">
+            <button  onclick="toggleComment(this)">MY PAGE<i class="fa-solid fa-chevron-down p-2"></i></button>
+            <div>
+                <div onclick="changeColor(this)" class="p-2 hover:bg-gray-200 hover:rounded-md cursor-pointer rounded-md">
+                    <a href="#">프로필</a>
+                </div>
+                <div onclick="changeColor(this)" class="p-2 hover:bg-gray-200 hover:rounded-md cursor-pointer rounded-md">
+                    <a href="#">크리에이터 정보</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="main w-full lg:w-[80%] ml-auto mt-4">
+        <div class="flex border-b border-t border-gray-300 py-4">
+            <span class=" text-sm lg:text-xl px-3 py-4" th:text="|No ${lecture.id}|"></span>
+            <span class="text-md lg:text-xl font-bold my-auto ml-6" th:text="${lecture.subject}"></span>
+            <div class="text-gray-500 ml-auto my-auto mr-3 hidden lg:flex" th:text="|등록일 ${#temporals.format(lecture.createDate, 'yy / MM / dd')}|"></div>
+        </div>
+        <div class="lg:w-[50%] flex">
+            <span class="text-lg font-bold p-2 mt-3">커리큘럼</span>
+            <span class="text-gray-500 text-center whitespace-nowrap mt-6 ml-auto mr-3 lg:ml-0 text-sm">총 <span th:text="${lecture.lessons.size}"></span> 개 /
+                <span th:if="${lecture.totalLessonLengthPerHour != 0}" th:text="|${lecture.totalLessonLengthPerHour} 시간 |"></span>
+                <span th:if="${lecture.totalLessonLengthPerMinute != 0}" th:text="|${lecture.totalLessonLengthPerMinute} 분|"></span>
+                <span> 의 수업</span>
+            </span>
+        </div>
+        <div style='box-shadow:2px 3px 5px 0px #d9d9d9' class="border rounded-xl border-gray-200 w-full h-38 mt-3">
+            <span class="text-lg font-bold p-4 inline-block"><i class="fa-regular fa-circle-check mx-2"></i>STUDIO 사용법</span>
+            <p class="mx-4 mb-6 text-sm lg:text-base">수업의 영상, 순서를 변경해보세요!<br>
+                하단의 <span class="bg-purple-200 font-bold">+수업추가</span> 버튼을 눌러 수업영상을 추가합니다. <br>
+                <span class="bg-blue-200 font-bold">순서변경</span> 버튼을 눌러 수업영상의 순서를 바꿀 수 있습니다. <br>
+                제목 수정 / 영상 변경 / 삭제는 각 수업목록을 누르면 가능합니다.<br>
+                강의를 등록 / 수정 하려면 <span class="bg-gray-200 font-bold">내가 올린 강의</span>로 이동해주세요.
+            </p>
 
-
-        <div class="card bg-base-100 shadow-xl " >
-            <div class="card-body">
-                <div class="detail grid grid-rows-[repeat(auto-fit,minmax(70px,1fr))] gap-3">
-
-
-
+        </div>
+        <div class="flex mt-6">
+            <button class="w-[33%] text-center border border-purple-200 bg-purple-200 p-2 rounded-md hover:bg-purple-300 ml-1 lg:ml-0 font-bold"
+                    onclick="my_modal_1.showModal()">+ 수업추가</button>
+            <dialog id="my_modal_1" class="modal">
+                <form class="modal-box w-3/4 mx-auto w-full bg-white border-gray-500" method="POST" enctype="multipart/form-data"
+                      onsubmit="submitWriteAddLessonForm(this); return false;"
+                      th:action="|/usr/lesson/${lecture.id}/writeAddLesson|">
                     <div class="flex justify-end">
-                        <a th:href="|/usr/lesson/${lecture.id}/modifySortNo|" class="modifySortNoTag btn btn-sm btn-outline btn-primary">커리큘럼 순서 바꾸기</a>
+                        <button type="button" onclick="closeAndClean(this);"><i class="fa-solid fa-xmark p-4"></i></button>
                     </div>
 
+                    <div class="upload-box w-3/4 mx-auto">
+                        <span class="font-bold text-lg"><i class="fa-solid fa-upload p-2"></i> 수업 추가하기</span>
+                        <div class="flex items-center my-3">
+                            <input class="border-gray-400 focus:outline-none focus:border-blue-800 border-2 rounded-lg w-full p-2"
+                                   maxlength="100" name="subject" placeholder="강의 제목">
+                        </div>
+                    </div>
+                    <div class="form-control w-3/4 mx-auto">
+                        <label class="label">
+                            <span class="label-text">강의 업로드</span>
+                        </label>
+                        <input class="file-input file-input-bordered"
+                               name="video" accept="video/*" type="file">
+                    </div>
+                    <div class="flex justify-center mt-6 w-3/4 mx-auto">
+                        <div class="flex flex-row">
+                            <button type="submit" class="btn btn-md mx-2">업로드 하기</button>
+                        </div>
+                    </div>
+                </form>
+            </dialog>
+            <a class="w-[33%] text-center border border-blue-200 bg-blue-200 p-2 ml-2 lg:ml-4 rounded-md hover:bg-blue-300 modifySortNoTag font-bold"
+               th:href="|/usr/lesson/${lecture.id}/modifySortNo|">순서변경</a>
+            </a>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const isMobile = getComputedStyle(document.body, ':after').getPropertyValue('content') === '"mobile"';
 
-                    <script>
-                        document.addEventListener("DOMContentLoaded", function() {
-                            const isMobile = getComputedStyle(document.body, ':after').getPropertyValue('content') === '"mobile"';
-
-                            document.querySelector(".modifySortNoTag").addEventListener("click", function(e) {
-                                if (isMobile) {
-                                    e.preventDefault();
-                                    rejectMobile(); // 원하는 함수를 호출
-                                }
-                            });
-                        });
-
-                        function rejectMobile() {
-                            toastWarning('모바일 환경에서는 지원하지 않습니다.');
+                    document.querySelector(".modifySortNoTag").addEventListener("click", function(e) {
+                        if (isMobile) {
+                            e.preventDefault();
+                            rejectMobile(); // 원하는 함수를 호출
                         }
-                    </script>
+                    });
+                });
 
-                    <div th:each="lesson : ${lessons}" class="text-left my-2 flex">
-                        <span class="btn btn-active btn-neutral flex-none mr-2 -ml-4" th:text="|${lesson.sortNo} 강 |"></span>
-                        <button type="button" class="btn btn-outline btn-primary flex-grow max-w-[460px] mr-2 "
-                                th:attr="onclick=${lesson.lessonReady} ? 'modifyFormModal'+${lesson.id}+'.showModal()'
-                                 : 'toastWarning(\'해당 수업은 동영상 변환 작업중 입니다. 현재 수정이 불가능합니다.\')'"
-                                >
-                            <span class="loading loading-spinner" th:unless="${lesson.lessonReady}"></span><span th:text="${lesson.subject}"></span>
-                        </button>
-                        <span class="btn btn-active btn-neutral flex-none mr-2" th:text="${lesson.lessonLengthForPrint}"></span>
+                function rejectMobile() {
+                    toastWarning('모바일 환경에서는 지원하지 않습니다.');
+                }
+            </script>
+            <a class="w-[33%] text-center border border-gray-300 bg-gray-200 p-2 ml-2 lg:ml-4  mr-1 lg:mr-0 rounded-md hover:bg-gray-300 font-bold0"
+               href="/usr/member/myEnrolledLectures">내가 올린 강의</a>
+        </div>
+        <div id="tab1" class="cont block w-full h-24 border-t border-gray-200 mt-4" >
+            <div class="w-full mt-3 ">
+                <button id="more_btn" onclick="toggleComment(this)" type="button" class="flex p-4 border-b border-gray-300 w-full">
+                    <span class="ml-4">Part 1</span>
+                    <span class="ml-auto text-gray-500 mr-2 text-sm">총
+                        <span th:text="${lecture.lessons.size}"></span> 강 /
+                        <span th:if="${lecture.totalLessonLengthPerHour != 0}" th:text="|${lecture.totalLessonLengthPerHour} 시간 |"></span>
+                        <span th:if="${lecture.totalLessonLengthPerMinute != 0}" th:text="|${lecture.totalLessonLengthPerMinute} 분|"></span>
+                    </span>
+                    <i class="fa-solid fa-angle-down mt-1"></i>
+                </button>
+                <div class="more_tab block">
+                    <div th:each="lesson : ${lessons}">
+                        <div class="more-header cursor-pointer bg-gray-100">
+                            <button type="button" class="inline-block px-6 p-3 border-b border-gray-300 w-full hover:bg-gray-200 flex flow-row items-center justify-between"
+                                    th:attr="onclick=${lesson.lessonReady} ? 'modifyFormModal'+${lesson.id}+'.showModal()'
+                                     : 'toastWarning(\'해당 수업은 동영상 변환 작업중 입니다. 현재 수정이 불가능합니다.\')'" >
+                                <div>
+                                    <span class="loading loading-spinner" th:unless="${lesson.lessonReady}"></span>
+                                    <span th:text="${lesson.subject}"></span>
+                                </div>
+                                <span class="text-gray-500 text-sm" th:text="${lesson.lessonLengthForPrint}"></span>
+                            </button>
+                        </div>
 
-                        <dialog th:id="'modifyFormModal' + ${lesson.id}" class="modal">
+                        <dialog th:id="'modifyFormModal' + ${lesson.id}" class="modal text-sm">
                             <form class="modal-box" method="POST" enctype="multipart/form-data"
                                   onsubmit="submitModifyForm(this); return false;"
                                   th:action="|/usr/lesson/${lecture.id}/modify|">
-                                <div class="form-control col-span-full">
-                                    <label class="label">
-                                        <span class="label-text">수업 제목 변경</span>
-                                    </label>
 
-                                    <div class="flex items-center">
-                                        <input class="input input-bordered w-full" maxlength="100"
-                                               name="subject" placeholder="제목" type="text" th:value="${lesson.subject}"
-                                               th:data-original="${lesson.subject}">
-                                    </div>
+                                <div class="flex flex-row justify-end">
+                                    <button type="button" onclick="closeAndReset(this);">
+                                        <i class="fa-solid fa-xmark p-4"></i>
+                                    </button>
                                 </div>
+
+                                <label class="label text-lg">
+                                    <span class="label-text">수업 제목 변경</span>
+                                </label>
+                                <input class="border-gray-400 focus:outline-none focus:border-blue-800 border-2 rounded-lg w-full p-2" maxlength="100"
+                                       name="subject" placeholder="제목" type="text" th:value="${lesson.subject}"
+                                       th:data-original="${lesson.subject}">
+                                <div class="flex">
+                                    <label class="label">
+                                        <span class="label-text mt-3">기존 강의 영상 삭제</span>
+                                    </label>
+                                    <input type="checkbox" class="checkbox checkbox-md ml-3 mt-4" value="true" name="videoRemove"/>
+                                </div>
+                                <p class="ml-2">
+                                    강의 영상 변경을 위해 체크와 파일선택이 동시에 이루어져야 합니다. <br>
+                                    파일선택시 취소를 선택하면 파일선택을 리셋할 수 있습니다. <br>
+                                </p>
 
                                 <input type="hidden" name="lessonId" th:value="${lesson.id}">
 
-                                <ul class="mt-16 list-disc mx-5 text-gray-400">
-                                    <li>
-                                        강의 영상 변경을 위해 체크와 파일선택이 동시에 이루어져야 합니다.
-                                    </li>
-                                    <li>
-                                        파일선택시 취소를 선택하면 파일선택을 리셋할 수 있습니다.
-                                    </li>
-                                </ul>
-                                <div class="form-control col-span-full">
-                                    <label class="label">
-                                        <span class="label-text">기존 강의영상 삭제</span>
-                                    </label>
-
-                                    <div class="flex items-center gap-3">
-                                        <input type="checkbox" class="checkbox" name="videoRemove" value="true">
-
-                                    </div>
-                                </div>
-
-                                <div class="form-control">
-                                    <label class="label">
-                                        <span class="label-text">새 강의영상 </span>
-                                    </label>
+                                <label class="label">
+                                    <span class="label-text mt-3">새 강의영상 </span>
+                                </label>
+                                <div>
                                     <input class="file-input file-input-bordered"
-                                           name="video"
-                                           type="file">
+                                           name="video" type="file" accept="video/*">
+                                    <a class="btn btn-neutral btn-md ml-3"
+                                       onclick="return confirm('해당 수업을 정말로 삭제하시겠습니까?');"
+                                       th:href="|/usr/lesson/${lecture.id}/remove/${lesson.id}|" method="POST">삭제하기</a>
                                 </div>
 
-                                <div class="flex flex-row justify-between mt-12">
-                                    <form method="dialog">
-                                        <button type="button" class="btn btn-error" onclick="closeAndReset(this);">취소</button>
-                                    </form>
-
-                                    <div class="flex flex-row">
-                                        <a onclick="return confirm('해당 수업을 정말로 삭제하시겠습니까?');"
-                                           th:href="|/usr/lesson/${lecture.id}/remove/${lesson.id}|"
-                                           class="btn btn-error mx-2" method="POST">삭제</a>
-                                        <button type="submit" class="btn btn-primary mx-2">저장</button>
-                                    </div>
+                                <div class="w-full mt-6 flex justify-center">
+                                    <button type="submit" class="btn btn-md">저장하기</button>
                                 </div>
                             </form>
                         </dialog>
@@ -178,247 +244,256 @@
                                 </ul>
                             </div>
                         </div>
-
-                        <script>
-
-                            function closeAndReset(buttonElement) {
-                                // 현재 다이얼로그를 닫음
-                                buttonElement.closest('dialog').close();
-
-                                // 현재 다이얼로그 내의 모든 input 요소의 값을 리셋
-                                let dialog = buttonElement.closest('dialog');
-                                let inputs = dialog.querySelectorAll('input:not([name=subject])'); // subject를 제외한 input
-                                inputs.forEach(input => {
-                                    input.value = '';
-                                    if(input.type === 'checkbox') {
-                                        input.checked = false;
-                                    }
-                                });
-
-                                // subject 입력값을 원래 값으로 되돌림
-                                let subjectInput = dialog.querySelector('input[name=subject]');
-                                if(subjectInput) {
-                                    subjectInput.value = subjectInput.dataset.original;
-                                }
-
-                                // 현재 button 이 속한 dialog 의 형제 ul 의 클래스에 hidden 추가
-                                let ulElement = dialog.nextElementSibling;
-                                    if (ulElement && ulElement.tagName === 'UL') {
-                                        ulElement.classList.add('hidden');
-                                    }
-                            }
-
-
-                            let submitModifyFormDone = false;
-
-                            function submitModifyForm(form) {
-
-                                form.parentElement.close();
-
-                                if (submitModifyFormDone) return;
-
-                                form.subject.value = form.subject.value.trim();
-
-                                if (form.subject.value.length == 0) {
-                                    form.subject.focus();
-                                    toastWarning('제목을 입력해주세요.');
-                                    return;
-                                }
-
-                                if (form.subject.value.length < 2) {
-                                    form.subject.focus();
-                                    toastWarning('제목을 2자 이상 입력해주세요.');
-                                    return;
-                                }
-
-
-                                // 체크박스와 파일 입력 필드의 상태를 가져옴
-                                let checkbox = form.querySelector('input[name="videoRemove"]');
-                                let fileInput = form.querySelector('input[name="video"]');
-
-                                // 체크박스가 체크된 상태인데 파일이 선택되지 않았을 경우
-                                     if ((checkbox.checked && !fileInput.files.length) || (!checkbox.checked && fileInput.files.length)) {
-                                    toastWarning('영상 변경 요청이 올바르지 않습니다. 삭제 체크와 파일 선택이 올바르게 선택되었는지 확인해주세요.');
-                                    return false;
-                                }
-
-                                function showLoadingOverlay() {
-                                    document.getElementById('loadingOverlay').style.display = 'block';
-                                }
-
-                                // "비디오 업로드 중..." 알림 표시 (여기서는 단순한 alert를 사용했으나, 실제로는 보다 나은 UX를 위한 로딩 애니메이션 등을 사용할 수 있습니다.)
-                                showLoadingOverlay();
-
-                                // FormData 객체를 사용하여 form의 데이터를 가져옵니다.
-                                let formData = new FormData(form);
-
-                                // fetch를 사용하여 비동기 요청을 보냅니다.
-                                fetch(form.action, {
-                                    method: 'POST',
-                                    body: formData
-                                })
-                                .then(res => res.json()) // 응답을 JSON 형태로 파싱합니다.
-                                .then(rs => {
-                                    // 요청 성공 시 수행할 로직 (예: 페이지 리디렉션)
-                                    if (rs.success) {
-                                        let lectureId = rs.data;
-                                        setTimeout(() => {
-                                            window.location.href = `/usr/lesson/${lectureId}/modify?msg=${encodeURIComponent(lectureId + '번 강의가 수정되었습니다.')}&ttl=1698804504756`
-                                        }, 5000);
-                                    }
-                                })
-
-                                submitModifyFormDone = true;
-                            }
-                        </script>
-
-                    </div>
-                </div>
-
-                <div class="flex justify-end">
-                    <button class="btn btn-sm btn-outline my-4 addBlockButton max-w-[100px]" onclick="my_modal_1.showModal()">수업 추가</button>
-                    <dialog id="my_modal_1" class="modal">
-                        <form class="modal-box" method="POST" enctype="multipart/form-data"
-                              onsubmit="submitWriteAddLessonForm(this); return false;"
-                              th:action="|/usr/lesson/${lecture.id}/writeAddLesson|">
-                            <div class="form-control col-span-full">
-                                <label class="label">
-                                    <span class="label-text">수업 제목</span>
-                                </label>
-
-                                <div class="flex items-center">
-                                    <input class="input input-bordered w-full" maxlength="100"
-                                           name="subject" placeholder="제목">
-                                </div>
-                            </div>
-
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text">강의영상 </span>
-                                </label>
-                                <input class="file-input file-input-bordered"
-                                       name="video"
-                                       type="file">
-                            </div>
-
-                            <div class="flex flex-row justify-between mt-12">
-                                <form method="dialog">
-                                    <button type="button" class="btn btn-error" onclick="closeAndClean(this);">취소</button>
-                                </form>
-
-                                <div class="flex flex-row">
-                                    <button type="submit" class="btn btn-primary mx-2">저장</button>
-                                </div>
-                            </div>
-                        </form>
-                    </dialog>
-
-                    <script>
-
-                        function closeAndClean(buttonElement) {
-                            // 현재 다이얼로그를 닫음
-                            buttonElement.closest('dialog').close();
-
-                            // 현재 다이얼로그 내의 모든 input 요소의 값을 리셋
-                            let dialog = buttonElement.closest('dialog');
-                            let inputs = dialog.querySelectorAll('input:not([name=subject])'); // subject를 제외한 input
-                            inputs.forEach(input => {
-                                input.value = '';
-                                if(input.type === 'checkbox') {
-                                    input.checked = false;
-                                }
-                            });
-
-                            let subjectInput = dialog.querySelector('input[name=subject]');
-                            if(subjectInput && subjectInput.value) {
-                                subjectInput.value = '';
-                            }
-
-                            // 현재 button 이 속한 dialog 의 형제 ul 의 클래스에 hidden 추가
-                            let ulElement = dialog.nextElementSibling;
-                                if (ulElement && ulElement.tagName === 'UL') {
-                                    ulElement.classList.add('hidden');
-                                }
-                        }
-
-
-
-                        let submitWriteAddLessonFormDone = false;
-
-                        function submitWriteAddLessonForm(form) {
-                            form.parentElement.close();
-
-                            if (submitWriteAddLessonFormDone) return;
-
-                            form.subject.value = form.subject.value.trim();
-
-                            if (form.subject.value.length == 0) {
-                                form.parentElement.close();
-                                toastWarning('제목을 입력해주세요.');
-                                return;
-                            }
-
-                            if (form.subject.value.length < 2) {
-                                form.parentElement.close();
-                                toastWarning('제목을 2자 이상 입력해주세요.');
-                                return;
-                            }
-
-                            var fileInput = form.video;
-
-                            if (!fileInput.files || fileInput.files.length == 0) {
-                                toastWarning('강의영상을 선택해주세요.');
-                                return;
-                            }
-
-                            function showLoadingOverlay() {
-                                document.getElementById('loadingOverlay').style.display = 'block';
-                            }
-
-                            showLoadingOverlay();
-
-                            // FormData 객체를 사용하여 form의 데이터를 가져옵니다.
-                            let formData = new FormData(form);
-
-                            // fetch를 사용하여 비동기 요청을 보냅니다.
-                            fetch(form.action, {
-                                method: 'POST',
-                                body: formData
-                            })
-                            .then(res => res.json()) // 응답을 JSON 형태로 파싱합니다.
-                            .then(rs => {
-                                // 요청 성공 시 수행할 로직 (예: 페이지 리디렉션)
-                                if (rs.success) {
-                                    let lectureId = rs.data;
-                                    setTimeout(() => {
-                                        window.location.href = `/usr/lesson/${lectureId}/modify?msg=${encodeURIComponent(lectureId + '번 강의가 수정되었습니다.')}&ttl=1698804504756`
-                                    }, 5000);
-                                }
-                            })
-
-                            submitWriteAddLessonFormDone = true;
-                        }
-                    </script>
-
-
-
-
-                </div>
-
-                <div class="">
-                    <div class="text-center">
-                        <a th:if="${@lectureService.checkProducerCanModify(@rq.member, lecture).success}"
-                           class="btn btn-primary"
-                           th:href="|/usr/lecture/detail/${lecture.id}|">수정 완료</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <script>
+        <!--메뉴 접기-->
+        function toggleComment(button) {
+            const content = button.nextElementSibling;
 
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+            } else {
+                content.style.display = 'block';
+            }
+        }
+        const nonClick = document.querySelectorAll(".non-click");
+
+        function handleClick(event) {
+
+            nonClick.forEach((e) => {
+                e.classList.remove("click");
+            });
+
+            event.target.classList.add("click");
+        }
+
+        nonClick.forEach((e) => {
+            e.addEventListener("click", handleClick);
+        });
+
+        <!--메뉴 클릭 시 색상변경-->
+        let prevSelected = null;
+
+        function changeColor(element) {
+            if (prevSelected !== null) {
+                prevSelected.classList.remove('bg-gray-200');
+                prevSelected.classList.add('bg-wihte');
+            }
+
+            if (prevSelected !== element) {
+                element.classList.remove('bg-wihte');
+                element.classList.add('bg-gray-200');
+                prevSelected = element;
+            } else {
+                prevSelected = null;
+            }
+        }
+        <!--수업 추가 모달창-->
+        window.onload = function(){
+            document.querySelector(".popup-btn").addEventListener("click", function(){
+                document.querySelector(".popup-view").style.display = "block";
+                document.querySelector('.overlay').style.display = 'block';
+            });
+            document.querySelector(".popup-close").addEventListener("click", function(){
+                document.querySelector(".popup-view").style.display = "none";
+                document.querySelector('.overlay').style.display = 'none';
+            });
+        <!--강의 수정 모달창-->
+            document.querySelector(".fix").addEventListener("click", function(){
+                document.querySelector(".modal-box").style.display = "block";
+                document.querySelector('.overlay').style.display = 'block';
+            });
+            document.querySelector(".popup-close-2").addEventListener("click", function(){
+                document.querySelector(".modal-box").style.display = "none";
+                document.querySelector('.overlay').style.display = 'none';
+            });
+        }
+    </script>
+    <script>
+
+        function closeAndClean(buttonElement) {
+            // 현재 다이얼로그를 닫음
+            buttonElement.closest('dialog').close();
+
+            // 현재 다이얼로그 내의 모든 input 요소의 값을 리셋
+            let dialog = buttonElement.closest('dialog');
+            let inputs = dialog.querySelectorAll('input:not([name=subject])'); // subject를 제외한 input
+            inputs.forEach(input => {
+                input.value = '';
+                if(input.type === 'checkbox') {
+                    input.checked = false;
+                }
+            });
+
+            let subjectInput = dialog.querySelector('input[name=subject]');
+            if(subjectInput && subjectInput.value) {
+                subjectInput.value = '';
+            }
+
+            // 현재 button 이 속한 dialog 의 형제 ul 의 클래스에 hidden 추가
+            let ulElement = dialog.nextElementSibling;
+                if (ulElement && ulElement.tagName === 'UL') {
+                    ulElement.classList.add('hidden');
+                }
+        }
+
+
+
+        let submitWriteAddLessonFormDone = false;
+
+        function submitWriteAddLessonForm(form) {
+            form.parentElement.close();
+
+            if (submitWriteAddLessonFormDone) return;
+
+            form.subject.value = form.subject.value.trim();
+
+            if (form.subject.value.length == 0) {
+                form.parentElement.close();
+                toastWarning('제목을 입력해주세요.');
+                return;
+            }
+
+            if (form.subject.value.length < 2) {
+                form.parentElement.close();
+                toastWarning('제목을 2자 이상 입력해주세요.');
+                return;
+            }
+
+            var fileInput = form.video;
+
+            if (!fileInput.files || fileInput.files.length == 0) {
+                toastWarning('강의영상을 선택해주세요.');
+                return;
+            }
+
+            function showLoadingOverlay() {
+                document.getElementById('loadingOverlay').style.display = 'block';
+            }
+
+            showLoadingOverlay();
+
+            // FormData 객체를 사용하여 form의 데이터를 가져옵니다.
+            let formData = new FormData(form);
+
+            // fetch를 사용하여 비동기 요청을 보냅니다.
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json()) // 응답을 JSON 형태로 파싱합니다.
+            .then(rs => {
+                // 요청 성공 시 수행할 로직 (예: 페이지 리디렉션)
+                if (rs.success) {
+                    let lectureId = rs.data;
+                    setTimeout(() => {
+                        let currentTimestamp = Date.now();
+                        window.location.href = `/usr/lesson/${lectureId}/modify?msg=${encodeURIComponent(lectureId + '번 강의가 수정되었습니다.')};ttl=${currentTimestamp}`
+                    }, 5000);
+                }
+            })
+
+            submitWriteAddLessonFormDone = true;
+        }
+    </script>
+    <script>
+
+        function closeAndReset(buttonElement) {
+            // 현재 다이얼로그를 닫음
+            buttonElement.closest('dialog').close();
+
+            // 현재 다이얼로그 내의 모든 input 요소의 값을 리셋
+            let dialog = buttonElement.closest('dialog');
+            let inputs = dialog.querySelectorAll('input:not([name=subject])'); // subject를 제외한 input
+            inputs.forEach(input => {
+                input.value = '';
+                if(input.type === 'checkbox') {
+                    input.checked = false;
+                }
+            });
+
+            // subject 입력값을 원래 값으로 되돌림
+            let subjectInput = dialog.querySelector('input[name=subject]');
+            if(subjectInput) {
+                subjectInput.value = subjectInput.dataset.original;
+            }
+
+            // 현재 button 이 속한 dialog 의 형제 ul 의 클래스에 hidden 추가
+            let ulElement = dialog.nextElementSibling;
+                if (ulElement && ulElement.tagName === 'UL') {
+                    ulElement.classList.add('hidden');
+                }
+        }
+
+
+        let submitModifyFormDone = false;
+
+        function submitModifyForm(form) {
+
+            form.parentElement.close();
+
+            if (submitModifyFormDone) return;
+
+            form.subject.value = form.subject.value.trim();
+
+            if (form.subject.value.length == 0) {
+                form.subject.focus();
+                toastWarning('제목을 입력해주세요.');
+                return;
+            }
+
+            if (form.subject.value.length < 2) {
+                form.subject.focus();
+                toastWarning('제목을 2자 이상 입력해주세요.');
+                return;
+            }
+
+
+            // 체크박스와 파일 입력 필드의 상태를 가져옴
+            let checkbox = form.querySelector('input[name="videoRemove"]');
+            let fileInput = form.querySelector('input[name="video"]');
+
+            // 체크박스가 체크된 상태인데 파일이 선택되지 않았을 경우
+                 if ((checkbox.checked && !fileInput.files.length) || (!checkbox.checked && fileInput.files.length)) {
+                toastWarning('영상 변경 요청이 올바르지 않습니다. 삭제 체크와 파일 선택이 올바르게 선택되었는지 확인해주세요.');
+                return false;
+            }
+
+            function showLoadingOverlay() {
+                document.getElementById('loadingOverlay').style.display = 'block';
+            }
+
+            // "비디오 업로드 중..." 알림 표시 (여기서는 단순한 alert를 사용했으나, 실제로는 보다 나은 UX를 위한 로딩 애니메이션 등을 사용할 수 있습니다.)
+            showLoadingOverlay();
+
+            // FormData 객체를 사용하여 form의 데이터를 가져옵니다.
+            let formData = new FormData(form);
+
+            // fetch를 사용하여 비동기 요청을 보냅니다.
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => res.json()) // 응답을 JSON 형태로 파싱합니다.
+            .then(rs => {
+                // 요청 성공 시 수행할 로직 (예: 페이지 리디렉션)
+                if (rs.success) {
+                    let lectureId = rs.data;
+                    setTimeout(() => {
+                        let currentTimestamp = Date.now();
+                        window.location.href = `/usr/lesson/${lectureId}/modify?msg=${encodeURIComponent(lectureId + '번 강의가 수정되었습니다.')};ttl=${currentTimestamp}`
+                    }, 5000);
+                }
+            })
+
+            submitModifyFormDone = true;
+        }
+    </script>
 </div>
 
-
 </body>
-
 </html>

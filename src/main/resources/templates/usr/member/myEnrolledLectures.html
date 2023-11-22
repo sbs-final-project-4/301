@@ -83,9 +83,11 @@
                             <div class=" w-[47%] border border-gray-300 bg-gray-200 mb-2 lg:mb-0 p-2 mx-auto flex justify-center rounded-md hover:bg-gray-300 h-10">
                                 <button class=""><a class="hover:font-bold" href="#">강의 정보 수정</a></button>
                             </div>
-                            <div class="w-[47%] border border-yellow-300 bg-yellow-200 mb-2 lg:mb-0 mx-auto flex justify-center rounded-md hover:bg-yellow-300 h-10">
-                                <button class=""><a class="hover:font-bold" href="#">STUDIO</a></button>
-                            </div>
+                            <a class="w-[47%] border border-yellow-300 bg-yellow-200 mb-2 lg:mb-0 mx-auto flex items-center justify-center rounded-md hover:bg-yellow-300 h-10 hover:font-bold"
+                               th:href="|/usr/lesson/${lecture.id}/modify|"
+                               th:if="${@lectureService.checkProducerCanModify(@rq.member, lecture).success} and ${lecture.lessonsReady}">
+                               STUDIO
+                            </a>
                         </div>
                     </div>
                 </div>
