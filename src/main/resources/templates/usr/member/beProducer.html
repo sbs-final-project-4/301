@@ -1,175 +1,238 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title th:text="${@rq.producerPageName}"></title>
+    <title th:text="|크리에이터|"></title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
 </head>
 
 <body>
 
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
-    <div class="max-w-2xl w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-brands fa-product-hunt"></i>
-            <span th:text="${@rq.producerPageName}"></span>
-        </h1>
-
-        <form class="flex flex-col gap-6" method="POST" name="be-producer-form"
-              onsubmit="submitBeProducerForm(this); return false;"
-              th:action>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">아이디</span>
-                </label>
-                <div class="badge badge-lg badge-ghost" th:text="${@rq.member.username}"></div>
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">별명</span>
-                </label>
-                <div class="badge badge-lg badge-ghost" th:text="${@rq.member.nickname}"></div>
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">활동명</span>
-                </label>
-                <input class="input input-bordered" maxlength="30" name="producerName" placeholder="활동명"
-                       th:value="${@rq.member.producerName}" type="text" onchange="$(this).keyup();"
-                       onkeyup="checkProducerNameDupDebounce();" onpaste="setTimeoutZero(() => $(this).keyup());">
-                <div class="mt-2 text-sm"></div>
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">정산 예정 금액</span>
-                </label>
-                <div class="restCash badge badge-lg badge-ghost" th:text="${@rq.member.restCash}"></div>
-            </div>
-
+<div class="lg:flex w-full lg:w-3/4 mt-2 lg:mt-10 mx-auto" layout:fragment="content">
+    <div class="menu-box w-full lg:w-52 flex lg:block">
+        <div class="nick-box ml-2 lg:border-b border-gray-300 ">
+            <P class="text-lg inline lg:block">크리에이터</P>
+            <p class="py-2 inline lg:block">닉네임님</p>
+        </div>
+        <!--아래는 모바일 드롭다운 메뉴 입니다.-->
+        <div class="dropdown dropdown-bottom dropdown-end ml-auto px-2 lg:invisible">
+            <label tabindex="0" class="btn btn-sm "><i class="fa-solid fa-angle-left"></i></label>
+            <ul tabindex="0" class="inline-block lg:hidden dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+                <li><a href="#">내가 올린 강의</a></li>
+                <li><a href="#" >STUDIO</a></li>
+                <li><a href="#">정산내역</a></li>
+                <li><a href="#">프로필</a></li>
+                <li><a href="#">크리에이터 정보</a></li>
+            </ul>
+        </div>
+        <!--아래는 데스크탑 메뉴 입니다.-->
+        <div class="activity -mt-6 hidden lg:block">
+            <button  onclick="toggleComment(this)" class="p-2">내 활동<i class="fa-solid fa-chevron-down p-2"></i></button>
             <div>
-                <button class="btn btn-block btn-primary gap-1">
-                    <i class="fa-brands fa-product-hunt"></i>
-                    <span th:unless="${@rq.producer}">크리에이터 활동시작</span>
-                    <span th:if="${@rq.producer}">크리에이터 정보수정</span>
-                </button>
+                <div onclick="changeColor(this)" class="rounded-md p-2 mx-2 hover:bg-gray-200 hover:rounded-md  cursor-pointer ">
+                    <a  class="" href="#">내가 올린 강의</a>
+                </div>
+                <div onclick="changeColor(this)" class="p-2 mx-2 hover:bg-gray-200 hover:rounded-md rounded-md cursor-pointer">
+                    <a href="#">STUDIO</a>
+                </div>
+                <div onclick="changeColor(this)" class="rounded-md p-2 mx-2 hover:bg-gray-200 hover:rounded-md non-click cursor-pointer">
+                    <a href="#">정산내역</a>
+                </div>
 
-                <div class="text-center">
-                    <a class="btn btn-link" href="/usr/member/me">내 정보</a>
-                    <a class="btn btn-link" href="/usr/member/logout">로그아웃</a>
-                    <a class="btn btn-link" href="/usr/member/withdrawal">회원탈퇴</a>
+            </div>
+        </div>
+        <div class="mypage p-2 hidden lg:block">
+            <button  onclick="toggleComment(this)">MY PAGE<i class="fa-solid fa-chevron-down p-2"></i></button>
+            <div>
+                <div onclick="changeColor(this)" class="p-2 hover:bg-gray-200 hover:rounded-md cursor-pointer rounded-md">
+                    <a href="#">프로필</a>
+                </div>
+                <div onclick="changeColor(this)" class="p-2 hover:bg-gray-200 hover:rounded-md cursor-pointer rounded-md">
+                    <a href="#">크리에이터 정보</a>
                 </div>
             </div>
-        </form>
+        </div>
+    </div>
+    <form class="w-full" method="POST" name="be-producer-form"
+          onsubmit="submitBeProducerForm(this); return false;"
+          th:action>
+        <div class="main-box mx-auto w-full mt-6 md:w-1/2 lg:w-2/5">
+            <h1 class="text-xl p-2">크리에이터 정보</h1>
+            <div class="flex mt-2">
+                <p class="text-md ml-2 font-bold p-4">아이디</p>
+                <p class="text-sm py-4" th:text="${@rq.member.username}"></p>
+            </div>
+            <div class="flex mt-1">
+                <p class="text-md ml-2 font-bold p-4">닉네임</p>
+                <p class="text-sm py-4" th:text="${@rq.member.nickname}"></p>
+            </div>
+            <div class="flex flex-col mt-2 w-full">
+                <div class="flex">
+                    <span class="text-md ml-2 font-bold p-4 whitespace-nowrap">활동명 변경</span>
+                    <input class="w-full border-gray-200 border rounded-md px-2 outline-none mr-2" th:value="${@rq.member.producerName}"
+                           maxlength="30" name="producerName" type="text" placeholder="활동명을 입력해주세요."
+                           onchange="$(this).keyup();" onkeyup="checkProducerNameDupDebounce();" onpaste="setTimeoutZero(() => $(this).keyup());">
+                </div>
+                <div class="ml-[110px] mt-2 text-sm"></div>
+            </div>
+            <div class="flex mt-2  bg-gray-100">
+                <p class="text-md ml-2 font-bold p-4">정산 예정 금액</p>
+                <p class="restCash text-md py-4" th:text="${@rq.member.restCash}"></p>
+            </div>
+            <button class="w-full text-center text-white border border-blue-800 bg-blue-800 p-2 mb-3  mt-6 rounded-md hover:bg-blue-900">
+                정보수정 완료
+            </button>
+        </div>
+    </form>
+    <script>
+        <!--메뉴 접기-->
+        function toggleComment(button) {
+            const content = button.nextElementSibling;
 
-        <script>
+            if (content.style.display === 'block') {
+                content.style.display = 'none';
+            } else {
+                content.style.display = 'block';
+            }
+        }
+        const nonClick = document.querySelectorAll(".non-click");
 
-            document.addEventListener('DOMContentLoaded', function() {
-              var restCashElement = document.querySelector('.restCash');
+        function handleClick(event) {
 
-              if (restCashElement) {
-                var restCashValue = parseInt(restCashElement.textContent, 10);
-
-                if (!isNaN(restCashValue)) {
-                  restCashElement.textContent = restCashValue.toLocaleString('ko-KR') + ' 원';
-                }
-              }
+            nonClick.forEach((e) => {
+                e.classList.remove("click");
             });
 
-        </script>
+            event.target.classList.add("click");
+        }
 
-        <script>
-            const beProducerForm = document['be-producer-form'];
+        nonClick.forEach((e) => {
+            e.addEventListener("click", handleClick);
+        });
 
-            // producerName 중복체크 시작
-            function checkProducerNameDup(form) {
-                form.producerName.value = form.producerName.value.trim();
+        <!--메뉴 클릭 시 색상변경-->
+        let prevSelected = null;
 
-                if (form.producerName.value.length == 0) {
-                    clearProducerNameInputMsg();
-                    return;
-                }
+        function changeColor(element) {
+            if (prevSelected !== null) {
+                prevSelected.classList.remove('bg-gray-200');
+                prevSelected.classList.add('bg-wihte');
+            }
 
-                if (form.producerName.value.length < 2) {
-                    clearProducerNameInputMsg();
-                    return;
-                }
+            if (prevSelected !== element) {
+                element.classList.remove('bg-wihte');
+                element.classList.add('bg-gray-200');
+                prevSelected = element;
+            } else {
+                prevSelected = null;
+            }
+        }
 
-                if (lastCheckedProducerName == form.producerName.value) return;
+    </script>
 
-                lastCheckedProducerName = form.producerName.value;
+    <script>
 
+        document.addEventListener('DOMContentLoaded', function() {
+          var restCashElement = document.querySelector('.restCash');
+
+          if (restCashElement) {
+            var restCashValue = parseInt(restCashElement.textContent, 10);
+
+            if (!isNaN(restCashValue)) {
+              restCashElement.textContent = restCashValue.toLocaleString('ko-KR') + ' 원';
+            }
+          }
+        });
+
+    </script>
+
+    <script>
+        const beProducerForm = document['be-producer-form'];
+
+        // producerName 중복체크 시작
+        function checkProducerNameDup(form) {
+            form.producerName.value = form.producerName.value.trim();
+
+            if (form.producerName.value.length == 0) {
                 clearProducerNameInputMsg();
-
-                fetch(
-                    'checkProducerNameDup?producerName=' + form.producerName.value
-                )
-                    .then(res => res.json())
-                    .then((rs) => {
-                        if (rs.success) {
-                            validProducerName = rs.data;
-                        }
-
-                        setProducerNameInputMsg(rs.success, rs.msg);
-                    });
+                return;
             }
 
-            const checkProducerNameDupDebounce = _.debounce(() => checkProducerNameDup(beProducerForm), 500);
-
-            function clearProducerNameInputMsg() {
-                $(beProducerForm.producerName).removeClass('input-accent input-error');
-                $(beProducerForm.producerName).next().removeClass('text-green-400 text-red-400');
-                $(beProducerForm.producerName).next().empty();
+            if (form.producerName.value.length < 2) {
+                clearProducerNameInputMsg();
+                return;
             }
 
-            function setProducerNameInputMsg(isSuccess, msg) {
-                if (isSuccess) $(beProducerForm.producerName).addClass('input-accent');
-                if (!isSuccess) $(beProducerForm.producerName).addClass('input-error');
+            if (lastCheckedProducerName == form.producerName.value) return;
 
-                $(beProducerForm.producerName).next().addClass(isSuccess ? 'text-green-400' : 'text-red-400');
+            lastCheckedProducerName = form.producerName.value;
 
-                $(beProducerForm.producerName).next().text(msg);
+            clearProducerNameInputMsg();
+
+            fetch(
+                'checkProducerNameDup?producerName=' + form.producerName.value
+            )
+                .then(res => res.json())
+                .then((rs) => {
+                    if (rs.success) {
+                        validProducerName = rs.data;
+                    }
+
+                    setProducerNameInputMsg(rs.success, rs.msg);
+                });
+        }
+
+        const checkProducerNameDupDebounce = _.debounce(() => checkProducerNameDup(beProducerForm), 500);
+
+        function clearProducerNameInputMsg() {
+            $(beProducerForm.producerName).removeClass('input-accent input-error');
+            $(beProducerForm.producerName).closest('.flex').next().removeClass('text-green-400 text-red-400');
+            $(beProducerForm.producerName).closest('.flex').next().empty();
+        }
+
+        function setProducerNameInputMsg(isSuccess, msg) {
+            if (isSuccess) $(beProducerForm.producerName).addClass('input-accent');
+            if (!isSuccess) $(beProducerForm.producerName).addClass('input-error');
+
+            $(beProducerForm.producerName).closest('.flex').next().addClass(isSuccess ? 'text-green-400' : 'text-red-400');
+
+            $(beProducerForm.producerName).closest('.flex').next().text(msg);
+        }
+
+        let validProducerName = '';
+        let lastCheckedProducerName = '';
+        // producerName 중복체크 끝
+
+        let submitBeProducerFormDone = false;
+
+        function submitBeProducerForm(form) {
+            if (submitBeProducerFormDone) return;
+
+            form.producerName.value = form.producerName.value.trim();
+
+            if (form.producerName.value.length == 0) {
+                form.producerName.focus();
+                toastWarning('활동명을 입력해주세요.');
+                return;
             }
 
-            let validProducerName = '';
-            let lastCheckedProducerName = '';
-            // producerName 중복체크 끝
-
-            let submitBeProducerFormDone = false;
-
-            function submitBeProducerForm(form) {
-                if (submitBeProducerFormDone) return;
-
-                form.producerName.value = form.producerName.value.trim();
-
-                if (form.producerName.value.length == 0) {
-                    form.producerName.focus();
-                    toastWarning('활동명을 입력해주세요.');
-                    return;
-                }
-
-                if (form.producerName.value.length < 2) {
-                    form.producerName.focus();
-                    toastWarning('활동명을 2자 이상 입력해주세요.');
-                    return;
-                }
-
-                if (validProducerName != form.producerName.value) {
-                    $(form.producerName).next().focus();
-                    toastWarning('활동명 중복체크를 해주세요.');
-                    return;
-                }
-
-                form.submit();
-                submitBeProducerFormDone = true;
+            if (form.producerName.value.length < 2) {
+                form.producerName.focus();
+                toastWarning('활동명을 2자 이상 입력해주세요.');
+                return;
             }
-        </script>
-    </div>
+
+            if (validProducerName != form.producerName.value) {
+                $(form.producerName).next().focus();
+                toastWarning('활동명 중복체크를 해주세요.');
+                return;
+            }
+
+            form.submit();
+            submitBeProducerFormDone = true;
+        }
+    </script>
 </div>
 
 </body>
-
 </html>

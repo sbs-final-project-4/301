@@ -94,12 +94,12 @@ public class MemberService {
 
     public RsData<String> checkProducerNameDup(Member actor, String producerName) {
         if (producerName.equals(actor.getProducerName()))
-            return RsData.of("S-1", "%s(은)는 사용 가능한 활동명입니다.".formatted(producerName), producerName);
+            return RsData.of("S-1", "사용 가능한 활동명입니다.", producerName);
 
         if (findByProducerName(producerName).isPresent())
-            return RsData.of("F-1", "%s(은)는 사용중인 활동명입니다.".formatted(producerName));
+            return RsData.of("F-1", "사용중인 활동명입니다.");
 
-        return RsData.of("S-1", "%s(은)는 사용 가능한 활동명입니다.".formatted(producerName), producerName);
+        return RsData.of("S-1", "사용 가능한 활동명입니다.", producerName);
     }
 
     // 명령

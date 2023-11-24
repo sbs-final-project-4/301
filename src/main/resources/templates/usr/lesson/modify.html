@@ -89,7 +89,7 @@
             <button class="w-[33%] text-center border border-purple-200 bg-purple-200 p-2 rounded-md hover:bg-purple-300 ml-1 lg:ml-0 font-bold"
                     onclick="my_modal_1.showModal()">+ 수업추가</button>
             <dialog id="my_modal_1" class="modal">
-                <form class="modal-box w-3/4 mx-auto w-full bg-white border-gray-500" method="POST" enctype="multipart/form-data"
+                <form class="modal-box w-3/4 mx-auto w-full bg-white border-gray-500" style="box-shadow: none;" method="POST" enctype="multipart/form-data"
                       onsubmit="submitWriteAddLessonForm(this); return false;"
                       th:action="|/usr/lesson/${lecture.id}/writeAddLesson|">
                     <div class="flex justify-end">
@@ -157,8 +157,8 @@
                                     th:attr="onclick=${lesson.lessonReady} ? 'modifyFormModal'+${lesson.id}+'.showModal()'
                                      : 'toastWarning(\'해당 수업은 동영상 변환 작업중 입니다. 현재 수정이 불가능합니다.\')'" >
                                 <div>
-                                    <span class="loading loading-spinner" th:unless="${lesson.lessonReady}"></span>
                                     <span th:text="${lesson.subject}"></span>
+                                    <span class="loading loading-spinner" th:unless="${lesson.lessonReady}"></span>
                                 </div>
                                 <span class="text-gray-500 text-sm" th:text="${lesson.lessonLengthForPrint}"></span>
                             </button>

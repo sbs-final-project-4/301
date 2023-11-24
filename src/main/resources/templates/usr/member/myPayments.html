@@ -1,58 +1,92 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title>내 결제</title>
+    <title th:text="|내 결제기록|"></title>
 </head>
 
 <body>
 
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
-    <div class="container w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-solid fa-pen"></i>
-            내 결제 목록
-        </h1>
-
-        <div class="overflow-x-auto">
-            <table class="table table-compact w-full">
-                <thead>
-                <tr>
-                    <th>결제번호</th>
+<div class="w-full lg:w-3/4 mx-auto" layout:fragment="content">
+    <span class="text-xl font-bold mt-4 inline-block p-4">결제 목록</span>
+    <div class="overflow-x-auto">
+        <table cellpadding="15" cellspacing="15" width="100%">
+            <thread>
+                <tr class="border-b-2 border-t-2 border-gray-200 whitespace-nowrap text-sm lg:text-md">
+                    <th class="p-3 px-4  hidden lg:block lg:mt-1 ">결제번호</th>
                     <th>결제일시</th>
                     <th>상태</th>
-                    <th>상품명</th>
+                    <th width="30%">강의명</th>
                     <th>결제가격</th>
                     <th>결제취소</th>
                 </tr>
-                </thead>
+            </thread>
 
-                <tbody>
-                <tr th:each="order : ${orders}">
-                    <td th:text="${order.id}"></td>
-                    <td>
-                        <div th:text="${#temporals.format(order.createDate, 'yyyy-MM-dd')}"></div>
-                        <div th:text="${#temporals.format(order.createDate, 'HH:mm:ss')}"></div>
-                    </td>
-                    <td th:if="${order.refunded}" th:text="'환불처리'">Refunded</td>
-                    <td th:unless="${order.refunded}" th:text="'결제완료'">Not Refunded</td>
-                    <td th:text="${order.name}"></td>
-                    <td th:text="${#numbers.formatDecimal(order.calculatePayPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'"></td>
-                    <td th:if="${#temporals.createNow().minusHours(3).isBefore(order.createDate) and !order.refunded}">
-                        <a th:href="|/usr/order/refund/${order.id}|"
-                           class="btn btn-primary btn-xs">결제취소</a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
+            <tbody>
+            <tr class="text-center whitespace-nowrap border-b border-gray-200 text-sm lg:text-md" th:each="order : ${orders}">
+                <td class=" hidden lg:block mt-1" th:text="${order.id}">1010</td>
+                <td>
+                    <div th:text="${#temporals.format(order.createDate, 'yyyy-MM-dd')}"></div>
+                    <div th:text="${#temporals.format(order.createDate, 'HH:mm:ss')}"></div>
+                </td>
+                <td>
+                    <div th:if="${order.refunded}" class="text-red-600" th:text="'환불처리'">Refunded</div>
+                    <div th:unless="${order.refunded}" th:text="'결제완료'">Not Refunded</div>
+                </td>
+                <td>자바 기초부터 심화까지 한번에 해결하기</td>
+                <td>28,900원</td>
+                <td>
+                    <button class="btn btn-sm" th:if="${#temporals.createNow().minusHours(3).isBefore(order.createDate) and !order.refunded}"
+                            th:onclick="'refundModal' + ${order.id} + '.showModal()'">결제취소</button>
+                    <span class="text-red-600" th:if="${order.refunded}">환불완료</span><!--환불이 완료되었을 때만 리스트에 나오는 표시 입니다.-->
+                </td>
+                <dialog th:id="'refundModal' + ${order.id}" class="modal">
+                    <div class="modal-box">
+                        <form method="dialog">
+                            <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                        </form>
+                        <div class="w-full lg:w-3/4 mx-auto mt-3">
+                            <div class="flex">
+                                <i class="fa-solid fa-check p-2"></i><h3 class="font-bold text-xl">결제 취소</h3>
+                            </div>
+                            <div class="flex p-2 mt-4">
+                                <p class="text-md font-bold">주문일시 :&nbsp</p>
+                                <div class="flex flex-col">
+                                    <div th:text="${#temporals.format(order.createDate, 'yyyy-MM-dd')}"></div>
+                                    <div th:text="${#temporals.format(order.createDate, 'HH:mm:ss')}"></div>
+                                </div>
+                            </div>
+                            <div class="flex p-2">
+                                <p class="text-md font-bold">주문자명 :</p>
+                                <p class="text-sm ml-2" th:text="${order.buyer.username}"></p>
+                            </div>
+                            <div class="p-2 mt-4 bg-gray-100">
+                                <p class="text-md font-bold" th:text="${order.name}">자바 기초부터 심화까지 한번에 해결하기</p>
+                            </div>
+                            <form method="post" class="w-full" th:action="|/usr/order/refund/${order.id}|">
+                                <select name="refundReason" class="mt-3 w-full mr-4 p-2 border-2 border-gray-300 rounded-md outline-none" required>
+                                    <option value="" disabled selected>환불사유</option>
+                                    <option>강의 주제가 예상과달라서</option>
+                                    <option>강의의 난이도가 맞지않아서</option>
+                                    <option>강의의 질이 낮아서</option>
+                                    <option>단순 변심</option>
+                                </select>
+                                <div class="flex flex-row items-center">
+                                    <span class="text-lg font-bold text-blue-800 mt-3">총 환불가격 :</span>
+                                    <p class="text-lg font-bold p-2 text-blue-800 mt-3"
+                                       th:text="${#numbers.formatDecimal(order.calculatePayPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'">총 환불가격 : 12,000원</p>
 
-        </div>
-
-
-
+                                </div>
+                                <button style="background-color: midnightblue" class="w-full text-center text-white p-2 mb-3  mt-6 rounded-md"
+                                        type="submit">환불요청</button>
+                            </form>
+                        </div>
+                    </div>
+                </dialog>
+            </tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
-
 </body>
-
 </html>

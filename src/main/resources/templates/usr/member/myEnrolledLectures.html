@@ -74,7 +74,7 @@
                                     <span>수강중인 학생 수 :</span>
                                     <span th:text="${#numbers.formatDecimal(lecture.members.size, 0, 'COMMA', 0, 'POINT')} + ' 명'"></span>
                                 </div>
-                                <div class="flex"
+                                <div class="flex flex-wrap"
                                      th:utext="${lecture.getTagLinks('<a class=`my-2 px-2 p-1 mr-2 sm:text-sm text-xs whitespace-nowrap rounded-lg inline-block` href=`%s`>#%s</a>', '/usr/lecture/listByTag/%s')}">
                                 </div>
                             </div>

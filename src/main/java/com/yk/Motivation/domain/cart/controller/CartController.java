@@ -61,6 +61,21 @@ public class CartController {
         return rq.redirectOrBack("/usr/cart/items", RsData.of("S-1","%d건의 품목을 삭제하였습니다.".formatted(idsArr.length)));
     }
 
+    @PostMapping("/removeAll")
+    @PreAuthorize("isAuthenticated()")
+    public String removeAllItems() {
+
+        List<CartItem> items = cartService.getItemsByBuyer(rq.getMember());
+
+        items.stream()
+                .filter(item -> cartService.actorCanDelete(rq.getMember(), item))
+                .forEach(cartService::removeItem);
+
+        return rq.redirectOrBack("/usr/cart/items", RsData.of("S-1", "%d건의 품목을 삭제하였습니다.".formatted(items.size())));
+    }
+
+
+
     @GetMapping("/write/lecture/{id}")
     public String write(
             @PathVariable Long id
