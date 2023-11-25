@@ -13,7 +13,7 @@ import com.yk.Motivation.domain.order.exception.MemberCanNotSeeOrderException;
 import com.yk.Motivation.domain.order.exception.OrderIdNotMatchedException;
 import com.yk.Motivation.domain.order.service.OrderService;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import org.springframework.http.*;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -134,11 +134,23 @@ public class OrderController {
 
     @PostMapping("/makeOrder")
     @PreAuthorize("isAuthenticated()")
-    public String makeOrder() {
-        Member member = rq.getMember();
+    @ResponseBody
+    public RsData<OrderDto> makeOrder() {
+        Member member = memberService.findById(rq.getMember().getId()).get();
         Order order = orderService.createFromCart(member);
 
-        return rq.redirectOrBack("/usr/order/%d".formatted(order.getId()), RsData.of("S-1", "%d번 주문이 생성되었습니다.".formatted(order.getId())));
+        return RsData.of("S-1", "%d번 주문이 생성되었습니다.".formatted(order.getId()), new OrderDto(order.getId(), order.getBuyer().getNickname(), order.getName(),order.calculatePayPrice()));
+    }
+
+    @AllArgsConstructor
+    @NoArgsConstructor
+    @Getter
+    @Setter
+    public static class OrderDto {
+        public long orderId;
+        public String buyerName;
+        public String orderName;
+        public int orderPayPrice;
     }
 
     @GetMapping("/refund/{id}")

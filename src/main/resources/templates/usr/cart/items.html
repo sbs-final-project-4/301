@@ -7,6 +7,7 @@
 <body>
 
 <div class="w-full 2lg:w-3/4 mx-auto" layout:fragment="content">
+    <script src="https://js.tosspayments.com/v1"></script>
     <div class="w-full lg:w-3/4 2xl:w-4/5  mx-auto border-b-2 border-blue-800 p-3">
         <div class="w-full 2xl:w-3/4 mx-auto">
             <span class="inline-block text-2xl font-bold mt-6">수강 바구니</span>
@@ -17,11 +18,11 @@
             <span class=" text-sm mt-3 p-3 ">전체 선택</span>
             <div class="w-2/3 ml-auto flex justify-end">
                 <a class="btn btn-sm btn-ghost mt-2" href="javascript:;" onclick="RemoveCartItemsForm__submit();">선택 삭제</a>
-                <form method="POST" name="removeCartItemsForm" th:action="@{|/usr/cart/remove|}" hidden>
+                <form method="POST" name="removeCartItemsForm" th:action="@{|/usr/cart/remove|}" >
                     <input type="hidden" name="ids">
                 </form>
                 <a href="javascript:;" class="btn btn-sm ml-2 mt-2" onclick="RemoveAllCartItemsForm__submit();">전체 삭제</a>
-                <form method="POST" name="removeAllCartItemsForm" th:action="@{|/usr/cart/removeAll|}" hidden></form>
+                <form method="POST" name="removeAllCartItemsForm" th:action="@{|/usr/cart/removeAll|}" ></form>
             </div>
         </div>
         <div class="basket-list w-full 2xl:w-3/4 mx-auto border-t border-gray-300 flex" th:each="item : ${items}">
@@ -67,14 +68,12 @@
 
                 var formattedSum = sum.toLocaleString('ko-KR');
                 document.getElementById('result').textContent = formattedSum + ' 원';
+                document.getElementById('result2').textContent = formattedSum + ' 원';
             });
         </script>
     </div>
     <div class="w-4/5 mt-6 mx-auto flex justify-center">
-        <div onclick="my_modal_3.showModal()" class="w-[33%] text-center border border-blue-800 bg-blue-800 p-2 lg:ml-4 rounded-md hover:bg-blue-900">
-            <a class=" text-white" href="#"><button>결제하기</button></a>
-        </div>
-
+        <button onclick="my_modal_3.showModal(); makeOrder();" class="w-[33%] text-center border border-blue-800 bg-blue-800 p-2 lg:ml-4 rounded-md hover:bg-blue-900 text-white">결제하기</button>
     </div>
     <dialog id="my_modal_3" class="modal">
         <div class="modal-box">
@@ -86,24 +85,33 @@
                     <i class="fa-solid fa-check p-2"></i></i><h3 class="font-bold text-xl">주문 상세 내용</h3>
                 </div>
                 <div class="flex p-2 mt-4">
-                    <p class="text-md font-bold">주문일시 :</p>
-                    <p class="text-sm ml-2">2023/11/21</p>
+                    <p class="text-md font-bold">주문날짜 : </p>
+                    <p id="currentDateTime" class="text-sm ml-2">2023/11/21</p>
                 </div>
                 <div class="flex p-2">
                     <p class="text-md font-bold">주문자명 :</p>
-                    <p class="text-sm ml-2">user1</p>
+                    <p class="text-sm ml-2" th:text="${@rq.member.username}"></p>
                 </div>
                 <div class="p-2 mt-4 bg-gray-100">
-                    <p class="text-md font-bold">자바 기초 1</p>
-                    <p class="text-sm">강사명</p>
+                    <div th:each="item : ${items}">
+                        <p class="text-md font-bold" th:text="${item.product.lecture.subject}">자바 기초 1</p>
+                        <p class="text-sm" th:text="${item.product.lecture.producer.producerName}">강사명</p>
+                    </div>
                 </div>
-                <p class="text-lg font-bold p-2 text-blue-800 mt-3">총 결제가격 : 12,000원</p>
-                <div class="w-full text-center border border-blue-800 bg-blue-800 p-2 mb-3  mt-6 rounded-md hover:bg-blue-900">
-                    <a class=" text-white " href="#"><button>카드결제</button></a>
-                </div>
+                <p class="text-lg font-bold p-2 text-blue-800 mt-3">총 결제가격 : <span id="result2"></span></p>
+                <button onclick="closeDialog(); payment();" class="w-full text-center border border-blue-800 bg-blue-800 p-2 mb-3  mt-6 rounded-md hover:bg-blue-900 text-white">카드결제</button>
             </div>
         </div>
     </dialog>
+    <script>
+        const currentDate = new Date().toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        }).replace(/\./g, '/').trim();
+
+        document.getElementById('currentDate').textContent = currentDate;
+    </script>
 
 
     <script>
@@ -153,6 +161,59 @@
 
         function RemoveCartItemForm__submit() {
             document.removeCartItemForm.submit();
+        }
+    </script>
+
+    <script>
+        let orderId, buyerName, orderName, orderPayPrice;
+        const tossPayments = TossPayments("클라이언트 키");
+
+        function makeOrder() {
+
+            const csrfToken = $("meta[name='_csrf']").attr("content");
+            const csrfHeader = $("meta[name='_csrf_header']").attr("content");
+
+            fetch('/usr/order/makeOrder', {
+                method: 'POST',
+                headers: {
+                    [csrfHeader]: csrfToken,
+                    'Content-Type': 'application/json' // JSON 형식의 데이터를 보낼 경우 필요
+                },
+            })
+            .then(res => res.json())
+            .then((rs) => {
+                if (rs.success) {
+                    const orderDTO = rs.data;
+
+                    orderId = orderDTO.orderId;
+                    buyerName = orderDTO.buyerName;
+                    orderName = orderDTO.orderName;
+                    orderPayPrice = orderDTO.orderPayPrice;
+                }
+            });
+        }
+
+        function closeDialog() {
+            var dialog = document.getElementById('my_modal_3');
+            if (dialog) {
+                dialog.close();
+            }
+        }
+
+
+        function payment() {
+            const method = "카드"; // "카드" 혹은 "가상계좌"
+
+            const paymentData = {
+                amount: orderPayPrice,
+                orderId: "order__" + orderId + "__" + (Math.random() + "").substring(2),
+                orderName,
+                customerName: buyerName,
+                successUrl: window.location.origin + "/usr/order/" + orderId + "/success",
+                failUrl: window.location.origin + "/usr/order/" + orderId + "/fail"
+            };
+
+            tossPayments.requestPayment(method, paymentData);
         }
     </script>
 </div>
