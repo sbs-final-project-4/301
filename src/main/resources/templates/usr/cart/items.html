@@ -38,12 +38,12 @@
             <div class="price-box w-60 h-32 flex items-center justify-center">
                 <span class="price font-bold mr-4" th:data-inline="${item.product.price}"
                       th:text="${#numbers.formatInteger(item.product.price, 0, 'COMMA')} + ' 원'"></span>
-                <a class="btn btn-circle btn-ghost" href="javascript:;" onclick="RemoveCartItemForm__submit();">
+                <a class="btn btn-circle btn-ghost" href="javascript:;" th:onclick="'RemoveCartItemForm__submit(\'' + ${item.id} + '\');'">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </a>
-                <form method="POST" name="removeCartItemForm" th:action="@{|/usr/cart/remove|}" hidden>
+                <form method="POST" name="removeCartItemForm" th:id="'removeCartItemForm' + ${item.id}" th:action="@{|/usr/cart/remove|}" hidden>
                     <input type="hidden" name="ids" th:value="${item.id}">
                 </form>
             </div>
@@ -159,8 +159,8 @@
             document.removeAllCartItemsForm.submit();
         }
 
-        function RemoveCartItemForm__submit() {
-            document.removeCartItemForm.submit();
+        function RemoveCartItemForm__submit(itemId) {
+            document.getElementById('removeCartItemForm' + itemId).submit();
         }
     </script>
 

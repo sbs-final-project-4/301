@@ -135,14 +135,9 @@ public class SeriesController {
     public String write(
             @Valid SeriesController.SeriesWriteForm writeForm
     ) {
-        RsData<Series> rsData = seriesService.write(rq.getMember(), writeForm.getPostKeywordId(), writeForm.getSubject(), writeForm.getTagsStr(), writeForm.getBody(), writeForm.getBodyHtml(), writeForm.isPublic());
+        RsData<Series> rsData = seriesService.write(rq.getMember(), writeForm.getPostKeywordId(), writeForm.getSubject(), writeForm.getTagsStr(), writeForm.isPublic());
 
-        if (Ut.file.exists(writeForm.getAttachment__1()))
-            seriesService.saveAttachmentFile(rsData.getData(), writeForm.getAttachment__1(), 1);
-        if (Ut.file.exists(writeForm.getAttachment__1()))
-            seriesService.saveAttachmentFile(rsData.getData(), writeForm.getAttachment__2(), 2);
-
-        return rq.redirectOrBack("/usr/series/detail/%d".formatted(rsData.getData().getId()), rsData);
+        return rq.redirectOrBack("/usr/series/list", rsData);
     }
 
     @Getter
@@ -154,12 +149,6 @@ public class SeriesController {
         @Length(min = 2)
         private String subject;
         private String tagsStr;
-        @NotBlank
-        private String body;
-        @NotBlank
-        private String bodyHtml;
-        private MultipartFile attachment__1;
-        private MultipartFile attachment__2;
     }
 
     @PreAuthorize("isAuthenticated()")

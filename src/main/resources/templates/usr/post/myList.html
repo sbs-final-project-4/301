@@ -6,110 +6,93 @@
 
 <body>
 
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
-    <div class="container w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-regular fa-file-lines"></i>
-            <span th:text="|내 글|"></span>
-        </h1>
-
-        <div>
-
-            <div class="flex bg-base-100 sticky top-[64px] shadow-sm z-10 -mx-4 px-4 py-2 flex-wrap gap-2 items-center">
-                <div>
-                    <span class="label-txt">검색된 결과 개수</span>
-                    <span th:text="${postPage.totalElements}"></span>
-                </div>
-                <div class="flex-grow"></div>
-                <div class="flex flex-wrap gap-2">
-                    <button class="btn btn-sm btn-primary" onclick="searchFormModal.showModal()">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                        검색
-                        <span th:if="${UtThy.hasText(param.kw)}">`<span class="normal-case"
-                                                                        th:text="${param.kw}"></span>`</span>
-                    </button>
-
-                    <a th:if="${UtThy.hasText(param.kw)}" th:href="${@rq.currentUrlPath}"
-                       class="btn btn-sm btn-outline">
-                        <i class="fa-solid fa-xmark"></i>
-                        검색조건 지우기
-                    </a>
-
-                    <a th:if="${@rq.login}" class="btn btn-sm btn-outline" th:href="|/usr/post/write|">
-                        <i class="fa-solid fa-pen"></i>
-                        글쓰기
-                    </a>
-                </div>
+<div class="w-full lg:w-3/4 mx-auto" layout:fragment="content">
+    <div class="searching-box mt-4 lg:mt-8 border w-3/4 lg:w-1/2 h-10 lg:h-14 rounded-md border-gray-700 flex mx-auto">
+        <form class="flex" onsubmit="submitSearchForm(this); return false;">
+            <select name="kwType" class="ml-3 p-1 lg:p-2 outline-none mt-1" th:value="${param.kwType}">
+                <option value="all">전체</option>
+                <option value="subject">제목</option>
+                <option value="body">내용</option>
+            </select>
+            <div class="search whitespace-nowrap">
+                <input class="outline-none border-gray-400 sm:bg-white ml-3 mt-2 lg:mt-4 w-3/5 lg:w-3/4"
+                       type="search" th:value="${param.kw}" name="kw">
             </div>
+        </form>
+        <i class="fa-solid fa-magnifying-glass my-auto ml-auto mr-5"></i>
+    </div>
+    <div class="flex flex-row justify-between items-center mt-10">
+        <div class="flex">
+            <span class="inline-block title ml-4 lg:ml-0 text-xl lg:text-2xl font-bold">나의 게시글</span>
+            <span class="ml-3 mt-1 text-md lg:text-lg text-gray-500">Post</span>
+        </div>
+        <a th:if="${UtThy.hasText(param.kw)}" th:href="${@rq.currentUrlPath}"
+           class="btn btn-sm btn-outline">
+            전체보기
+        </a>
+    </div>
+    <table cellpadding="15" cellspacing="15" width="100%" class="mx-auto mt-10 hidden lg:table">
+        <thread>
+            <tr class="border-b-2 border-t-2 border-gray-200 whitespace-nowrap text-sm lg:text-md">
+                <th>글 번호</th>
+                <th>공개여부</th>
+                <th>제목</th>
+                <th>작성일</th>
+            </tr>
+        </thread>
 
-            <dialog id="searchFormModal" class="modal">
-                <div class="modal-box">
-                    <form method="dialog">
-                        <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
-                    </form>
-
-                    <form class="bg-base rounded flex flex-col gap-6" onsubmit="submitSearchForm(this); return false;">
-
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text">검색필터</span>
-                            </label>
-
-                            <select name="kwType" class="select select-bordered" th:value="${param.kwType}">
-                                <option value="all">전체</option>
-                                <option value="subject">제목</option>
-                                <option value="body">내용</option>
-                            </select>
-                        </div>
-
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text">검색어</span>
-                            </label>
-
-                            <input placeholder="검색어"
-                                   class="input input-bordered ws-full"
-                                   name="kw"
-                                   type="search"
-                                   th:value="${param.kw}"
-                            >
-                        </div>
-
-                        <div>
-                            <button class="btn btn-block btn-primary gap-1">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                                <span>검색</span>
-                            </button>
-                        </div>
-
-                    </form>
+        <tbody>
+        <tr class="text-center whitespace-nowrap border-b border-gray-200 text-sm lg:text-md" th:each="post : ${postPage.content}">
+            <td th:text="${post.id}">12</td>
+            <td th:text="${post.publicHanName}">비공개</td>
+            <td width="60%" class="border border-gray-200 p-0">
+                <div class="bg-gray-100 w-full p-2">
+                    <a class="truncate text-lg font-bold" th:href="|/usr/post/detail/${post.id}?listUrl=${@rq.encodedCurrentUrl}|"
+                       th:text="${post.subject}"></a>
                 </div>
+                <div class="p-2">
+                    <div th:utext="${post.getTagLinks('<a class=`hashtag inline-block mt-2 ml-3 lg:ml-2` href=`%s`>#%s</a>', @rq.getSuitableListByTagPageBaseUrlByCurrentUrl('post') + '/%s')}"></div>
+                </div>
+                <style>
+                    .hashtag:nth-child(3n+1) {
+                        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, #FFD0AE 40%);
+                    }
 
-                <form method="dialog" class="modal-backdrop">
-                    <button>close</button>
-                </form>
-            </dialog>
+                    .hashtag:nth-child(3n+2) {
+                        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, #D9D9D9 40%);
+                    }
 
-            <div class="mt-4" th:if="${postPage.totalPages > 1}"
-                 th:with="queryStrBase = '?kwType=' + ${param.kwType != null ? param.kwType : ''} + '&kw=' + ${param.kw != null ? param.kw : ''} + '&'">
-                <div th:replace="common/fragments :: pagination(${postPage}, ${queryStrBase}, 1)"></div>
+                    .hashtag:nth-child(3n+3) {
+                        background: linear-gradient(180deg, rgba(255, 255, 255, 0) 60%, #BEEFFE 40%);
+                    }
+                </style>
+            </td>
+            <td th:text="${#temporals.format(post.createDate, 'yy / MM / dd')}">2023 / 10 / 01</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="mt-4" th:if="${postPage.totalPages > 1}"
+         th:with="queryStrBase = '?kwType=' + ${param.kwType != null ? param.kwType : ''} + '&kw=' + ${param.kw != null ? param.kw : ''} + '&'">
+        <div th:replace="common/fragments :: pagination(${postPage}, ${queryStrBase}, 1)"></div>
+    </div>
+    <!--아래는 반응형 모바일 버전 입니다.-->
+    <div class="block lg:hidden border border-gray-300 mt-3">
+        <h1 class="p-3 font-bold text-md hover:underline"><a href="#">제목이 들어갈 자리 입니다.</a></h1>
+        <div class="">
+            <span style="background: linear-gradient(180deg, rgba(255,255,255,0) 60%, #FFD0AE 40%);" class="inline-block my-1 ml-3 text-sm"><a href="#"># 자바</a></span>
+            <span style="background: linear-gradient(180deg, rgba(255,255,255,0) 60%, #D9D9D9 40%);" class="inline-block my-1 ml-3 text-sm"><a href="#"># 파이썬</a></span>
+            <span style="background: linear-gradient(180deg, rgba(255,255,255,0) 60%, #BEEFFE 40%);" class="inline-block my-1 ml-3 text-sm"><a href="#"># C언어</a></span>
+        </div>
+        <div class="flex justify-between">
+            <div class="p-2">
+                <span class="text-sm text-gray-500 ml-1">Num 5</span>
+                <span class="text-sm text-gray-500 ml-4 ">비공개</span>
             </div>
-
-            <ul class="mt-3 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-[20px]">
-                <li th:each="post : ${postPage.content}">
-                    <div th:replace="common/fragments :: postListItemCard(${post})"></div>
-                </li>
-            </ul>
-
-            <div class="mt-4"
-                 th:if="${postPage.totalPages > 1}"
-                 th:with="queryStrBase = '?kwType=' + ${param.kwType != null ? param.kwType : ''} + '&kw=' + ${param.kw != null ? param.kw : ''} + '&'">
-                <div th:replace="common/fragments :: pagination(${postPage}, ${queryStrBase}, 1)"></div>
-            </div>
+            <span class="text-sm text-gray-500 p-2">2023 / 10 / 01</span>
         </div>
     </div>
 </div>
 
 </body>
-
 </html>

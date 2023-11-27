@@ -6,122 +6,127 @@
 
 <body>
 
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
+<div class="w-full lg:w-3/4 mx-auto" layout:fragment="content">
     <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
+    <span class="text-xl font-bold mt-3 ml-2">글쓰기</span>
+    <form method="POST" class="flex flex-col" enctype="multipart/form-data"
+          onsubmit="submitWriteForm(this); return false;"
+          th:action>
+        <input type="hidden" name="body">
+        <input type="hidden" name="bodyHtml">
 
-    <div class="container w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-solid fa-pen"></i>
-            <span th:text="|${board.name} 글쓰기|"></span>
-        </h1>
+        <div class=" w-full py-4 mt-6">
+            <input class="w-full p-3 rounded-md outline-none focus:border-blue-800 bg-transparent placeholder:text-2xl" maxlength="100"
+                   name="subject" placeholder="제목을 입력해주세요." type="text" autofocus>
+        </div>
+        <div class=" w-full p-2">
+            <input class="w-full p-3 border border-gray-200 rounded-md outline-none focus:border-2 focus:border-blue-800" maxlength="100"
+                   name="tagsStr" placeholder="`#자바 #HTML[5] #알고리즘 ...`          * 숫자 `[5]` 설명 : `5`는 전체 `알고리즘` 글들 중에서 이 글의 순서번호(조절가능, 입력안하면 순서번호는 자동으로 부여됨)" type="text">
+        </div>
+        <div onclick="toggleComment(this)" class="rounded-md p-3 ml-2 hover:bg-gray-100 text-gray-500">태그사용 가이드<i class="fa-solid fa-caret-down ml-2"></i></div>
+        <div class="more_tab hidden p-3">
+            <p>하나의 글</span>은 여러개의 <span class="bg-pink-200">태그</span>들을 가질 수 있습니다. <br>
+                하나의 태그는 여러개의 <span class="bg-pink-200">글들이</span> 공유할 수 있습니다. <br>
+                각 태그들의 구분자는 #</span> 입니다. <br>
+                하나의 태그로 묶인 글들을 <span class="bg-pink-200">시리즈</span> 라고 합니다. <br>
+                예를들어 내가 작성한 모든 글들 중에서 <span class="bg-pink-200">알고리즘</span>이라는
+                태그가 등록된 글들을 <span class="bg-pink-200">알고리즘 시리즈</span> 라고 합니다. <br>
+                각 <span class="bg-pink-200">시리즈</span>에 속한 글들은 자동으로 순서대로
+                <span class="bg-pink-200">순서번호</span>가 매겨집니다.(첫 번호는 1) <br>
+                #자바 와 같은 식으로 <span class="bg-pink-200">[숫자]를 뒤에 붙이지
+                않으면</span> 자동으로 이 글은 자바 시리즈의 <span class="bg-pink-200">가장 마지막 글로</span> 등록됩니다. <br>
+                <span class="bg-pink-200">#알고리즘[3]</span> 와 같은 식으로 입력하면 이 글은 알고리즘 시리즈
+                의 <span class="bg-pink-200">3번째 글로</span> 등록됩니다.(이런식으로 순서조절 가능) <br>
+                글 수정화면에서는 <span class="bg-pink-200">#알고리즘[3/5]</span> 에서 처럼 뒤에 숫자 5가 나온는데 (참고로 숫자 3은 순서번호) <br>
+                그것(숫자 5)은 알고리즘 시리즈를 구성하는 <span class="bg-pink-200">모든
+                글의 개수</span> 입니다.(수정 불가능, 표시용 정보) <br>
+            </p>
+        </div>
+        <div placeholder=" " class="toast-ui-editor mx-auto w-[99%] mt-6" height="calc(100vh - 300px)"></div>
 
-        <form class="flex flex-col gap-6" enctype="multipart/form-data" method="POST"
-              onsubmit="submitWriteForm(this); return false;"
-              th:action>
-            <input type="hidden" name="body">
-            <input type="hidden" name="bodyHtml">
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">제목</span>
-                </label>
-                <input class="input input-bordered" maxlength="100"
-                       name="subject" placeholder="제목" type="text" autofocus>
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">태그</span>
-                </label>
-                <input class="input input-bordered" maxlength="100"
-                       name="tagsStr" placeholder="#IT #HTML #..." type="text">
-            </div>
-
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text">내용</span>
-                </label>
-
-                <div class="toast-ui-editor" height="calc(100vh - 200px)" placeholder="내용"></div>
-            </div>
-
-            <div th:each="i : ${#numbers.sequence(1, 2)}" class="form-control">
-                <label class="label">
-                    <span class="label-text">첨부파일 <span th:text="${i}"></span></span>
-                </label>
-                <input class="file-input file-input-bordered"
-                       th:name="'attachment__' + ${i}"
-                       type="file">
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <button class="btn btn-block btn-primary gap-1">
-                    <i class="fa-solid fa-pen"></i>
-                    <span>글쓰기</span>
-                </button>
-
-                <div class="text-center">
-                    <a class="btn btn-link" th:href="|/usr/article/${board.code}/list|">목록</a>
-                </div>
-            </div>
-        </form>
-
-        <script>
-            let submitWriteFormDone = false;
-
-            function submitWriteForm(form) {
-                if (submitWriteFormDone) return;
-
-                form.subject.value = form.subject.value.trim();
-
-                if (form.subject.value.length == 0) {
-                    form.subject.focus();
-                    toastWarning('제목을 입력해주세요.');
-                    return;
-                }
-
-                if (form.subject.value.length < 2) {
-                    form.subject.focus();
-                    toastWarning('제목을 2자 이상 입력해주세요.');
-                    return;
-                }
-
-                const editor = $(form).find(".toast-ui-editor").data("data-toast-editor");
-
-                const markdown = editor.getMarkdown().trim();
-                const html = editor.getHTML().trim();
-
-                form.body.value = markdown;
-                form.bodyHtml.value = html;
-
-                if (form.body.value.length == 0 || form.bodyHtml.value.length == 0) {
-                    toastWarning("내용을 입력해주세요");
-                    editor.focus();
-                    return;
-                }
-
-                // 파일 입력 필드의 인덱스 시작
-                for (let i = 1; true; i++) {
-                    const fileInput = form['attachment__' + i];
-
-                    // 해당 이름의 입력 필드가 없으면 반복문 종료
-                    if (!fileInput) break;
-
-                    if (fileInput.files.length > 0 && fileInput.files[0].size === 0) {
-                        fileInput.focus();
-                        toastWarning('첨부파일 ' + i + '의 용량이 0 입니다. 다른 파일을 선택해주세요.');
-                        return;
-                    }
-
-                    i++;
-                }
-
-                form.submit();
-                submitWriteFormDone = true;
-            }
-        </script>
+        <div th:each="i : ${#numbers.sequence(1, 2)}" class="my-4">
+            <span class="p-2 ml-2 mt-3 text-sm">파일첨부 <span th:text="${i}"></span></span>
+            <input type="file" id="file-input-medium" class="block w-[99%] ml-2 mt-1  border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-2 focus:border-blue-800 focus:ring-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600
+                file:bg-gray-50 file:border-0
+                file:bg-gray-100 file:me-4
+                file:py-3 file:px-4
+                dark:file:bg-gray-700 dark:file:text-gray-400" th:name="'attachment__' + ${i}">
+        </div>
+        <div class="p-4 mt-2 lg:mt-6 flex justify-center">
+            <button class="inline-block text-white w-full lg:w-1/3 text-center border border-blue-800 bg-blue-800 p-2 mb-3 mt-2 lg:mt-6 rounded-md hover:bg-blue-900">
+                작성완료
+            </button>
+        </div>
+    </form>
+    <div class="flex justify-center">
+        <a th:href="|/usr/article/${board.code}/list|" class="text-sm text-gray-500 ml-2 p-2">목록으로</a>
     </div>
+    <script>
+        let submitWriteFormDone = false;
+
+        function submitWriteForm(form) {
+            if (submitWriteFormDone) return;
+
+            form.subject.value = form.subject.value.trim();
+
+            if (form.subject.value.length == 0) {
+                form.subject.focus();
+                toastWarning('제목을 입력해주세요.');
+                return;
+            }
+
+            if (form.subject.value.length < 2) {
+                form.subject.focus();
+                toastWarning('제목을 2자 이상 입력해주세요.');
+                return;
+            }
+
+            const editor = $(form).find(".toast-ui-editor").data("data-toast-editor");
+
+            const markdown = editor.getMarkdown().trim();
+            const html = editor.getHTML().trim();
+
+            form.body.value = markdown;
+            form.bodyHtml.value = html;
+
+            if (form.body.value.length == 0 || form.bodyHtml.value.length == 0) {
+                toastWarning("내용을 입력해주세요");
+                editor.focus();
+                return;
+            }
+
+            // 파일 입력 필드의 인덱스 시작
+            for (let i = 1; true; i++) {
+                const fileInput = form['attachment__' + i];
+
+                // 해당 이름의 입력 필드가 없으면 반복문 종료
+                if (!fileInput) break;
+
+                if (fileInput.files.length > 0 && fileInput.files[0].size === 0) {
+                    fileInput.focus();
+                    toastWarning('첨부파일 ' + i + '의 용량이 0 입니다. 다른 파일을 선택해주세요.');
+                    return;
+                }
+
+                i++;
+            }
+
+            form.submit();
+            submitWriteFormDone = true;
+        }
+    </script>
+    <script>
+        function toggleComment(button) {
+            const content = button.nextElementSibling;
+
+            if (content.style.display === 'block') {
+                content.style.display = 'none'; // 열려있을 때 닫습니다.
+            } else {
+                content.style.display = 'block'; // 닫혀있을 때 엽니다.
+            }
+        }
+    </script>
 </div>
 
 </body>
-
 </html>

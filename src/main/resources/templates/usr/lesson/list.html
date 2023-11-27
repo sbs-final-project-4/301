@@ -1,70 +1,74 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title th:text="|${lecture.subject}|"></title>
+    <title th:text="${lecture.subject}"></title>
 </head>
 
 <body>
 
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
-
-    <div class="container w-full px-4">
-        <div class="flex flex-row justify-between">
-            <h1 class="my-4">
-                <i class="fa-solid fa-chalkboard-user"></i>
-                <span th:text="|${lecture.subject} 커리큘럼|"></span>
-            </h1>
-            <a th:if="${@lectureService.checkProducerCanModify(@rq.member, lecture).success}"
-               class="btn btn-primary btn-sm m-4"
-               th:href="|/usr/lecture/modify/${lecture.id}|">강의 정보 수정</a>
+<div class="w-full lg:w-3/4 mx-auto" layout:fragment="content">
+    <div class="header-box p-6 border-b border-gray-400">
+        <span class="text-md p-2" th:text="${lecture.producer.producerName}">강사명</span>
+        <h1 class="text-2xl font-bold ml-2" th:text="${lecture.subject}">자바 기초부터 심화까지</h1>
+        <h2 class="text-sm text-gray-500 p-2">수강기간 : 무제한</h2>
+        <span th:if="${lecture.lessonsReady}" class="ml-2">총
+            <span th:if="${lecture.totalLessonLengthPerHour != 0}" th:text="|${lecture.totalLessonLengthPerHour} 시간 |"></span>
+            <span th:if="${lecture.totalLessonLengthPerMinute != 0}" th:text="|${lecture.totalLessonLengthPerMinute} 분|"></span>
+        </span>
+        <div class="flex flex-row justify-between items-center">
+            <div class="ml-2 mt-3 flex-grow">
+                <span class="flex flex-col w-1/4">
+                    <div class=" flex flex-row mb-4">
+                        <div class="label-txt">진도율 :&nbsp </div>
+                        <div class="label-txt" th:utext="${lecture.getProgressRate(@lessonService.getSumPlaybackTime(lecture)) + ' %'}"></div>
+                    </div>
+                    <progress class="progress progress-primary"
+                              th:value="${lecture.getProgressRate(@lessonService.getSumPlaybackTime(lecture))}" max="100"></progress>
+                </span>
+            </div>
+            <button onclick="my_modal_3.showModal()" class="p-2 bg-yellow-200 border-yellow-300 hover:bg-yellow-300 rounded-md px-2 hidden lg:flex">파일첨부 BOX</button>
         </div>
-
-
-        <div class="form-control col-span-full" th:each="fileEntry : ${filesMap}">
-            <label class="label">
-                <span class="label-text">강의자료 <span th:text="${fileEntry.key}"></span></span>
-            </label>
-
-            <a th:href="|${fileEntry.value.downloadUrl}|" class="link">
-                <i class="fa-regular fa-floppy-disk"></i>
-                강의자료
-                <span th:text="${fileEntry.key}"></span>
-                (<span th:text="${fileEntry.value.originFileName}"></span>)
-                다운로드
+        <button class="p-2 bg-yellow-200 border-yellow-300 hover:bg-yellow-300 rounded-md ml-2 mt-3 px-2 block lg:hidden">파일첨부 BOX</button>
+    </div>
+    <div class="list-box p-2 mt-3 " th:each="lesson : ${lessons}">
+        <div class="w-full border border-gray-200 mt-5">
+            <h1 class="p-3 text-lg border border-b border-gray-200" th:text="|${lesson.sortNo} 강  ${lesson.subject}|"></h1>
+            <a th:href="|/usr/lesson/hls/${lesson.id}|"><!--여기를 누르면 동영상 페이지로 갑니다.-->
+                <div class="bg-gray-100 w-800 text-gray-600 p-3">
+                    <i th:if="${@lessonService.isLessonCompleted(lesson.id, lesson.lessonLength)}" class="fa-solid fa-circle-check"></i>
+                    <i th:unless="${@lessonService.isLessonCompleted(lesson.id, lesson.lessonLength)}" class="fa-regular fa-circle-check"></i>
+                    <i class="fa-solid fa-play mx-1"></i>
+                    <span th:text="${lesson.lessonLengthForPrint}"></span>
+                </div>
             </a>
         </div>
-
-        <div class="max-w-[1000px] mt-16" th:if="${lecture.lessonsReady}">
-            <table class="table">
-                <!-- head -->
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>수업 제목</th>
-                    <th>수업 길이</th>
-                </tr>
-                </thead>
-                <tbody th:each="lesson : ${lessons}">
-                <tr>
-                    <th th:text="|${lesson.sortNo} 강 |"></th>
-                    <td class="">
-                        <a th:href="|/usr/lesson/hls/${lesson.id}|">
-                            <i th:if="${@lessonService.isLessonCompleted(lesson.id, lesson.lessonLength)}" class="fa-solid fa-circle-check"></i>
-                            <i th:unless="${@lessonService.isLessonCompleted(lesson.id, lesson.lessonLength)}" class="fa-regular fa-circle-check"></i>
-                            <i class="fa-solid fa-play mx-1"></i>
-                            <span class="ml-4" th:text="${lesson.subject}"></span>
-                        </a>
-                    </td>
-                    <td th:text="${lesson.lessonLengthForPrint}"></td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-
     </div>
+    <dialog id="my_modal_3" class="modal">
+        <div class="modal-box">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+            <h3 class="font-bold text-lg">
+                <i class="fa-solid fa-file-arrow-down"></i><span class="ml-3 ">파일 다운로드</span>
+            </h3>
+            <div class="p-2">
+                <div class="form-control col-span-full" th:each="fileEntry : ${filesMap}">
+                    <label class="label">
+                        <span class="label-text">강의자료 <span th:text="${fileEntry.key}"></span></span>
+                    </label>
 
+                    <a th:href="|${fileEntry.value.downloadUrl}|" class="link">
+                        <i class="fa-regular fa-floppy-disk"></i>
+                        강의자료
+                        <span th:text="${fileEntry.key}"></span>
+                        (<span th:text="${fileEntry.value.originFileName}"></span>)
+                        다운로드
+                    </a>
+                </div>
+            </div>
+        </div>
+    </dialog>
 </div>
 
 </body>
-
 </html>

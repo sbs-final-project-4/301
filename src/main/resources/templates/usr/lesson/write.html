@@ -1,74 +1,45 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-    <title th:text="|강의 생성|"></title>
+    <title th:text="게시판"></title>
 </head>
 
 <body>
 
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
-    <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
-
-    <div class="flex flex-col fixed top-[264px] left-0 self-start ml-4 side" >
-        <span class="text-xl mb-4">강의 제작</span>
-        <ul class="steps steps-vertical">
-            <li class="step step-primary">강의 소개 작성</li>
-            <li class="step step-primary">수업 영상 등록</li>
-            <li class="step">강의 가격 설정</li>
-        </ul>
-    </div>
-
-    <script>
-        function updateDivVisibility() {
-            const divElement = document.querySelector('.side');
-            if (window.innerWidth <= 1860) { // 화면 넓이가 768px 이하인지 확인
-                divElement.classList.add('hidden'); // hidden 클래스 추가
-            } else {
-                divElement.classList.remove('hidden'); // hidden 클래스 제거
-            }
-        }
-
-        window.addEventListener('resize', updateDivVisibility); // 화면 크기가 변경될 때마다 함수 호출
-        updateDivVisibility(); // 페이지 로딩 시 함수를 초기 호출하여 적절한 상태 설정
-    </script>
-
-    <div class="container w-full px-4">
+<div class="w-full lg:w-3/4 mx-auto mt-12" layout:fragment="content">
+    <div class="container w-full lg:w-3/4 mx-auto px-4">
         <h1 class="mb-4">
-            <i class="fa-solid fa-file-pen"></i>
-            <span th:text="|내 강의 만들기|"></span>
+            <span class="text-xl font-bold" th:text="|내 강의 만들기|"></span>
         </h1>
 
-        <button class="btn btn-sm btn-outline my-4 addBlockButton">수업 추가</button>
+        <button class="btn w-28 btn-md my-6 addBlockButton">+ 수업 추가</button>
 
-        <form id="myForm" class="flex flex-col gap-6" enctype="multipart/form-data" method="POST"
+        <form id="myForm" class="flex flex-col gap-3" enctype="multipart/form-data" method="POST"
               onsubmit="submitWriteForm(this); return false;"
               th:action>
 
-            <div class="form-control">
+            <div class="form-control w-full">
                 <label class="label">
-                    <span class="label-text">수업 1 제목</span>
+                    <span class="label-text ">1강 제목</span>
                 </label>
-                <input class="input input-bordered" maxlength="100"
+                <input class="p-2 rounded-md  border border-gray-200 focus:border-2 focus:border-blue-800 outline-none" maxlength="100"
                        name="subjects" placeholder="제목" type="text" autofocus>
             </div>
 
             <div class="form-control">
                 <label class="label">
-                    <span class="label-text">수업 1 영상</span>
+                    <span class="label-text">1강 영상</span>
                 </label>
-                <input class="file-input file-input-bordered"
-                       name="videos"
-                       type="file"
-                       accept=".mp4,.avi,.mov,.wmv">
+                <input type="file" name="videos" id="file-input-medium" class="block p-1 w-full mt-1 mb-3 border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-2 focus:border-blue-800 focus:ring-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600
+                    file:bg-gray-50 file:border-0
+                    file:bg-gray-100 file:me-4
+                    file:py-2 file:px-4
+                    dark:file:bg-gray-700 dark:file:text-gray-400" accept=".mp4,.avi,.mov,.wmv">
             </div>
-
-            <button type="button" id="last" class="btn btn-sm btn-outline my-4 w-20 addBlockButton">수업 추가</button>
-
+            <button type="button" id="last" class="btn btn-md w-28 my-4 addBlockButton">+ 수업 추가</button>
             <div class="flex flex-col gap-2">
-                <button class="btn btn-block btn-primary gap-1">
-                    <i class="fa-solid fa-upload"></i>
-                    <span>등록 완료</span>
-                </button>
+                <button class="inline-block text-white w-full lg:w-2/5 mx-auto text-center border border-blue-800 bg-blue-800 p-2 mb-3 mt-2 lg:mt-6 rounded-md hover:bg-blue-900">
+                    업로드 하기</button>
             </div>
 
         </form>
@@ -192,6 +163,7 @@
             }
         </script>
 
+
         <script th:inline="javascript">
             document.addEventListener('DOMContentLoaded', function() {
                 const addButtons = document.querySelectorAll('.addBlockButton');
@@ -210,22 +182,30 @@
                 const blockCount = formElement.querySelectorAll('.form-control').length / 2 + 1; // 각 수업에는 두 개의 .form-control이 있으므로 2로 나눔
 
                 const blockHtml = `
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">수업 <span>${blockCount}</span><span> 제목</span></span>
-                            <button type="button" class="btn btn-square btn-outline w-[40px]" onclick="removeElements(this)">
+                    <div class="form-control w-full">
+                        <div class="flex flex-row flex justify-between">
+                            <label class="label">
+                                <span class="label-text"><span>${blockCount}</span><span>강 제목</span></span>
+                            </label>
+                            <button type="button" class="btn btn-circle w-[30px] flex-shrink-0" onclick="removeElements(this)">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                             </button>
-                        </label>
-                        <input class="input input-bordered" maxlength="100" name="subjects" placeholder="제목" type="text" autofocus>
+                        </div>
+                        <input class="p-2 rounded-md  border border-gray-200 focus:border-2 focus:border-blue-800 outline-none" maxlength="100"
+                               name="subjects" placeholder="제목" type="text" autofocus>
                     </div>
 
-                    <div class="form-control">
+                    <div class="form-control flex">
                         <label class="label">
-                            <span class="label-text">수업 <span>${blockCount}</span><span> 영상</span></span>
+                            <span class="label-text"><span>${blockCount}</span><span>강 영상</span></span>
                         </label>
-                        <input class="file-input file-input-bordered" name="videos" type="file">
+                        <input type="file" name="videos" id="file-input-medium" class="block p-1 w-full mt-1 mb-3 border border-gray-200 shadow-sm rounded-lg text-sm focus:z-10 focus:border-2 focus:border-blue-800 focus:ring-blue-800 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600
+                                file:bg-gray-50 file:border-0
+                                file:bg-gray-100 file:me-4
+                                file:py-2 file:px-4
+                                dark:file:bg-gray-700 dark:file:text-gray-400" accept=".mp4,.avi,.mov,.wmv">
+                        <div class="w-full flex justify-end">
                     </div>
                 `;
 
@@ -265,11 +245,8 @@
             }
         </script>
 
-
     </div>
 </div>
 
-
 </body>
-
 </html>

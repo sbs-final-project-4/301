@@ -115,7 +115,7 @@ public class NotProd {
         Post post5 = postService.write(member2, "제목 5", "#Java #JSP", "내용 5", false).getData();
         Post post6 = postService.write(member2, "제목 6", "#CSS #Hungry #Python", "내용 6", true).getData();
 
-        seriesService.write(member1, postKeywordHtml, "HTML 기초", "#HTML #프론트 엔드", "내용 1", Ut.markdown.toHtml("내용 1"), true);
+        seriesService.write(member1, postKeywordHtml, "HTML 기초", "#HTML #프론트 엔드", true);
 
 //        lectureService.write(member1, "제목1", "#HTML", "내용1", true);
 //        lectureService.write(member1, "제목2", "#HTML", "내용1", true);

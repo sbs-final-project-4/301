@@ -1,0 +1,60 @@
+<html layout:decorate="~{usr/common/layout}">
+
+<head>
+    <title th:text="게시판"></title>
+</head>
+
+<body>
+
+<div class="w-full lg:w-3/4 mx-auto" layout:fragment="content">
+    <div class="header-box p-6 border-b border-gray-400">
+        <span class="text-md p-2">강사명</span>
+        <h1 class="text-2xl font-bold ml-2">자바 기초부터 심화까지</h1>
+        <h2 class="text-sm text-gray-500 p-2">수강기간 : 무제한</h2>
+        <span class="text-sm ml-2">총 10시간 38분</span>
+        <div class="flex justify-between">
+            <span class="w-96 flex">
+                <span class="whitespace-nowrap p-2">진도율</span>
+                <progress class="progress mt-4" value="70" max="100"></progress>
+            </span>
+            <button onclick="my_modal_3.showModal()" class="p-2 bg-yellow-200 border-yellow-300 hover:bg-yellow-300 rounded-md px-2 hidden lg:flex">파일첨부 BOX</button>
+        </div>
+        <button class="p-2 bg-yellow-200 border-yellow-300 hover:bg-yellow-300 rounded-md ml-2 mt-3 px-2 block lg:hidden">파일첨부 BOX</button>
+    </div>
+    <div class="list-box p-2 mt-3">
+        <div class="w-full border border-gray-200 mt-5">
+            <h1 class="p-3 text-lg border border-b border-gray-200">PART1 1강 자바는 객체지향언어이다.</h1>
+            <a href="#"><!--여기를 누르면 동영상 페이지로 갑니다.-->
+              <div class="bg-gray-100 w-800 text-gray-600 p-3">
+                <i class="fa-solid fa-circle-play"></i>
+                <span class="text-md">50분 30초</span>
+              </div>
+            </a>
+        </div>
+        <div class="w-full border border-gray-200 mt-5">
+            <h1 class="p-3 text-lg border border-b border-gray-200">PART1 2강 주석 / 들여쓰기</h1>
+            <a href="#"><!--여기를 누르면 동영상 페이지로 갑니다.-->
+                <div class="bg-gray-100 w-800 text-gray-600 p-3">
+                    <i class="fa-solid fa-circle-play"></i>
+                    <span class="text-md">50분 30초</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    <dialog id="my_modal_3" class="modal">
+        <div class="modal-box">
+            <form method="dialog">
+                <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+            </form>
+            <h3 class="font-bold text-lg">
+                <i class="fa-solid fa-file-arrow-down"></i><span class="ml-3 ">파일 다운로드</span>
+            </h3>
+            <div class="p-2">
+             <!--첨부 할 파일을 넣어주세요. -->
+            </div>
+        </div>
+    </dialog>
+</div>
+
+</body>
+</html>

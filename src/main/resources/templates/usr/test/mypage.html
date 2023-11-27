@@ -1,0 +1,105 @@
+<html layout:decorate="~{usr/common/layout}">
+
+<head>
+    <title th:text="게시판"></title>
+</head>
+
+<body>
+
+<div class="w-full lg:w-3/4  mx-auto block lg:flex" layout:fragment="content">
+
+  <div class="w-full lg:w-[20%] xl:w-[15%] p-3 -mt-3 lg:mt-6 flex lg:block border-b border-gray-300 lg:border-white">
+      <div class="w-28 h-28 mt-3 lg:mt-0 bg-gray-200 rounded-full"></div>
+      <div class="ml-3">
+          <span class="inline-block text-lg p-2 ml-1 lg:mt-3">닉네임 님</span>
+          <div class="mt-0 lg:mt-2">
+              <a href="/usr/member/me" class="text-md p-2 hover:underline "><i class="fa-regular fa-user p-1"></i>내정보</a>
+          </div>
+          <div class="mt-2">
+              <a href="/usr/post/myList" class="text-md p-2 hover:underline"><i class="fa-solid fa-book p-1"></i>내가 쓴 글</a>
+          </div>
+          <div class="mt-2">
+              <a href="/usr/member/checkPassword?redirectUrl=/usr/member/myPayments"
+                 class="text-md p-2 hover:underline"><i class="fa-regular fa-credit-card p-1"></i>결제 내역</a>
+          </div>
+      </div>
+  </div>
+  <div class="w-full lg:w-[80%] xl:w-[85%] lg:mt-6">
+      <span class="inline-block text-xl lg:text-2xl font-bold p-4">수강중인 강의</span>
+      <!--강좌 리스트-->
+      <div class="con mx-auto px-[10px] mt-0 lg:mt-4">
+          <ul class="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-[20px]">
+              <li class="group border border-gray-300">
+                  <a href="#">
+                      <img class="aspect-[376/221] object-cover w-full" src="https://ifh.cc/g/3hOfS7.jpg" alt="">
+                  </a>
+
+                  <a href="#" class="flex flex-col gap-1 mt-3 p-2">
+                      <div class="text-lg">
+                          한번에 끝내는 Java
+                      </div>
+                      <div class="flex gap-2 text-xs">
+                          <div class="text-sm text-gray-500">수강기간 : 무제한</div>
+                      </div>
+                      <div class="">
+                          <span class="text-xs text-gray-600">진도률: 70%<progress class="progress" value="70" max="100"></progress></span>
+                      </div>
+                  </a>
+              </li>
+              <li class="group border border-gray-300">
+                  <a href="#">
+                      <img class="aspect-[376/221] object-cover w-full" src="https://ifh.cc/g/3hOfS7.jpg" alt="">
+                  </a>
+
+                  <a href="#" class="flex flex-col gap-1 mt-3 p-2">
+                      <div class="text-lg">
+                          한번에 끝내는 Java
+                      </div>
+                      <div class="flex gap-2 text-xs">
+                          <div class="text-sm text-gray-500">수강기간 : 무제한</div>
+                      </div>
+                      <div class="">
+                          <span class="text-xs text-gray-600">진도률: 70%<progress class="progress" value="70" max="100"></progress></span>
+                      </div>
+                  </a>
+              </li>
+              <li class="group border border-gray-300">
+                  <a href="#">
+                      <img class="aspect-[376/221] object-cover w-full" src="https://ifh.cc/g/3hOfS7.jpg" alt="">
+                  </a>
+
+                  <a href="#" class="flex flex-col gap-1 mt-3 p-2">
+                      <div class="text-lg">
+                          한번에 끝내는 Java
+                      </div>
+                      <div class="flex gap-2 text-xs">
+                          <div class="text-sm text-gray-500">수강기간 : 무제한</div>
+                      </div>
+                      <div class="">
+                          <span class="text-xs text-gray-600">진도률: 70%<progress class="progress" value="70" max="100"></progress></span>
+                      </div>
+                  </a>
+              </li>
+              <li class="group border border-gray-300">
+                  <a href="#">
+                      <img class="aspect-[376/221] object-cover w-full" src="https://ifh.cc/g/3hOfS7.jpg" alt="">
+                  </a>
+
+                  <a href="#" class="flex flex-col gap-1 mt-3 p-2">
+                      <div class="text-lg">
+                          한번에 끝내는 Java
+                      </div>
+                      <div class="flex gap-2 text-xs">
+                          <div class="text-sm text-gray-500">수강기간 : 무제한</div>
+                      </div>
+                      <div class="">
+                          <span class="text-xs text-gray-600">진도률: 70%<progress class="progress" value="70" max="100"></progress></span>
+                      </div>
+                  </a>
+              </li>
+          </ul>
+      </div>
+  </div>
+</div>
+</body>
+</html>

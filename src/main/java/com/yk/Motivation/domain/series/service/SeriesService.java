@@ -41,26 +41,22 @@ public class SeriesService {
     }
 
     @Transactional
-    public RsData<Series> write(Member author, long postKeywordId, String subject, String tagsStr, String body, String bodyHtml, boolean isPublic) {
-        return write(author, postService.findKeywordById(postKeywordId).get(), subject, tagsStr, body, bodyHtml, isPublic);
+    public RsData<Series> write(Member author, long postKeywordId, String subject, String tagsStr, boolean isPublic) {
+        return write(author, postService.findKeywordById(postKeywordId).get(), subject, tagsStr, isPublic);
     }
 
     @Transactional
-    public RsData<Series> write(Member author, PostKeyword postKeyword, String subject, String tagsStr, String body, String bodyHtml, boolean isPublic) {
+    public RsData<Series> write(Member author, PostKeyword postKeyword, String subject, String tagsStr, boolean isPublic) {
         Series series = Series.builder()
                 .postKeyword(postKeyword)
                 .author(author)
                 .subject(subject)
-                .body(body)
-                .bodyHtml(bodyHtml)
                 .isPublic(isPublic)
                 .build();
 
         seriesRepository.save(series);
 
         series.addTags(tagsStr);
-
-        documentService.updateTempGenFilesToInBody(series);
 
         return new RsData<>("S-1", series.getId() + "번 시리즈가 생성되었습니다.", series);
     }
