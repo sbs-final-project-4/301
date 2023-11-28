@@ -35,7 +35,7 @@
         <thread>
             <tr class="border-b-2 border-t-2 border-gray-200 whitespace-nowrap text-sm lg:text-md">
                 <th>글 번호</th>
-                <th>공개여부</th>
+                <th>작성자</th>
                 <th>제목</th>
                 <th>작성일</th>
             </tr>
@@ -44,7 +44,7 @@
         <tbody>
         <tr class="text-center whitespace-nowrap border-b border-gray-200 text-sm lg:text-md" th:each="post : ${postPage.content}">
             <td th:text="${post.id}">12</td>
-            <td th:text="${post.publicHanName}">비공개</td>
+            <td th:text="${post.author.nickname}">비공개</td>
             <td width="60%" class="border border-gray-200 p-0">
                 <div class="bg-gray-100 w-full p-2">
                     <a class="truncate text-lg font-bold" th:href="|/usr/post/detail/${post.id}?listUrl=${@rq.encodedCurrentUrl}|"
