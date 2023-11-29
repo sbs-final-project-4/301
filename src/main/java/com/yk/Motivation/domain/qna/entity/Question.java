@@ -4,6 +4,7 @@ import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
 import com.yk.Motivation.domain.lecture.entity.Lecture;
 import com.yk.Motivation.domain.lesson.entity.Lesson;
 import com.yk.Motivation.domain.member.entity.Member;
+import com.yk.Motivation.standard.util.DateUtils;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -39,4 +40,12 @@ public class Question extends BaseEntity {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.REMOVE)
     private List<Answer> answerList;
+
+    public String getFormattedDate() {
+        // BaseEntity의 createDate를 사용
+        return DateUtils.timeForToday(this.getCreateDate());
+    }
+
+    // 조회 수
+    private int viewCount = 0;
 }

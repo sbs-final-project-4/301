@@ -6,19 +6,19 @@
 
 <body>
 
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
+<!--<div class="flex-1 flex items-center justify-center" layout:fragment="content">
     <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
 
-    <div class="container w-full px-4"> <!-- 컨테이너 시작 -->
+    <div class="container w-full px-4"> &lt;!&ndash; 컨테이너 시작 &ndash;&gt;
         <h1 class="mb-4">
-            <i class="fa-regular fa-file-word"></i> <!-- 아이콘 -->
-            <span th:text="|${question.id} 질문|"></span> <!-- 게시판 이름 -->
+            <i class="fa-regular fa-file-word"></i> &lt;!&ndash; 아이콘 &ndash;&gt;
+            <span th:text="|${question.id} 질문|"></span> &lt;!&ndash; 게시판 이름 &ndash;&gt;
         </h1>
-        <div class="card bg-base-100 shadow-xl"> <!-- 카드 스타일 시작 -->
-            <div class="card-body"> <!-- 카드 내용 시작 -->
-                <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3"> <!-- 그리드 레이아웃 시작 -->
-                    <!-- 각 정보 영역 시작: 게시물 번호, 작성일, 작성자, 제목, 태그, 내용, 첨부파일 -->
-                    <!-- (이후의 div들은 유사한 구조를 갖는 정보 영역입니다.) -->
+        <div class="card bg-base-100 shadow-xl"> &lt;!&ndash; 카드 스타일 시작 &ndash;&gt;
+            <div class="card-body"> &lt;!&ndash; 카드 내용 시작 &ndash;&gt;
+                <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3"> &lt;!&ndash; 그리드 레이아웃 시작 &ndash;&gt;
+                    &lt;!&ndash; 각 정보 영역 시작: 게시물 번호, 작성일, 작성자, 제목, 태그, 내용, 첨부파일 &ndash;&gt;
+                    &lt;!&ndash; (이후의 div들은 유사한 구조를 갖는 정보 영역입니다.) &ndash;&gt;
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">질문 번호</span>
@@ -55,8 +55,8 @@
                     </div>
                 </div>
 
-                <div class="mt-6"> <!-- 버튼 그룹 시작 -->
-                    <div class="text-center"> <!-- 중앙 정렬 -->
+                <div class="mt-6"> &lt;!&ndash; 버튼 그룹 시작 &ndash;&gt;
+                    <div class="text-center"> &lt;!&ndash; 중앙 정렬 &ndash;&gt;
                         <a th:if="${@questionService.checkActorCanModify(@rq.member, question).success}"
                            class="btn btn-link" th:href="|/usr/qna/q/modify/${question.id}|">수정</a>
                         <a th:if="${@questionService.checkActorCanModify(@rq.member, question).success}"
@@ -66,7 +66,7 @@
                     </div>
                 </div>
 
-                <!--Answer-->
+                &lt;!&ndash;Answer&ndash;&gt;
                 <h5 th:text="|${#lists.size(question.answerList)}개의 답변이 있습니다.|"></h5>
                 <div>
                     <ul>
@@ -85,6 +85,88 @@
                     </div>
                 </div>
 
+            </div>
+        </div>
+    </div>
+</div>-->
+<div class="wrap -mt-4" layout:fragment="content">
+    <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
+    <div class="banner">
+        <img class="w-full xl:w-3/4 mx-auto object-contain hidden md:flex" src="" alt="">
+        <img class="w-150 mx-auto object-contain flex md:hidden" src="" alt="">
+    </div>
+
+    <div class="w-full sm:w-3/4 mx-auto mt-1 sm:mt-12">
+        <div style='box-shadow:2px 3px 5px 0px #d9d9d9' class="main h-full border-gray-200 border-2 rounded-xl">
+            <div class="w-4/5 mx-auto">
+                <!-- 질문 상단 섹션 -->
+                <div class="top-box mt-8">
+                    <div class="mt-4">
+                        <a th:text="${question.subject}" class="text-md sm:text-xl font-semibold"></a>
+                    </div>
+                    <div class="mt-2 w-full sm:w-2/5">
+                        <span th:text="'조회수 ' + ${question.viewCount}" class="text-sm font-semibold text-gray-400"></span>
+                        <span th:text="${question.member.nickname}" class="text-sm ml-4 whitespace-nowrap"></span>
+                        <span th:text="${question.formattedDate}" class="text-sm text-gray-500 px-2 inline-block whitespace-nowrap"></span>
+                    </div>
+                </div>
+
+                <!-- 질문 내용 섹션 -->
+                <div class="bottom-box w-full mt-4 mb-8 h-full border-b border-t border-gray-200">
+                    <div class="mt-8">
+                        <a class="toastui-editor-contents"
+                             style="overflow-wrap: break-word;"
+                             th:utext="${question.bodyHtml}">
+                        </a>
+                    </div>
+
+                    <div class="modify-box flex justify-end mr-1 sm:mr-12 mb-2 relative">
+                        <a th:if="${@questionService.checkActorCanModify(@rq.member, question).success}"
+                           class="mr-2 text-xs sm:text-sm" th:href="|/usr/qna/q/modify/${question.id}|">수정</a>
+                        <a th:if="${@questionService.checkActorCanModify(@rq.member, question).success}"
+                           onclick="return confirm('정말로 삭제하시겠습니까?');"
+                           class="mr-2 text-xs sm:text-sm" th:href="|/usr/qna/q/delete/${question.id}|">삭제</a>
+                        <a class="mr-2 text-xs sm:text-sm" th:href="|/usr/qna/q/list|">목록</a>
+                    </div>
+                </div>
+
+                <!-- 댓글 섹션 -->
+                <div class="comment-box">
+                    <span class="text-md sm:text-lg font-semibold">답변</span>
+                    <span th:text="|${#lists.size(question.answerList)}|" class="text-md sm:text-lg font-semibold text-blue-600"></span>
+                    <span class="text-md sm:text-lg font-semibold">개</span>
+
+                    <!-- 댓글 목록 -->
+                    <div class="comment text-sm flex flex-col sm:border-b border-t border-gray-200 p-2 mt-4 mb-4">
+                        <div th:each="answer : ${question.answerList}">
+                            <div class="flex flex-col sm:flex-row justify-between items-start">
+                                <div class="flex-grow">
+                                    <div class="flex flex-col sm:flex-row items-center">
+                                        <span>
+                                            <p th:text="${answer.member.nickname}"></p>
+                                            <p th:text="${answer.formattedDate}" class="text-gray-500 text-center hidden sm:inline"></p>
+                                        </span>
+                                        <span class="mt-2 sm:mt-0 sm:ml-16">
+                                            <p th:text="${answer.content}" style="word-break: break-all;"></p>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                        </div>
+                    </div>
+
+                    <div th:if="${@rq.login}">
+                        <div th:if="${@questionService.checkActorCanModify(@rq.member, question).success or @rq.isProducer()}">
+                            <form th:action="@{|/usr/qna/a/create/${question.id}|}" method="post">
+                                <textarea name="content" placeholder="답변을 입력해주세요." cols="50" class="placeholder:text-sm textarea textarea-bordered textarea-lg w-full"></textarea>
+                                <div class="w-full flex justify-end py-2">
+                                    <button type="submit" class="btn btn-sm">답변 등록</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

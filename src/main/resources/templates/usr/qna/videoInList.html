@@ -13,41 +13,39 @@
 
 <div th:fragment="qnaContent" class="flex-1 flex items-center justify-center" layout:fragment="content">
     <div class="container w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-solid fa-cubes"></i>
-            <span th:text="|QnA 게시판|"></span>
-        </h1>
 
         <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
                 <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3">
-                    <table>
-                        <thead>
-                        <tr>
-                            <th style="text-align: left">ID</th>
-                            <th style="text-align: left">제목</th>
-                            <th style="text-align: left">상태</th>
-                            <th style="text-align: left">기록</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="question, stat : ${questionPage.content}">
-                            <td>
-                                <span th:text="${question.id}"></span>
-                            </td>
-                            <td>
-                                <a th:href="@{/usr/qna/q/videoInDetail/{id}(id=${question.id},lessonId=${lessonId})}" th:text="${question.subject}"></a>
-                            </td>
-                            <td>
-                                <th:block th:if="${hasAnswersByOthersList[stat.index]}">답변 완료</th:block>
-                                <th:block th:if="${!hasAnswersByOthersList[stat.index]}">대기중...</th:block>
-                            </td>
-                            <td>
-                                <h5 th:text="|${#lists.size(question.answerList)}개의 기록이 있습니다.|"></h5>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div class="overflow-x-auto">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th style="text-align: left">ID</th>
+                                <th style="text-align: left">제목</th>
+                                <th style="text-align: left">상태</th>
+                                <th style="text-align: left">기록</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="question, stat : ${questionPage.content}">
+                                <td>
+                                    <span th:text="${question.id}"></span>
+                                </td>
+                                <td>
+                                    <a th:href="@{/usr/qna/q/videoInDetail/{id}(id=${question.id},lessonId=${lessonId})}" th:text="${question.subject}"></a>
+                                </td>
+                                <td>
+                                    <th:block th:if="${hasAnswersByOthersList[stat.index]}">답변 완료</th:block>
+                                    <th:block th:if="${!hasAnswersByOthersList[stat.index]}">대기중...</th:block>
+                                </td>
+                                <td>
+                                    <h5 th:text="|${#lists.size(question.answerList)}개의 기록이 있습니다.|"></h5>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
                 <script>

@@ -3,8 +3,11 @@ package com.yk.Motivation.domain.article.entity;
 
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
 import com.yk.Motivation.domain.board.entity.Board;
+import com.yk.Motivation.domain.comment.entity.Comment;
 import com.yk.Motivation.domain.document.standard.DocumentHavingTags;
 import com.yk.Motivation.domain.document.standard.DocumentTag;
+import com.yk.Motivation.domain.vote.entity.Vote;
+import com.yk.Motivation.standard.util.DateUtils;
 import com.yk.Motivation.standard.util.Ut;
 import jakarta.persistence.*;
 import lombok.*;
@@ -73,7 +76,20 @@ public class Article extends BaseEntity implements DocumentHavingTags {
     // 조회 수
     private int viewCount = 0;
 
-    /*@OneToMany(mappedBy = "article", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
-    private List<Comment> comments = new ArrayList<>();*/
+    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = {CascadeType.ALL})
+    @Builder.Default
+    @ToString.Exclude
+    private List<Comment> comments = new ArrayList<>();
+
+    @OneToMany(mappedBy = "article", orphanRemoval = true, cascade = {CascadeType.ALL})
+    @Builder.Default
+    @ToString.Exclude
+    private List<Vote> votes = new ArrayList<>();
+
+    // Article 클래스 내에 메소드 추가
+    public String getFormattedDate() {
+        // BaseEntity의 createDate를 사용
+        return DateUtils.timeForToday(this.getCreateDate());
+    }
     /*JHG ADD*/
 }
