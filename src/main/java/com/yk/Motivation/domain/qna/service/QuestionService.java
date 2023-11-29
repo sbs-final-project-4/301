@@ -1,6 +1,8 @@
 package com.yk.Motivation.domain.qna.service;
 
 import com.yk.Motivation.base.rsData.RsData;
+import com.yk.Motivation.domain.article.entity.Article;
+import com.yk.Motivation.domain.comment.entity.Comment;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.domain.qna.entity.Question;
 import com.yk.Motivation.domain.qna.repository.QuestionRepository;
@@ -42,17 +44,21 @@ public class QuestionService {
                 .orElseThrow(() -> new RuntimeException("Question with id " + id + " not found"));
     }
 
-    public Question create(Question question) {
-        return this.questionRepository.save(question);
-    }
-
-    public void delete(Long id) {
-        questionRepository.deleteById(id);
+    public RsData<Question> create(Question question) {
+        questionRepository.save(question);
+        return new RsData<>("S-1", question.getId() + "번 질문이 생성되었습니다.", null);
     }
 
     @Transactional
-    public Question save(Question question) {
-        return questionRepository.save(question);
+    public RsData<?> remove(Question question) {
+        questionRepository.delete(question);
+        return new RsData<>("S-1", question.getId() + "번 질문이 삭제되었습니다.", null);
+    }
+
+    @Transactional
+    public RsData<Question> save(Question question) {
+        questionRepository.save(question);
+        return new RsData<>("S-1", question.getId() + "번 질문이 수정되었습니다.", null);
     }
 
     public RsData<?> checkActorCanModify(Member member, Question question) {

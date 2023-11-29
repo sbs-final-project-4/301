@@ -16,9 +16,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
 
     public RsData<Comment> save(Comment comment) {
-
         commentRepository.save(comment);
-
         return RsData.of("S-1", "%d 번 댓글이 작성되었습니다.".formatted(comment.getId()), comment);
     }
 
@@ -32,12 +30,9 @@ public class CommentService {
     }
 
     // 댓글 삭제
-    public void delete(long commentId) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
-
-
+    public RsData<Comment> delete(Comment comment) {
         commentRepository.delete(comment);
+        return RsData.of("S-1", "%d 번 댓글이 삭제되었습니다.".formatted(comment.getId()), comment);
     }
 
     // 댓글 조회 (ID 기반)
@@ -45,20 +40,12 @@ public class CommentService {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
     }
-/*
 
-    public Comment updateComment(Long commentId, String updatedContent) {
+    public RsData<Comment> updateComment(Long commentId, String updatedContent, int updatedRating) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
         comment.setContent(updatedContent);
-        return commentRepository.save(comment);
-    }
-*/
-    public Comment updateComment(Long commentId, String updatedContent, int updatedRating) {
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
-        comment.setContent(updatedContent);
-        comment.setRating(updatedRating); // 별점도 업데이트
-        return commentRepository.save(comment);
+        comment.setRating(updatedRating);
+        return RsData.of("S-1", "%d 번 댓글이 수정되었습니다.".formatted(comment.getId()), commentRepository.save(comment));
     }
 }

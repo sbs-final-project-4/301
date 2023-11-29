@@ -7,12 +7,18 @@
 <body>
 
 <div class="flex-1 flex items-center justify-center" layout:fragment="content">
+<<<<<<< HEAD
     <div class="container w-full px-4">
         <h1 class="mb-4">
+=======
+    <div class="w-full -mt-4">
+        <h1 class="main w-full lg:w-2/3 flex mx-auto bg-gray-100 sm:bg-white mt-4 mb-4">
+>>>>>>> 04f7326 (update article, qna page)
             <i class="fa-solid fa-hashtag"></i>
             <span th:text="|게시물 태그 `${tagContent}`|"></span>
         </h1>
 
+<<<<<<< HEAD
         <div>
             <div class="mt-4" th:if="${articlePage.totalPages > 1}"
                  th:with="queryStrBase = ${tagContent} + '?'">
@@ -29,6 +35,18 @@
                  th:with="queryStrBase = ${tagContent} + '?'">
                 <div th:replace="common/fragments :: pagination(${articlePage}, ${queryStrBase}, 1)"></div>
             </div>
+=======
+        <ul>
+            <li th:each="article : ${articlePage.content}">
+                <div th:replace="common/fragments :: articleListItemCard(${article})"></div>
+                <br>
+            </li>
+        </ul>
+
+        <div class="mt-4" th:if="${articlePage.totalPages > 1}"
+             th:with="queryStrBase = ${tagContent} + '?'">
+            <div th:replace="common/fragments :: pagination(${articlePage}, ${queryStrBase}, 1)"></div>
+>>>>>>> 04f7326 (update article, qna page)
         </div>
     </div>
 </div>

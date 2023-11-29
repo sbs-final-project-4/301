@@ -2,7 +2,46 @@
 <html>
 
 <head>
+<<<<<<< HEAD
 
+=======
+    <!--article list-->
+    <!--제목 텍스트 처리-->
+    <style>
+        .line-clamp-1 {
+          width: 200px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;  /* 말줄임 적용 */
+        }
+    </style>
+    </style>
+    <!--조회수, 닉네임 모바일 표시-->
+    <style>
+        /* 모바일 환경에서는 right-box의 자식 요소들을 세로로 정렬 */
+        @media screen and (max-width: 600px) {
+            .right-box {
+                flex-direction: column;
+                align-items: flex-start; /* 자식 요소들을 왼쪽 정렬로 배치 */
+                padding: 0; /* 필요한 경우 패딩 제거 */
+            }
+
+            .view-count {
+                margin-bottom: 0; /* 원하는 간격으로 조정 */
+            }
+            .author-nickname {
+                margin-top: 0; /* 원하는 간격으로 조정 */
+            }
+        }
+
+        /* 비모바일 환경에서는 right-box의 자식 요소들을 가로로 정렬 */
+        @media screen and (min-width: 601px) {
+            .right-box {
+                flex-direction: row;
+            }
+        }
+    </style>
+>>>>>>> 04f7326 (update article, qna page)
 </head>
 
 <body>
@@ -600,54 +639,29 @@
 </th:block>
 
 <th:block th:fragment="articleListItemCard(article)">
-    <div class="card bg-base-100 shadow-xl">
-        <div class="card-body">
+    <div style='box-shadow:2px 3px 5px 0px #d9d9d9' class="flex mx-auto card-container w-full sm:h-36 lg:w-2/3 h-32 rounded-3xl border-2 border-gray-200 w-full">
+        <!--<div class="p-2 w-1/5 p-4 mt-2 sm:ml-6 sm:mt-8">
+            <span class="text-xs sm:text-sm text-gray-500 mt-8 sm:mt-4 px-2 mt-2 inline-block whitespace-nowrap" th:text="${#temporals.format(article.createDate, 'yy.MM.dd')}"></span>
+        </div>-->
+        <div class="p-2 w-1/5 p-4 mt-2 sm:ml-6 sm:mt-8">
+            <span class="text-xs sm:text-sm text-gray-500 mt-8 sm:mt-4 px-2 mt-2 inline-block whitespace-nowrap" th:text="${article.formattedDate}"></span>
+        </div>
 
-            <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3">
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">게시물번호</span>
-                    </label>
-                    <div th:text="${article.id}"></div>
-                </div>
-
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">작성일</span>
-                    </label>
-                    <div th:text="${#temporals.format(article.createDate, 'yy.MM.dd')}"></div>
-                </div>
-
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text">작성자</span>
-                    </label>
-                    <div th:text="${article.author.nickname}"></div>
-                </div>
-
-<!--                <div class="form-control">-->
-<!--                    <label class="label">-->
-<!--                        <span class="label-text">본문</span>-->
-<!--                    </label>-->
-<!--                    <a class="link" target="_blank" th:href="|/usr/post/listByKeyword/${series.postKeyword.id}|"-->
-<!--                       th:text="|#${series.postKeyword.content}(${series.postKeyword.total})|"></a>-->
-<!--                </div>-->
-
-                <div class="form-control col-span-full">
-                    <label class="label">
-                        <span class="label-text">제목</span>
-                    </label>
-                    <a class="link truncate" th:href="|/usr/article/${article.board.code}/detail/${article.id}|"
-                       th:text="${article.subject}"></a>
-                </div>
-
-                <div class="form-control col-span-full">
-                    <label class="label">
-                        <span class="label-text">태그</span>
-                    </label>
-                    <div th:utext="${article.getTagLinks('<a class=`my-3 px-2 p-1 mr-2 sm:text-sm text-xs whitespace-nowrap rounded-lg inline-block` href=`%s`>#%s</a>', '/usr/article/listByTag/%s')}"></div>
-                </div>
+        <div class="center-box mt-6 sm:mt-6 w-1/2 ml-6 sm:-ml-1">
+            <div>
+                <a th:href="|/usr/article/${article.board.code}/detail/${article.id}|"
+                    th:text="${article.subject}" class="text-md sm:text-xl font-semibold line-clamp-1"></a>
             </div>
+            <div><a href="#"
+                    th:text="${article.body}" class="text-sm line-clamp-1"></a></div>
+            <div class="flex">
+                <div th:utext="${article.getTagLinks('<a class=`my-3 px-2 p-1 mr-2 sm:text-sm text-xs whitespace-nowrap rounded-lg inline-block` href=`%s`>#%s</a>', '/usr/article/listByTag/%s')}"></div>
+            </div>
+        </div>
+
+        <div class="right-box flex flex-col sm:flex-row justify-between mt-10 sm:mt-12 md:mt-14 lg:mt-12 xl:mt-14 ml-2 sm:ml-36 w-1/5">
+            <span th:text="'조회수 ' + ${article.viewCount}" class="view-count flex-none text-sm ml-3 md:ml-6 font-semibold text-gray-400"></span>
+            <span th:text="${article.author.nickname}" class="author-nickname flex-none text-sm ml-3 md:ml-6 whitespace-nowrap mr-12"></span>
         </div>
     </div>
 </th:block>

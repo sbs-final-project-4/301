@@ -2,242 +2,191 @@
 
 <head>
     <title th:text="|글 - ${article.subject}|"></title>
-    <!-- 별점 스타일 -->
-    <style>
-        .rating {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: left;
-            align-items: center;
-        }
-        .rating > input {
-            display: none;
-        }
-        .rating > label {
-            font-size: 2em;
-            color: gray;
-            cursor: pointer;
-        }
-        .rating > input:checked ~ label {
-            color: gold;
-        }
-    </style>
 </head>
 
 <body>
 
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
+<div class="wrap -mt-4" layout:fragment="content">
     <th:block th:replace="common/fragments :: toastuiEidtorLib"></th:block>
 
-    <div class="container w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-regular fa-file-word"></i>
-            <span th:text="|${board.name} 게시글|"></span>
-        </h1>
+    <div class="banner">
+        <img class="w-full xl:w-3/4 mx-auto object-contain hidden md:flex" src="" alt="">
+        <img class="w-150 mx-auto object-contain flex md:hidden" src="" alt="">
+    </div>
 
-        <div class="card bg-base-100 shadow-xl">
-            <div class="card-body">
-                <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3">
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">게시물번호</span>
-                        </label>
-                        <div th:text="${article.id}"></div>
+    <div class="w-full sm:w-3/4 mx-auto mt-1 sm:mt-12">
+        <div style='box-shadow:2px 3px 5px 0px #d9d9d9' class="main h-full border-gray-200 border-2 rounded-xl">
+            <div class="w-4/5 mx-auto">
+                <!-- 게시판 상단 섹션 -->
+                <div class="top-box mt-8">
+                    <div class="cate flex">
+                        <div th:utext="${article.getTagLinks('<a class=`link mt-3 bg-blue-200 px-2 p-1 sm:text-sm text-xs whitespace-nowrap rounded-lg inline-block` href=`%s`>#%s</a>', '/usr/article/listByTag/%s')}"></div>
                     </div>
-
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">작성일</span>
-                        </label>
-                        <div th:text="${#temporals.format(article.createDate, 'yy.MM.dd')}"></div>
+                    <div class="mt-4">
+                        <a th:text="${article.subject}" class="text-md sm:text-xl font-semibold"></a>
                     </div>
-
-                    <div class="form-control">
-                        <label class="label">
-                            <span class="label-text">작성자</span>
-                        </label>
-                        <div th:text="${article.author.nickname}"></div>
-                    </div>
-
-                    <div class="form-control col-span-full">
-                        <label class="label">
-                            <span class="label-text">제목</span>
-                        </label>
-                        <div th:text="${article.subject}"></div>
-                    </div>
-
-                    <div class="form-control col-span-full">
-                        <label class="label">
-                            <span class="label-text">태그</span>
-                        </label>
-                        <div th:utext="${article.getTagLinks('<a class=`link` href=`%s`>#%s</a>', '/usr/article/listByTag/%s')}"></div>
-                    </div>
-
-                    <div class="form-control col-span-full">
-                        <label class="label">
-                            <span class="label-text">내용</span>
-                        </label>
-                        <div class="toastui-editor-contents"
-                             style="overflow-wrap: break-word;"
-                             th:utext="${article.bodyHtmlForPrint}">
-                        </div>
-                    </div>
-
-                    <div class="form-control col-span-full" th:each="fileEntry : ${filesMap}">
-                        <label class="label">
-                            <span class="label-text">첨부파일 <span th:text="${fileEntry.key}"></span></span>
-                        </label>
-
-                        <a th:href="|${fileEntry.value.downloadUrl}|" class="link">
-                            <i class="fa-regular fa-file"></i>
-                            첨부파일
-                            <span th:text="${fileEntry.key}"></span>
-                            (<span th:text="${fileEntry.value.originFileName}"></span>)
-                            다운로드
-                        </a>
+                    <div class="mt-2 w-full sm:w-2/5">
+                        <span th:text="'조회수 ' + ${article.viewCount}" class="text-sm font-semibold text-gray-400"></span>
+                        <span th:text="${article.author.nickname}" class="text-sm ml-4 whitespace-nowrap"></span>
+                        <span th:text="${article.formattedDate}" class="text-sm text-gray-500 px-2 inline-block whitespace-nowrap"></span>
                     </div>
                 </div>
-                <div class="mt-6">
-                    <div class="text-center">
+
+                <!-- 게시판 내용 섹션 -->
+                <div class="bottom-box w-full mt-4 mb-8 h-full border-b border-t border-gray-200">
+                    <div class="mt-8">
+                        <a class="toastui-editor-contents "
+                             style="overflow-wrap: break-word;"
+                             th:utext="${article.bodyHtmlForPrint}">
+                        </a>
+                    </div>
+
+                    <div class="modify-box flex justify-end mr-1 sm:mr-12 mb-2 relative">
                         <a th:if="${@articleService.checkActorCanModify(@rq.member, article).success}"
-                           class="btn btn-link"
+                           class="mr-2 text-xs sm:text-sm"
                            th:href="|/usr/article/${board.code}/modify/${article.id}|">수정</a>
                         <a onclick="return confirm('정말로 삭제하시겠습니까?');"
                            th:if="${@articleService.checkActorCanRemove(@rq.member, article).success}"
-                           class="btn btn-link"
+                           class="mr-2 text-xs sm:text-sm"
                            th:href="|/usr/article/${board.code}/remove/${article.id}|" method="POST">삭제</a>
-                        <a class="btn btn-link" th:href="|/usr/article/${board.code}/list|">목록</a>
-                        <!--JHG ADD - vote-->
-                        <form th:action="@{/usr/vote/add}" method="post" onsubmit="return confirmVote();">
-                            <input type="hidden" th:if="${@rq.member != null}" th:value="${@rq.member.nickname}" name="nickName" />
-                            <input type="hidden" th:value="${article.id}" name="article" />
-
-                            <div th:if="${@rq.login}">
-                                <!-- 로그인한 사용자에게만 추천 버튼 보여주기 -->
-                                <button type="submit" class="recommend btn btn-sm btn-outline-secondary">추천
-                                    <span th:text="${article.voteCount}" class="badge rounded-pill bg-success"></span>
-                                </button>
-                            </div>
-
-                            <div th:unless="${@rq.login}">
-                                <!-- 비로그인 사용자에게는 추천 수만 보여주기 -->
-                                <a href="#" class="recommend btn btn-sm btn-outline-secondary">추천
-                                    <span class="badge rounded-pill bg-success" th:text="${article.voteCount}"></span>
-                                </a>
-                            </div>
-                        </form>
-                        <!--JHG ADD - vote-->
+                        <a class="mr-2 text-xs sm:text-sm" th:href="|/usr/article/${board.code}/list|">목록</a>
                     </div>
                 </div>
-            </div>
-            <!-- JHG ADD - comment -->
-            <div class="card-body" th:if="${board.name} == '자유'">
-                <!--아이콘 영역-->
-                <h1 class="mb-4">
-                    <i class="fa-regular fa-comment"></i>
-                    <span th:text="|${board.name} 게시판 게시물 댓글|"></span>
-                </h1>
 
-                <!-- 댓글 리스트 -->
-                <span>댓글 리스트</span>
-                <ul th:each="comment : ${commentsPage.content}"> <!-- 페이징 처리된 댓글 목록 사용 -->
-                    <li style="border: 1px solid black; padding: 2px;">
-                        <strong th:text="${comment.nickName}"></strong> <!-- 작성자의 nickName 출력 -->
-                        <div class="rating">
-                            <input type="radio" disabled="true" th:checked="${comment.rating == 5}">
-                            <label>★</label>
-                            <input type="radio" disabled="true" th:checked="${comment.rating == 4}">
-                            <label>★</label>
-                            <input type="radio" disabled="true" th:checked="${comment.rating == 3}">
-                            <label>★</label>
-                            <input type="radio" disabled="true" th:checked="${comment.rating == 2}">
-                            <label>★</label>
-                            <input type="radio" disabled="true" th:checked="${comment.rating == 1}">
-                            <label>★</label>
-                        </div>
-                        <p id="comment-content-${comment.id}" th:text="${comment.content}"></p>
-                        <!-- 로그인된 사용자가 이 댓글의 작성자인 경우 수정 및 삭제 버튼 표시 -->
-                        <div th:if="${@rq.login}">
-                            <div th:if="${@rq.member.nickname} == ${comment.nickName}">
-                                <div th:id="'comment-modify-' + ${comment.id}" class="comment-modify" style="display: none;">
-                                    <form th:action="@{/usr/comment/modify}" method="post">
-                                        <input type="hidden" name="_csrf" th:value="${_csrf.token}">
-                                        <textarea class="textarea textarea-bordered w-full" name="content"
-                                                  th:attr="placeholder=${comment.content}"></textarea>
-                                        <div class="rating">
-                                            <span>별점:</span>
-                                            <input type="radio" name="rating" value="5" id="edit-star5-${comment.id}" th:checked="${comment.rating == 5}">
-                                            <label for="edit-star5-${comment.id}">★</label>
-                                            <input type="radio" name="rating" value="4" id="edit-star4-${comment.id}" th:checked="${comment.rating == 4}">
-                                            <label for="edit-star4-${comment.id}">★</label>
-                                            <input type="radio" name="rating" value="3" id="edit-star3-${comment.id}" th:checked="${comment.rating == 3}">
-                                            <label for="edit-star3-${comment.id}">★</label>
-                                            <input type="radio" name="rating" value="2" id="edit-star2-${comment.id}" th:checked="${comment.rating == 2}">
-                                            <label for="edit-star2-${comment.id}">★</label>
-                                            <input type="radio" name="rating" value="1" id="edit-star1-${comment.id}" th:checked="${comment.rating == 1}">
-                                            <label for="edit-star1-${comment.id}">★</label>
-                                        </div>
-                                        <input type="hidden" name="commentId" th:value="${comment.id}"/> <!-- 댓글 ID도 서버로 전송 -->
-                                        <button type="submit" class="btn btn-success">수정 완료</button>
-                                    </form>
-                                </div>
-                                <a class="btn btn-warning" th:onclick="'toggleCommentModify(' + ${comment.id} + ');'">수정</a>
-                                <script>
-                                    function toggleCommentModify(commentId) {
-                                        var commentModifyDiv = document.querySelector('#comment-modify-' + commentId);
-
-                                        if(commentModifyDiv.style.display === 'none' || commentModifyDiv.style.display === '') {
-                                            commentModifyDiv.style.display = 'block';
-                                        } else {
-                                            commentModifyDiv.style.display = 'none';
-                                        }
-                                    }
-                                </script>
-                                <a th:href="|/usr/comment/delete/${comment.id}|" class="btn btn-danger" onclick="return confirm('댓글을 삭제 하시겠습니까?');">삭제</a>
+                <!-- 댓글 섹션 -->
+                <div class="comment-box">
+                    <span class="text-md sm:text-lg font-semibold">댓글</span>
+                    <span th:text="${article.getComments().size()}" class="text-md sm:text-lg font-semibold text-blue-600"></span>
+                    <span class="text-md sm:text-lg font-semibold">개</span>
+                    <!-- 댓글 작성 폼 -->
+                    <form th:action="@{/usr/comment/write}" method="post" class="mt-6">
+                        <input type="hidden" th:value="${@rq.member.nickname}" name="nickName" />
+                        <input type="hidden" th:value="${article.id}" name="article" /> <!-- 게시글 ID -->
+                        <!-- 댓글 내용 입력 영역 -->
+                        <textarea name="content" placeholder="댓글을 입력해주세요." cols="50" class="placeholder:text-sm  textarea textarea-bordered textarea-lg w-full"></textarea>
+                        <!-- 별점 선택 영역 -->
+                        <div class="w-full flex justify-end py-2">
+                            <div class="rating mr-4 mt-1">
+                                <input type="radio" name="rating" value="5" id="star5" class="mask mask-star">
+                                <label for="star5"></label>
+                                <input type="radio" name="rating" value="4" id="star4" class="mask mask-star">
+                                <label for="star4"></label>
+                                <input type="radio" name="rating" value="3" id="star3" class="mask mask-star">
+                                <label for="star3"></label>
+                                <input type="radio" name="rating" value="2" id="star2" class="mask mask-star">
+                                <label for="star2"></label>
+                                <input type="radio" name="rating" value="1" id="star1" class="mask mask-star">
+                                <label for="star1"></label>
                             </div>
-                        </div>
-                    </li>
-                </ul>
-                <div class="mt-4" th:if="${commentsPage.totalPages > 1}"
-                     th:with="queryStrBase='/usr/article/' + ${boardCode} + '/detail/' + ${article.id} + '?'">
-                    <div th:replace="common/fragments :: pagination(${commentsPage}, ${queryStrBase}, 1)"></div>
-                </div>
-
-                <!-- 댓글 작성 폼 -->
-                <div class="form-control col-span-full">
-                    <label class="label">
-                        <span class="label-text">댓글 작성하기</span>
-                    </label>
-                    <!--로그인 상태 확인 / 로그인 상태만 작성 가능-->
-                    <div th:if="${@rq.login}">
-                        <form th:action="@{/usr/comment/write}" method="post">
-                            <input type="hidden" th:value="${@rq.member.nickname}" name="nickName" />
-                            <input type="hidden" th:value="${article.id}" name="article" /> <!-- 게시글 ID -->
-
-                            <!-- 별점 선택 영역 -->
-                            <div class="rating">
-                                <input type="radio" name="rating" value="5" id="star5">
-                                <label for="star5">★</label>
-                                <input type="radio" name="rating" value="4" id="star4">
-                                <label for="star4">★</label>
-                                <input type="radio" name="rating" value="3" id="star3">
-                                <label for="star3">★</label>
-                                <input type="radio" name="rating" value="2" id="star2">
-                                <label for="star2">★</label>
-                                <input type="radio" name="rating" value="1" id="star1">
-                                <label for="star1">★</label>
-                            </div>
-
-                            <!-- 댓글 내용 입력 영역 -->
-                            <textarea class="textarea textarea-bordered w-full" name="content" placeholder="댓글을 입력하세요."></textarea>
-
                             <!-- 댓글 작성 버튼 -->
-                            <button type="submit" class="btn btn-primary mt-2">댓글 작성</button>
-                        </form>
+                            <button type="submit" class="btn btn-sm">댓글 등록</button>
+                        </div>
+                    </form>
+                    <!-- 댓글 목록 -->
+                    <div class="comment text-sm flex flex-col sm:border-b border-t border-gray-200 p-2 mt-4 mb-4">
+                        <div th:each="comment : ${commentsPage.content}">
+                            <div class="flex flex-col sm:flex-row justify-between items-start">
+                                <div class="flex-grow">
+                                    <div class="flex flex-col sm:flex-row items-center">
+                                        <span>
+                                            <div>
+                                                <p th:text="${comment.nickName}"></p>
+                                                <p th:text="${comment.formattedDate}" class="text-gray-500 text-center hidden sm:inline"></p>
+                                            </div>
+                                            <div class="rating">
+                                                <input type="radio" disabled="true" th:checked="${comment.rating == 5}" class="mask mask-star">
+                                                <label></label>
+                                                <input type="radio" disabled="true" th:checked="${comment.rating == 4}" class="mask mask-star">
+                                                <label></label>
+                                                <input type="radio" disabled="true" th:checked="${comment.rating == 3}" class="mask mask-star">
+                                                <label></label>
+                                                <input type="radio" disabled="true" th:checked="${comment.rating == 2}" class="mask mask-star">
+                                                <label></label>
+                                                <input type="radio" disabled="true" th:checked="${comment.rating == 1}" class="mask mask-star">
+                                                <label></label>
+                                            </div>
+                                        </span>
+                                        <span class="mt-2 sm:mt-0 sm:ml-16">
+                                            <p id="comment-content-${comment.id}" th:text="${comment.content}" style="word-break: break-all;"></p>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="flex justify-end sm:justify-start w-full sm:w-auto">
+                                    <div th:if="${@rq.member.nickname} == ${comment.nickName}">
+                                        <a class="btn btn-sm" th:onclick="'toggleCommentModify(' + ${comment.id} + ');'">수정</a>
+                                        <a class="btn btn-error btn-sm" th:href="|/usr/comment/delete/${comment.id}|" onclick="return confirm('정말로 삭제하시겠습니까?');">삭제</a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div th:id="'comment-modify-' + ${comment.id}" class="comment-modify" style="display: none;">
+                                <form th:action="@{/usr/comment/modify}" method="post">
+                                    <input type="hidden" name="_csrf" th:value="${_csrf.token}">
+                                    <textarea  name="content" th:attr="placeholder=${comment.content}"
+                                               class="placeholder:text-sm textarea textarea-bordered textarea-lg w-full"></textarea>
+                                    <div class="w-full flex justify-end py-2">
+                                        <div class="rating mr-4">
+                                            <!-- 별점 수정 입력 요소, id 속성을 고유하게 설정 -->
+                                            <input type="radio" name="rating" value="5" class="mask mask-star"
+                                                   th:id="'edit-star5-' + ${comment.id}" th:checked="${comment.rating == 5}">
+                                            <label th:for="'edit-star5-' + ${comment.id}"></label>
+                                            <input type="radio" name="rating" value="4" class="mask mask-star"
+                                                   th:id="'edit-star4-' + ${comment.id}" th:checked="${comment.rating == 4}">
+                                            <label th:for="'edit-star4-' + ${comment.id}"></label>
+                                            <input type="radio" name="rating" value="3" class="mask mask-star"
+                                                   th:id="'edit-star3-' + ${comment.id}" th:checked="${comment.rating == 3}">
+                                            <label th:for="'edit-star3-' + ${comment.id}"></label>
+                                            <input type="radio" name="rating" value="2" class="mask mask-star"
+                                                   th:id="'edit-star2-' + ${comment.id}" th:checked="${comment.rating == 2}">
+                                            <label th:for="'edit-star2-' + ${comment.id}"></label>
+                                            <input type="radio" name="rating" value="1" class="mask mask-star"
+                                                   th:id="'edit-star1-' + ${comment.id}" th:checked="${comment.rating == 1}">
+                                            <label th:for="'edit-star1-' + ${comment.id}"></label>
+                                        </div>
+                                        <input type="hidden" name="commentId" th:value="${comment.id}"/>
+                                        <button type="submit" class="btn btn-sm">수정 완료</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <script>
+                                function toggleCommentModify(commentId) {
+                                    var commentModifyDiv = document.querySelector('#comment-modify-' + commentId);
+
+                                    if (commentModifyDiv.style.display === 'none' || commentModifyDiv.style.display === '') {
+                                        commentModifyDiv.style.display = 'block';
+                                    } else {
+                                        commentModifyDiv.style.display = 'none';
+                                    }
+                                }
+                            </script>
+                            <br>
+                        </div>
+                    </div>
+                    <!-- 모바일 환경 댓글 내용 및 버튼 -->
+                    <!--<span class="ml-2 mt-1 sm:hidden">댓글 내용입니다.</span>
+                    <div class="ml-auto flex sm:hidden border-b border-gray-200 py-2">
+                        <button class="btn btn-sm ml-auto">수정</button>
+                        <button class="btn btn-error btn-sm ml-3">삭제</button>
+                    </div>-->
+
+                    <div class="mt-4 mb-4" th:if="${commentsPage.totalPages > 1}"
+                         th:with="queryStrBase='/usr/article/' + ${boardCode} + '/detail/' + ${article.id} + '?'">
+                        <div th:replace="common/fragments :: pagination(${commentsPage}, ${queryStrBase}, 1)"></div>
                     </div>
                 </div>
+                <!--추천-->
+                <form th:action="@{/usr/vote/add}" method="post" onsubmit="return confirmVote();">
+                    <input type="hidden" th:if="${@rq.member != null}" th:value="${@rq.member.nickname}" name="nickName" />
+                    <input type="hidden" th:value="${article.id}" name="article" />
+
+                    <button class="btn absolute right-10 top-32 md:right-36 md:top-76 xl:right-56 xl:top-96">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 " fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                        <span th:text="${article.voteCount}" class="badge rounded-pill bg-success"></span>
+                    </button>
+                </form>
             </div>
-            <!-- JHG ADD - comment -->
         </div>
     </div>
 

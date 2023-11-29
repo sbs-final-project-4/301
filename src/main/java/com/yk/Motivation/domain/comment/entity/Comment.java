@@ -2,6 +2,7 @@ package com.yk.Motivation.domain.comment.entity;
 
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
 import com.yk.Motivation.domain.article.entity.Article;
+import com.yk.Motivation.standard.util.DateUtils;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -16,7 +17,6 @@ import static lombok.AccessLevel.PROTECTED;
 @SuperBuilder  // Lombok: Builder 패턴 구현
 @ToString(callSuper = true)  // Lombok: toString 메서드 오버라이드
 public class Comment extends BaseEntity {
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "article_id")
     private Article article;
@@ -27,4 +27,9 @@ public class Comment extends BaseEntity {
     private Integer rating = 0; // 별점 0~5 (기본값 0으로 설정)
 
     private String nickName; // member는 nickname만 기록
+
+    public String getFormattedDate() {
+        // BaseEntity의 createDate를 사용
+        return DateUtils.timeForToday(this.getCreateDate());
+    }
 }

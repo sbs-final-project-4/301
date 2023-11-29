@@ -2,55 +2,61 @@
 
 <head>
     <title th:text="|QnA 게시판|"></title>
+    <!--제목 텍스트 처리-->
+    <style>
+        .line-clamp-1 {
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 1;
+          overflow: hidden;
+        }
+    </style>
 </head>
 
 <body>
 
-<div th:fragment="qnaContent" class="flex-1 flex items-center justify-center" layout:fragment="content">
-    <div class="container w-full px-4">
-        <h1 class="mb-4">
-            <i class="fa-solid fa-cubes"></i>
-            <span th:text="|QnA 게시판|"></span>
-        </h1>
-
-        <div class="card bg-base-100 shadow-xl">
-            <div class="card-body">
-                <div class="detail grid grid-cols-[repeat(auto-fit,minmax(100px,1fr))] gap-3" style="border: 1px solid black;">
-                    <table>
-                        <thead>
-                        <tr>
-                            <th style="text-align: left">제목</th>
-                            <th style="text-align: left">상태</th>
-                            <th style="text-align: left">기록</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="question, stat : ${questionPage.content}">
-                            <td>
-                                <a th:href="@{|/usr/qna/q/detail/${question.id}|}" th:text="${question.subject}"></a>
-                            </td>
-                            <td>
-                                <th:block th:if="${hasAnswersByOthersList[stat.index]}">답변 완료</th:block>
-                                <th:block th:if="${!hasAnswersByOthersList[stat.index]}">대기중...</th:block>
-                            </td>
-                            <td>
-                                <h5 th:text="|${#lists.size(question.answerList)}개의 기록이 있습니다.|"></h5>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
-                </div>
-                <!-- Page Navigation -->
-                <div class="mt-4" th:if="${questionPage.totalPages > 1}"
-                     th:with="queryStrBase='/usr/qna/q/list?'">
-                    <div th:replace="common/fragments :: pagination(${questionPage}, ${queryStrBase}, 1)"></div>
-                </div>
-
-                <div th:if="${@rq.login}">
-                    <a th:href="@{/usr/qna/q/create}" class="btn btn-primary">질문 등록하기</a>
-                </div>
-
+<div class="flex-1 flex items-center justify-center" layout:fragment="content">
+    <div class="w-full mt-4">
+        <img class="w-full xl:w-3/4 mx-auto object-contain hidden md:flex" src="" alt="">
+        <img class="w-150 mx-auto object-contain flex md:hidden" src="" alt="">
+        <div class="main w-full lg:w-2/3 flex mx-auto bg-gray-100 sm:bg-white mb-4">
+            <div class="flex w-full sm:w-2/3 sm:py-12 py-2 ">
             </div>
+            <div th:if="${@rq.login}" class="write-btn my-auto ml-14 w-1/4 justify-end hidden sm:flex lg:-mr-1 mr-3">
+                <a th:href="@{/usr/qna/q/create}" class="btn btn-sm">질문 등록하기</a>
+            </div>
+        </div>
+
+        <ul>
+            <li th:each="question, stat : ${questionPage.content}">
+                <div style='box-shadow:2px 3px 5px 0px #d9d9d9' class="flex mx-auto card-container w-full sm:h-36 lg:w-2/3 h-32 rounded-3xl border-2 border-gray-200 w-full">
+                    <div class="p-2 w-1/5 p-4 mt-2 sm:ml-6 sm:mt-8">
+                        <span class="text-xs sm:text-sm text-gray-500 mt-8 sm:mt-4 px-2 mt-2 inline-block whitespace-nowrap" th:text="${question.formattedDate}"></span>
+                    </div>
+                    <div class="center-box mt-6 sm:mt-6 w-1/2 ml-6 sm:-ml-1">
+                        <div>
+                            <a th:href="@{|/usr/qna/q/detail/${question.id}|}" th:text="${question.subject}" class="text-lg font-semibold line-clamp-1"></a>
+                        </div>
+                        <div>
+                            <a th:text="${question.body}" class="line-clamp-1"></a>
+                        </div>
+                        <div class="flex">
+                            <span th:text="${hasAnswersByOthersList[stat.index] ? '답변 완료' : '대기중...'}" style="color: #808080;"
+                                  class="my-3 px-2 p-1 mr-2 sm:text-sm text-xs whitespace-nowrap rounded-lg inline-block"></span>
+                        </div>
+                    </div>
+
+                    <div class="right-box flex flex-col sm:flex-row justify-between mt-10 sm:mt-12 md:mt-14 lg:mt-12 xl:mt-14 ml-2 sm:ml-36 w-1/5">
+                        <span th:text="'조회수 ' + ${question.viewCount}" class="text-sm font-semibold text-gray-400"></span>
+                        <span th:text="${question.member.nickname}" class="author-nickname flex-none text-sm ml-3 md:ml-6 whitespace-nowrap mr-12"></span>
+                    </div>
+                </div>
+                <br>
+            </li>
+        </ul>
+
+        <div class="mt-4" th:if="${questionPage.totalPages > 1}" th:with="queryStrBase='/usr/qna/q/list?'">
+            <div th:replace="common/fragments :: pagination(${questionPage}, ${queryStrBase}, 1)"></div>
         </div>
     </div>
 </div>
