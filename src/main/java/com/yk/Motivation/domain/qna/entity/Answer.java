@@ -2,6 +2,8 @@ package com.yk.Motivation.domain.qna.entity;
 
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
 import com.yk.Motivation.domain.member.entity.Member;
+import com.yk.Motivation.standard.util.DateUtils;
+import jakarta.persistence.*;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -26,4 +28,9 @@ public class Answer extends BaseEntity {
 
     @ManyToOne
     private Member member;
+
+    public String getFormattedDate() {
+        // BaseEntity의 createDate를 사용
+        return DateUtils.timeForToday(this.getCreateDate());
+    }
 }

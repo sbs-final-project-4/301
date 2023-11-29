@@ -20,7 +20,6 @@ public class CommentController {
     @PostMapping("/write")
     public String write(@ModelAttribute Comment comment) {
         RsData<Comment> saveRs = commentService.save(comment);
-
         return rq.redirectOrBack("/usr/article/free1/detail/%s".formatted(comment.getArticle().getId()), saveRs);
     }
 
@@ -28,14 +27,14 @@ public class CommentController {
     @RequestMapping(value = "/delete/{commentId}", method = RequestMethod.GET)
     public String delete(@PathVariable long commentId) {
         Comment comment = commentService.findById(commentId);
-        long articleId = comment.getArticle().getId();
-        commentService.delete(commentId);
-        return "redirect:/usr/article/free1/detail/" + articleId;
+        RsData<Comment> deleteRs = commentService.delete(comment);
+        return rq.redirectOrBack("/usr/article/free1/detail/%s".formatted(comment.getArticle().getId()), deleteRs);
     }
 
     @PostMapping("/modify")
     public String modify(@RequestParam long commentId, @RequestParam String content, @RequestParam int rating) {
-        Comment updatedComment = commentService.updateComment(commentId, content, rating);
-        return "redirect:/usr/article/free1/detail/" + updatedComment.getArticle().getId();
+        Comment comment = commentService.findById(commentId);
+        RsData<Comment> modifyRs = commentService.updateComment(commentId, content, rating);
+        return rq.redirectOrBack("/usr/article/free1/detail/%s".formatted(comment.getArticle().getId()), modifyRs);
     }
 }

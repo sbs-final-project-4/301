@@ -1,6 +1,8 @@
 package com.yk.Motivation.domain.qna.controller;
 
 import com.yk.Motivation.base.rq.Rq;
+import com.yk.Motivation.base.rsData.RsData;
+import com.yk.Motivation.domain.comment.entity.Comment;
 import com.yk.Motivation.domain.lecture.entity.Lecture;
 import com.yk.Motivation.domain.lesson.entity.Lesson;
 import com.yk.Motivation.domain.lesson.service.LessonService;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,8 +38,11 @@ public class QuestionController {
         // 페이지 번호를 0 기반 인덱스로 변환 (1 페이지 -> 0, 2 페이지 -> 1, ...)
         int zeroBasedPage = Math.max(0, page - 1);
 
-        // PageRequest 객체 생성 (zeroBasedPage를 사용)
-        Pageable adjustedPageable = PageRequest.of(zeroBasedPage, pageable.getPageSize(), pageable.getSort());
+        // 최신 순으로 정렬하기 위한 Sort 객체 생성
+        Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
+
+        // PageRequest 객체 생성 (정렬 조건 포함)
+        Pageable adjustedPageable = PageRequest.of(zeroBasedPage, pageable.getPageSize(), sort);
 
         Member currentMember = rq.getMember();
         Page<Question> questionPage = this.questionService.getList(adjustedPageable);
@@ -52,6 +58,9 @@ public class QuestionController {
     @GetMapping(value = "/detail/{id}")
     public String detail(Model model, @PathVariable("id") Long id) {
         Question question = this.questionService.getQuestion(id);
+        // 조회수 증가
+        question.setViewCount(question.getViewCount() + 1);
+        questionService.save(question); // 증가된 조회수를 저장
         model.addAttribute("question", question);
         return "usr/qna/detail";
     }
@@ -71,14 +80,15 @@ public class QuestionController {
         }
 
         question.setMember(loginedMember); // 로그인된 멤버 정보를 Question 객체에 설정
-        questionService.create(question);  // 데이터베이스에 저장하는 로직
-        return "redirect:/usr/qna/q/list"; // 질문 목록 페이지로 리디렉션
+        RsData<Question> writeRs = questionService.create(question);
+        return rq.redirectOrBack("/usr/qna/q/list", writeRs);
     }
 
     @GetMapping("/delete/{id}")
     public String delete(@PathVariable Long id) {
-        questionService.delete(id);
-        return "redirect:/usr/qna/q/list";
+        Question question = questionService.findById(id).get();
+        RsData<?> deleteRs = questionService.remove(question);
+        return rq.redirectOrBack("/usr/qna/q/list", deleteRs);
     }
 
     @GetMapping("/modify/{id}")
@@ -103,10 +113,8 @@ public class QuestionController {
         updatedQuestion.setBody(question.getBody());
         updatedQuestion.setBodyHtml(question.getBodyHtml());
 
-        questionService.save(updatedQuestion);
-
-        redirectAttributes.addFlashAttribute("successMessage", "Question updated successfully!");
-        return "redirect:/usr/qna/q/detail/" + updatedQuestion.getId();
+        RsData<Question> modifyRs = questionService.save(updatedQuestion);
+        return rq.redirectOrBack("/usr/qna/q/detail/" + updatedQuestion.getId(), modifyRs);
     }
 
     /*####################################################################################################################################*/
@@ -142,6 +150,9 @@ public class QuestionController {
     @GetMapping(value = "/videoInDetail/{id}")
     public String videoInDetail(Model model, @PathVariable("id") Long id, @RequestParam(name = "lessonId", required = false) Long lessonId) {
         Question question = this.questionService.getQuestion(id);
+        // 조회수 증가
+        question.setViewCount(question.getViewCount() + 1);
+        questionService.save(question); // 증가된 조회수를 저장
         model.addAttribute("question", question);
 
         // lessonId가 제공되었다면 모델에 추가
@@ -175,15 +186,16 @@ public class QuestionController {
         questionService.create(question);  // 데이터베이스에 저장하는 로직
 
         // lessonId를 URL에 포함하여 리다이렉션
-        return "redirect:/usr/qna/q/videoInList/" + lessonId;
+
+        RsData<Question> writeRs = questionService.create(question);
+        return rq.redirectOrBack("/usr/qna/q/videoInList/" + lessonId, writeRs);
     }
 
     @GetMapping("/videoInDelete/{id}")
     public String videoInDelete(@PathVariable Long id, @RequestParam(name = "lessonId", required = false) Long lessonId) {
-        questionService.delete(id);
-        // 비디오 페이지 안에서 int 값 존재 = /videoInDelete/{id}
-        // 일반 Q&A에서 작성한 내 글을 지우기 위해 null 대신 0 필요
-        return "redirect:/usr/qna/q/videoInList/" + (lessonId != null ? lessonId : "0");
+        Question question = questionService.findById(id).get();
+        RsData<?> deleteRs = questionService.remove(question);
+        return rq.redirectOrBack("/usr/qna/q/videoInList/" + (lessonId != null ? lessonId : "0"), deleteRs);
     }
 
     @GetMapping("/videoInModify/{id}")
@@ -212,9 +224,7 @@ public class QuestionController {
         updatedQuestion.setBody(question.getBody());
         updatedQuestion.setBodyHtml(question.getBodyHtml());
 
-        questionService.save(updatedQuestion);
-
-        redirectAttributes.addFlashAttribute("successMessage", "Question updated successfully!");
-        return "redirect:/usr/qna/q/videoInDetail/" + updatedQuestion.getId() + "?lessonId=" + (lessonId != null ? lessonId : "0");
+        RsData<Question> modifyRs = questionService.save(updatedQuestion);
+        return rq.redirectOrBack("/usr/qna/q/videoInDetail/" + updatedQuestion.getId() + "?lessonId=" + (lessonId != null ? lessonId : "0"), modifyRs);
     }
 }
