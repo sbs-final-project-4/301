@@ -142,4 +142,8 @@ public class SeriesService {
     private List<GenFile> findGenFiles(Series series) {
         return genFileService.findByRelId(series.getModelName(), series.getId());
     }
+
+    public List<Series> findTop4Series() {
+        return seriesRepository.findTop4ByOrderByIdDesc();
+    }
 }

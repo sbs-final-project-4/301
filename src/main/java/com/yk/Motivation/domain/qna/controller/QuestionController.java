@@ -97,6 +97,7 @@ public class QuestionController {
         if (!questionOptional.isPresent()) {
             return "redirect:/usr/qna/q/list";
         }
+
         model.addAttribute("question", questionOptional.get());
         return "usr/qna/modify";
     }
