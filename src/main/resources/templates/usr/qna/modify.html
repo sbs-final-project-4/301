@@ -15,7 +15,7 @@
             <span th:text="|Question modify|"></span>
         </h1>
 
-        <form class="flex flex-col gap-6" method="POST" th:action="@{/usr/qna/q/modify/{id}(id=${question.id})}" th:object="${question}" onsubmit="submitQuestionForm(this); return false;">
+        <form class="flex flex-col gap-6" method="POST" th:action="@{/usr/qna/q/modify/{id}(id=${question.id})}" onsubmit="submitQuestionForm(this); return false;">
             <input type="hidden" name="_method" value="PUT" />
             <input type="hidden" name="body">
             <input type="hidden" name="bodyHtml">
@@ -24,14 +24,16 @@
                 <label class="label">
                     <span class="label-text">제목</span>
                 </label>
-                <input class="input input-bordered" maxlength="100" name="subject" placeholder="제목" th:value="*{subject}" type="text" autofocus>
+                <input class="input input-bordered" maxlength="100" name="subject" placeholder="제목" th:value="${question.subject}" type="text" autofocus>
             </div>
 
             <div class="form-control">
                 <label class="label">
                     <span class="label-text">내용</span>
                 </label>
-                <div class="toast-ui-editor" th:text="*{body}" height="calc(100vh - 200px)" placeholder="내용"></div>
+                <div class="toast-ui-editor" height="calc(100vh - 200px)" placeholder="내용">
+                    <script type="text/x-template" th:utext="${question.bodyForEditor}"></script>
+                </div>
             </div>
 
             <div class="flex flex-col gap-2">

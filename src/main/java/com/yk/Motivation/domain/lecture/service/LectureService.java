@@ -140,7 +140,7 @@ public class LectureService {
             }
         }
 
-        return "https://ifh.cc/g/Rrmt4A.png"; // 기본 섬네일
+        return "/resource/common/videoImg.png"; // 기본 섬네일
     }
 
 
@@ -169,7 +169,9 @@ public class LectureService {
         return lectureRepository.findByProducerId(id);
     }
 
-
+    public List<Lecture> findTop4Lectures() {
+        return lectureRepository.findTop4ByOrderByIdDesc();
+    }
 
 
 

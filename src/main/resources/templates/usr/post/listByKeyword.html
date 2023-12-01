@@ -15,7 +15,7 @@
     </div>
     <div class="flex flex-row justify-between items-center">
         <span style="background: linear-gradient(180deg, rgba(255,255,255,0) 60%, #D9D9D9 40%);" class="inline-block mt-2 ml-4 lg:ml-2"
-              th:text="|${author.nickname}님의 `${tagContent}` 태그 시리즈|"></span>
+              th:text="|${author.nickname}님의 `${tagContent}` 시리즈|"></span>
         <a href="/usr/series/list" class="btn btn-sm mr-4">목록</a>
     </div>
     <div th:each="post : ${postPage.content}">

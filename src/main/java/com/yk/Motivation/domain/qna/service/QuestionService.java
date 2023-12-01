@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -67,5 +68,9 @@ public class QuestionService {
         }
 
         return new RsData<>("S-1", "가능합니다.", null);
+    }
+
+    public List<Question> findbyTop3Questions() {
+        return questionRepository.findTop3ByOrderByIdDesc();
     }
 }

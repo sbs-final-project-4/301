@@ -1,6 +1,7 @@
 package com.yk.Motivation.domain.qna.entity;
 
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
+import com.yk.Motivation.domain.document.standard.Document;
 import com.yk.Motivation.domain.lecture.entity.Lecture;
 import com.yk.Motivation.domain.lesson.entity.Lesson;
 import com.yk.Motivation.domain.member.entity.Member;
@@ -18,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @SuperBuilder  // Lombok: Builder 패턴 구현
 @ToString(callSuper = true)  // Lombok: toString 메서드 오버라이드
-public class Question extends BaseEntity {
+public class Question extends BaseEntity implements Document {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Lecture lecture;  // 강의 ID

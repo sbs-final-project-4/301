@@ -1,15 +1,296 @@
 <html layout:decorate="~{usr/common/layout}">
 
 <head>
-  <title>메인</title>
+  <title th:text="메인"></title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.js" integrity="sha512-BJ/5sR2hFxQTKin/55JQCcMTObShDBAmVjL/3NR/MVcrhyOazJjAgvROem03+HYyGw16SVdSfoWCFGr9syxAKA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body>
 
-<div class="flex-1 flex items-center justify-center" layout:fragment="content">
-  Let's find motivation together
+<div class="-mt-4 w-full mx-auto h-full" layout:fragment="content">
+  <div class="-mt-4 w-full mx-auto lg:w-3/4 h-full">
+    <div class="searching-box mt-20 border-2 w-3/4 lg:w-1/2 h-10 lg:h-14 rounded-md bg-white border-gray-700 flex mx-auto">
+      <form action="/usr/lecture/list" class="flex w-full" onsubmit="submitSearchForm(this); return false;">
+        <select name="choice" class="ml-3 p-1 lg:p-2 outline-none mt-1">
+          <option value="all">전체</option>
+          <option value="subject">제목</option>
+          <option value="body">내용</option>
+          <option value="producer">강사명</option>
+        </select>
+        <div class="search whitespace-nowrap w-full mr-4">
+          <input class="outline-none border-gray-400 w-full sm:bg-white ml-3 mt-2 lg:mt-4" name="kw"
+                 type="search" th:value="${param.kw}">
+        </div>
+        <div class="flex flex-row justify-end items-center w-1/2">
+          <button class="">
+            <i class="fa-solid fa-magnifying-glass my-auto ml-auto mr-5"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="overflow-hidden h-10 w-[80%] md:w-[75%] lg:w-[50%] p-3 mx-auto">
+      <ul id="list_txt">
+        <li th:each="tagList : ${tags}">
+          <a th:each="tag : ${tagList}" class="font-bold" th:href="|/usr/lecture/listByTag/${tag.content}|" th:text="|#${tag.content} &nbsp&nbsp|"></a>
+        </li>
+      </ul>
+
+    </div>
+
+    <div id="default-carousel" class="relative w-full mt-0 lg:mt-10" data-carousel="slide">
+      <!-- Carousel wrapper -->
+      <div class="relative h-56 overflow-hidden rounded-lg md:h-96">
+        <!-- Item 1 -->
+        <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <img src="https://ifh.cc/g/TX0YXp.jpg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+        </div>
+        <!-- Item 2 -->
+        <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <img src="https://ifh.cc/g/JgAypm.jpg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+        </div>
+        <!-- Item 3 -->
+        <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <img src="https://ifh.cc/g/p08tJv.jpg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+        </div>
+        <!-- Item 4 -->
+        <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <img src="https://ifh.cc/g/Ym1CKT.jpg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+        </div>
+        <!-- Item 5 -->
+        <div class="hidden duration-700 ease-in-out" data-carousel-item>
+          <img src="https://ifh.cc/g/A4w9Yf.jpg" class="absolute block w-full -translate-x-1/2 -translate-y-1/2 top-1/2 left-1/2" alt="...">
+        </div>
+      </div>
+      <!-- Slider indicators -->
+      <div class="absolute z-30 flex -translate-x-1/2 bottom-5 left-1/2 space-x-3 rtl:space-x-reverse">
+        <button type="button" class="w-3 h-3 rounded-full" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
+        <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
+        <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 3" data-carousel-slide-to="2"></button>
+        <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 4" data-carousel-slide-to="3"></button>
+        <button type="button" class="w-3 h-3 rounded-full" aria-current="false" aria-label="Slide 5" data-carousel-slide-to="4"></button>
+      </div>
+      <!-- Slider controls -->
+      <button type="button" class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-prev>
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+            <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+            </svg>
+            <span class="sr-only">Previous</span>
+        </span>
+      </button>
+      <button type="button" class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none" data-carousel-next>
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 dark:bg-gray-800/30 group-hover:bg-white/50 dark:group-hover:bg-gray-800/60 group-focus:ring-4 group-focus:ring-white dark:group-focus:ring-gray-800/70 group-focus:outline-none">
+            <svg class="w-4 h-4 text-white dark:text-gray-800 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
+                <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+            </svg>
+            <span class="sr-only">Next</span>
+        </span>
+      </button>
+    </div>
+
+    <span class="inline-block ml-4 mt-0 lg:mt-12 font-bold text-xl">시리즈</span>
+    <span class="ml-2">Series</span>
+    <span class="ml-4 text-sm text-gray-500"><a href="/usr/series/list">더보기</a></span>
+    <div class="mt-6 lg:flex grid grid-cols-2 md:grid-cols-2 gap-[25px]">
+      <div class="w-full lg:w-[23%] flex flex-col border border-gray-200 shadow-lg ml-1" th:each="series : ${series}">
+        <a th:href="|/usr/post/listByKeyword/${series.postKeyword.id}|">
+          <img class="aspect-[376/221] object-cover w-full" src="/resource/common/seriesImg.png">
+        </a>
+        <span class="inline-block text-md lg:text-lg font-bold p-2" th:text="${series.subject}">제목이 들어갈 자리입니다.</span>
+        <span class="inline-block text-sm ml-3 mb-3" th:text="|#${series.postKeyword.content}|">내용이 들어갈 자리입니다.</span>
+<!--        <div th:utext="${series.getTagLinks('<a class=`hashtag inline-block ml-3 lg:ml-2` href=`%s`>#%s</a>', @rq.getSuitableListByTagPageBaseUrlByCurrentUrl('series') + '/%s')}"></div>-->
+        <div class="flex mt-auto">
+          <img class="w-10 h-10 ml-2 mt-1 rounded-full bg-gray-200" th:src="${@memberService.getProfileImgUrl(series.author)}">
+          <div class="p-4 text-sm" th:text="${series.author.nickname}">닉네임</div>
+          <span class="ml-auto p-4 text-sm text-gray-500 hidden 2xl:inline" th:text="${#temporals.format(series.createDate, 'yy / MM / dd')}"></span>
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-2 mt-16 mb-8">
+      <div class="text-xl font-bold ml-4"> 최신 강의 </div>
+      <span class="text-md text-gray-600 mt-1">Lecture</span>
+      <span class="text-sm text-gray-500 mt-2 ml-2"><a href="/usr/lecture/list">더보기</a></span>
+    </div>
+    <div class="con mx-auto px-[10px]">
+      <ul class="grid grid-cols-2 md:grid-cols-2 xl:grid-cols-4 gap-[20px]">
+        <li class="group" th:each="lecture : ${lectures}">
+          <a th:href="|/usr/lecture/detail/${lecture.id}|">
+            <img class="aspect-[376/221] object-cover w-full" th:src="${@lectureService.getThumbnailImgUrl(lecture.subject)}">
+          </a>
+
+          <a href="#" class="flex flex-col gap-1 mt-3">
+            <div class="text-xs font-bold" th:text="${lecture.producer.producerName}">
+              풀스택
+            </div>
+            <div class="text-gray-500" th:text="${lecture.subject}">
+              한번에 끝내는 스프링부트
+            </div>
+            <div class="flex gap-2 text-ml">
+              <div class="font-semibold">
+                <div class="font-semibold" th:unless="${lecture.product.free}"
+                     th:text="${#numbers.formatDecimal(lecture.product.price, 0, 'COMMA', 0, 'POINT')} + ' 원'"></div>
+                <div class="font-semibold" th:if="${lecture.product.free}">무료강의</div>
+              </div>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="flex gap-2 mt-16">
+      <div class="text-xl font-bold ml-4"> 자주 하는 질문 </div>
+      <span class="text-md text-gray-600 mt-1">QnA</span>
+      <span class="text-sm text-gray-500 mt-2 ml-2"><a href="/usr/qna/q/list">더보기</a></span>
+    </div>
+    <div class="block lg:flex w-[96%] mt-6">
+      <div class="title p-4">
+        <span style="background: linear-gradient(180deg, rgba(255,255,255,0) 60%, #AFAFFC 40%);" class="text-lg lg:text-2xl font-extrabold leading-normal">301 수강생들이</span><br>
+        <span style="background: linear-gradient(180deg, rgba(255,255,255,0) 60%, #AFAFFC 40%);" class="text-lg lg:text-2xl font-extrabold leading-normal">가장 궁금해하는 학습내용</span><br>
+        <span style="background: linear-gradient(180deg, rgba(255,255,255,0) 60%, #AFAFFC 40%);" class="text-lg lg:text-2xl font-extrabold leading-normal">BEST 3</span>
+        <span ></span>
+      </div>
+      <div class="w-full lg:w-3/4 py-5 mb-12">
+        <a th:href="|/usr/qna/q/detail/${question.id}|" th:each="question : ${questions}">
+          <div class="w-full ml-2 lg:ml-12 mt-5 flex justify-between border border-gray-300 shadow-md p-4 hover:shadow-inner">
+            <span class="text-md lg:text-xl font-bold" th:text="|Q ${questions.indexOf(question) + 1}|">Q1</span>
+            <span class="text-md lg:text-lg font-bold" th:text="${question.subject}">질문 제목이 들어갈 자리 입니다.</span>
+            <span class="text-sm lg:text-md" th:text="${question.member.nickname}">작성자명</span>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="mt-2">
+      <div class="p-2 text-xl font-bold ml-3 lg:ml-0">
+        <span class="text-blue-500 -ml-1">3</span>
+        <span class="text-blue-800 -ml-1">0</span>
+        <span class="text-gray-800 -ml-1">1</span>
+        <span class="">에서 더많은 활동을 해보세요-</span>
+      </div>
+      <div class="hidden justify-center lg:flex mt-3"> <!--모바일 버전에서는 안보입니다. -->
+        <div class="flex mb-2 lg:mb-16 ml-1 justify-center">
+          <a href="/usr/member/checkPassword?redirectUrl=/usr/member/beProducer"><!--클릭시 크리에이터 신청하는 페이지로 가주세요.-->
+            <div class="flex border border-gray-300 shadow-md rounded-full mt-3 -ml-1 px-2">
+               <span class="text-md text-gray-600 p-5">
+                  <img class="w-10 ml-3" src="https://ifh.cc/g/fVlsSo.png" alt="">
+               </span>
+              <span class=" p-4">
+                  <p class="text-lg">크리에이터 신청하기</p>
+                  <p class="text-sm text-gray-500">Apply as a Creator</p>
+               </span>
+            </div>
+          </a>
+        </div>
+        <div class="flex mb-2 lg:mb-16 ml-10">
+          <a href="/usr/member/join"><!--클릭시 회원가입하는 페이지로 가주세요.-->
+            <div class="flex border border-gray-300 shadow-md rounded-full mt-3 px-6">
+               <span class="text-md text-gray-600 p-5">
+                  <img class="w-10 ml-3" src="https://ifh.cc/g/ODsVs9.png " alt="">
+               </span>
+              <span class=" p-4">
+                  <p class="text-lg">회원가입 하러가기</p>
+                  <p class="text-sm text-gray-500">Sign up</p>
+               </span>
+            </div>
+          </a>
+        </div>
+        <div class="flex mb-2 lg:mb-16 ml-10">
+          <a href="/usr/qna/q/list"><!--클릭시 로그인 화면, QNA 게시판으로 가주세요.-->
+            <div class="flex border border-gray-300 shadow-md rounded-full mt-3 px-4">
+               <span class="text-md text-gray-600 p-5">
+                  <img class="w-10 ml-3" src="https://ifh.cc/g/1AL7JC.png" alt="">
+               </span>
+              <span class=" p-4">
+                  <p class="text-lg">질문 하러가기</p>
+                  <p class="text-sm text-gray-500">Question</p>
+               </span>
+            </div>
+          </a>
+        </div>
+        <div class="flex mb-6 lg:mb-16 ml-10">
+          <a href="/usr/series/list"><!--클릭시 로그인 화면, 시리즈 게시판으로 가주세요.-->
+            <div class="flex border border-gray-300 shadow-md rounded-full mt-3 px-4">
+               <span class="text-md text-gray-600 p-5">
+                  <img class="w-10 ml-3" src="https://ifh.cc/g/lCKL4Y.png" alt="">
+               </span>
+              <span class="p-4">
+                  <p class="text-lg">시리즈 글쓰러 가기</p>
+                  <p class="text-sm text-gray-500">Series</p>
+               </span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="block lg:hidden">
+        <div class="flex flex-col">
+          <a class="" href="">
+            <div class="flex bg-white my-2 p-3 border border-gray-300 shadow-md rounded-full justify-center">
+              <img class="w-6 ml-2" src="https://ifh.cc/g/sQ7Y9v.png" alt="">
+              <span class="ml-2">크리에이터 신청하기</span>
+            </div>
+          </a>
+          <a href="">
+            <div class="flex bg-white my-2 p-3 border border-gray-300 shadow-md rounded-full justify-center">
+              <img class="w-6 ml-2" src="https://ifh.cc/g/7scAY2.png" alt="">
+              <span class="ml-2">회원가입 하러가기</span>
+            </div>
+          </a>
+          <a href="">
+            <div class="flex bg-white my-2 p-3 border border-gray-300 shadow-md rounded-full justify-center">
+              <img class="w-6 ml-2" src="https://ifh.cc/g/8FLq1v.png" alt="">
+              <span class="ml-2">질문 하러가기</span>
+            </div>
+          </a>
+          <a href="">
+            <div class="flex bg-white mb-6 my-2 p-3 border border-gray-300 shadow-md rounded-full justify-center">
+              <img class="w-6 ml-2" src="https://ifh.cc/g/OhSh2X.png" alt="">
+              <span class="ml-2">시리즈 글쓰러가기</span>
+            </div>
+          </a>
+        </div>
+        <div></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function banner_roll(div_id, banner_height, banner_delay, banner_speed, this_height)
+    {
+        var div_tag = document.getElementById(div_id);
+        var a_tag, i;
+
+        this_height ++;
+        if(this_height < banner_height) {
+            div_tag.style.top = -this_height;
+            setTimeout("banner_roll('" + div_id + "', " + banner_height + ", " + banner_delay + ", " + banner_speed + ", " + this_height + ");", banner_speed);
+        } else {
+            a_tag = div_tag.getElementsByTagName("li");
+            div_tag.appendChild(a_tag[0]);
+            div_tag.style.top = 0;
+            setTimeout("banner_roll('" + div_id + "', " + banner_height + ", " + banner_delay + ", " + banner_speed + ", 0);", banner_delay);
+        }
+        return true;
+    }
+    banner_roll("list_txt", 18, 2000, 40, 0);
+  </script>
+  <footer class="footer footer-center p-10 bg-base-200 text-base-content rounded">
+    <nav class="grid grid-flow-col gap-4">
+      <a class="link link-hover">About us</a>
+      <a class="link link-hover">Contact</a>
+      <a class="link link-hover">Jobs</a>
+      <a class="link link-hover">Press kit</a>
+    </nav>
+    <nav>
+      <div class="grid grid-flow-col gap-4">
+        <a><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-current"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"></path></svg></a>
+        <a><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-current"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"></path></svg></a>
+        <a><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="fill-current"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"></path></svg></a>
+      </div>
+    </nav>
+    <aside>
+      <p>Copyright © 2023 - All right reserved by ACME Industries Ltd</p>
+    </aside>
+  </footer>
 </div>
 
 </body>
-
 </html>
+<!--영규님 고생 하셨습니다. 같은 팀 되어서 좋았어요 감사합니다 :) -->

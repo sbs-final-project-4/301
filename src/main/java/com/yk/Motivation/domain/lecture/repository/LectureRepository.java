@@ -15,4 +15,6 @@ public interface LectureRepository extends JpaRepository<Lecture, Long>, Lecture
     Page<Lecture> findByLectureTags_contentAndIsPublicTrue(String tagContent, Pageable pageable);
 
     List<Lecture> findByProducerId(Long producerId);
+
+    List<Lecture> findTop4ByOrderByIdDesc();
 }
