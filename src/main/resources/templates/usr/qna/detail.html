@@ -32,8 +32,8 @@
                 <div class="bottom-box w-full mt-4 mb-8 h-full border-b border-t border-gray-200">
                     <div class="mt-8">
                         <a class="toastui-editor-contents"
-                             style="overflow-wrap: break-word;"
-                             th:utext="${question.bodyHtmlForPrint}">
+                           style="overflow-wrap: break-word;"
+                           th:utext="${question.bodyHtmlForPrint}">
                         </a>
                     </div>
 
@@ -54,8 +54,8 @@
                     <span class="text-md sm:text-lg font-semibold">개</span>
 
                     <!-- 댓글 목록 -->
-                    <div class="comment text-sm flex flex-col sm:border-b border-t border-gray-200 p-2 mt-4 mb-4">
-                        <div th:each="answer : ${question.answerList}">
+                    <div class="comment text-sm flex flex-col border-t border-gray-200 p-2 mt-4 mb-4">
+                        <div th:each="answer : ${question.answerList}" class="border-b border-gray-200">
                             <div class="flex flex-col sm:flex-row justify-between items-start">
                                 <div class="flex-grow">
                                     <div class="flex flex-col sm:flex-row items-center">
@@ -63,9 +63,7 @@
                                             <p th:text="${answer.member.nickname}"></p>
                                             <p th:text="${answer.formattedDate}" class="text-gray-500 text-center hidden sm:inline"></p>
                                         </span>
-                                        <span class="mt-2 sm:mt-0 sm:ml-16">
-                                            <p th:text="${answer.content}" style="word-break: break-all;"></p>
-                                        </span>
+                                        <span th:utext="${answer.bodyHtmlForPrint}" class="ml-4 mt-2 sm:inline toastui-editor-contents"></span>
                                     </div>
                                 </div>
                             </div>
@@ -73,7 +71,7 @@
                         </div>
                     </div>
 
-                    <div th:if="${@rq.login}">
+                    <!--<div th:if="${@rq.login}">
                         <div th:if="${@questionService.checkActorCanModify(@rq.member, question).success or @rq.isProducer()}">
                             <form th:action="@{|/usr/qna/a/create/${question.id}|}" method="post">
                                 <textarea name="content" placeholder="답변을 입력해주세요." cols="50" class="placeholder:text-sm textarea textarea-bordered textarea-lg w-full"></textarea>
@@ -81,6 +79,43 @@
                                     <button type="submit" class="btn btn-sm">답변 등록</button>
                                 </div>
                             </form>
+                        </div>
+                    </div>-->
+                    <div th:if="${@rq.login}">
+                        <div th:if="${@questionService.checkActorCanModify(@rq.member, question).success or @rq.isProducer()}" class="comment text-sm flex p-2 mt-4 mb-4 mx-auto flex flex-col gap-6">
+                            <form th:action="@{|/usr/qna/a/create/${question.id}|}" method="post" onsubmit="submitAnswerForm(this); return false;">
+                                <input type="hidden" name="content">
+                                <input type="hidden" name="contentHtml">
+
+                                <div class="form-control">
+                                    <div class="toast-ui-editor" height="calc(100vh - 200px)" placeholder="내용"></div>
+                                </div>
+                                <div class="w-full flex justify-end py-2">
+                                    <button type="submit" class="btn btn-sm">
+                                        <span th:if="${@rq.isProducer()}">답글 등록</span>
+                                        <span th:unless="${@rq.isProducer()}">댓글 등록</span>
+                                    </button>
+                                </div>
+                            </form>
+                            <script>
+                                function submitAnswerForm(form) {
+                                    const editor = $(form).find(".toast-ui-editor").data("data-toast-editor");
+
+                                    const markdown = editor.getMarkdown().trim();
+                                    const html = editor.getHTML().trim();
+
+                                    form.content.value = markdown;
+                                    form.contentHtml.value = html;
+
+                                    if (form.content.value.length == 0 || form.contentHtml.value.length == 0) {
+                                        toastWarning("내용을 입력해주세요");
+                                        editor.focus();
+                                        return;
+                                    }
+
+                                    form.submit();
+                                }
+                            </script>
                         </div>
                     </div>
                 </div>

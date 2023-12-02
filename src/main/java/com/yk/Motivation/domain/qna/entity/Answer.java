@@ -1,6 +1,7 @@
 package com.yk.Motivation.domain.qna.entity;
 
 import com.yk.Motivation.base.jpa.baseEntity.BaseEntity;
+import com.yk.Motivation.domain.document.standard.Document;
 import com.yk.Motivation.domain.member.entity.Member;
 import com.yk.Motivation.standard.util.DateUtils;
 import jakarta.persistence.*;
@@ -18,14 +19,15 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @SuperBuilder  // Lombok: Builder 패턴 구현
 @ToString(callSuper = true)  // Lombok: toString 메서드 오버라이드
-public class Answer extends BaseEntity {
+public class Answer extends BaseEntity implements Document {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Question question;  // 해당 답변과 관련된 질문
 
     @Column(nullable = false, columnDefinition = "TEXT")
-    private String content;  // 답변 내용
-
+    private String body;  // 답변 내용
+    @Column(columnDefinition = "TEXT")
+    private String bodyHtml;
     @ManyToOne
     private Member member;
 

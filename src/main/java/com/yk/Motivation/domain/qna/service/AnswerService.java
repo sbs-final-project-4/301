@@ -14,6 +14,6 @@ public class AnswerService {
 
     public RsData<Answer> save(Answer answer) {
         answerRepository.save(answer);
-        return new RsData<>("S-1", answer.getId() + "번 댓글이 생성되었습니다.", null);
+        return new RsData<>("S-1", "답변이 등록 되었습니다.", null);
     }
 }

@@ -29,7 +29,8 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class FfmpegService {
+public class
+FfmpegService {
 
     @Value("${custom.ffmpeg.path}")
     private String ffmpegPath;

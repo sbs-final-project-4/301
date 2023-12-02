@@ -243,7 +243,13 @@ public class LessonController {
         member.getLectures().stream()
                 .filter(lecture -> lecture.getId() == lesson.getLecture().getId())
                 .findFirst()
-                .orElseThrow(() -> new InvalidAccessAttempError("올바르지 않은 접근입니다."));
+                .orElseGet(() -> {
+                    if (member.getId() == lesson.getLecture().getProducer().getId()) {
+                        return null;
+                    } else {
+                        throw new InvalidAccessAttempError("올바르지 않은 접근입니다.");
+                    }
+                });
 
 //        결제 데이터 뒤져보는 코드
 

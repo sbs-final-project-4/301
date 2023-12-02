@@ -70,7 +70,7 @@ public class QuestionService {
         return new RsData<>("S-1", "가능합니다.", null);
     }
 
-    public List<Question> findbyTop3Questions() {
+    public List<Question> findByTop3Questions() {
         return questionRepository.findTop3ByOrderByIdDesc();
     }
 }

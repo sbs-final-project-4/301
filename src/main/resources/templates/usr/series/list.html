@@ -30,7 +30,7 @@
     <div th:each="series : ${seriesPage.content}">
         <div class="main-box w-full mt-4 lg:mt-12 ">
             <div class="article w-full h-44 flex border-b border-t border-gray-300">
-                <div class="ficture-box hidden lg:block w-56 h-[88%] mt-2 bg-yellow-200"></div>
+                <img class="ficture-box hidden lg:block w-56 h-[88%] mt-2 bg-yellow-200" src="/resource/common/seriesImg.png">
                 <div class="left-box ml-2 lg:ml-4 w-2/3 md:mt-4 lg:mt-0 lg:w-1/2 2xl:w-2/3">
                     <h1 class="p-3 font-bold text-lg hover:underline">
                         <a th:href="|/usr/post/listByKeyword/${series.postKeyword.id}|" th:text="${series.subject}"></a>
