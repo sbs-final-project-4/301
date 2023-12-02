@@ -25,13 +25,14 @@ public class AnswerController {
     private final Rq rq;
 
     @PostMapping("/create/{id}")
-    public String createAnswer(@PathVariable("id") Long id, @RequestParam String content) {
+    public String createAnswer(@PathVariable("id") Long id, @RequestParam String content, @RequestParam String contentHtml) {
         Member loginedMember = rq.getMember();
         Question question = this.questionService.getQuestion(id);
 
         Answer answer = new Answer();
         answer.setMember(loginedMember);
-        answer.setContent(content);
+        answer.setBody(content);
+        answer.setBodyHtml(contentHtml);
         answer.setQuestion(question);
 
         RsData<Answer> saveRs = answerService.save(answer);
@@ -39,13 +40,17 @@ public class AnswerController {
     }
 
     @PostMapping("/videoInCreateAnswer/{id}")
-    public String videoInCreateAnswer(@PathVariable("id") Long id, @RequestParam String content, @RequestParam(name = "lessonId", required = false) Long lessonId) {
+    public String videoInCreateAnswer(@PathVariable("id") Long id,
+                                      @RequestParam String content,
+                                      @RequestParam String contentHtml,
+                                      @RequestParam(name = "lessonId", required = false) Long lessonId) {
         Member loginedMember = rq.getMember();
         Question question = this.questionService.getQuestion(id);
 
         Answer answer = new Answer();
         answer.setMember(loginedMember);
-        answer.setContent(content);
+        answer.setBody(content); // 마크다운 내용 설정
+        answer.setBodyHtml(contentHtml);         // HTML 내용 설정
         answer.setQuestion(question);
 
         RsData<Answer> saveRs = answerService.save(answer);

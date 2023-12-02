@@ -32,7 +32,9 @@
             <input class="w-full p-3 border border-gray-200 rounded-md outline-none focus:border-2 focus:border-blue-800" maxlength="100"
                    name="tagsStr" placeholder="태그를 입력해주세요.  #IT #HTML #..." type="text" th:value="${lecture.tagsStr}">
         </div>
-        <div placeholder=" " class="toast-ui-editor mx-auto w-[99%] mt-6" height="calc(100vh - 300px)" th:utext="${lecture.bodyForEditor}"></div>
+        <div placeholder=" " class="toast-ui-editor mx-auto w-[99%] mt-6" height="calc(100vh - 300px)">
+            <script type="text/x-template" th:utext="${lecture.bodyForEditor}"></script>
+        </div>
 
         <th:block th:each="i : ${#numbers.sequence(1, 2)}" th:with="genFile = ${filesMap[i + '']}">
 
@@ -68,7 +70,7 @@
             </div>
         </th:block>
         <div class="p-4 mt-2 lg:mt-6 flex justify-center">
-            <button class="text-white inline-block w-full lg:w-1/3 text-center border border border-blue-800 bg-blue-800 hover:bg-blue-900 rounded-md lg:mt-6 p-2 mb-3 mt-2">작성완료</button>
+            <button class="text-white inline-block w-full lg:w-1/3 text-center border border border-blue-800 bg-blue-800 hover:bg-blue-900 rounded-md lg:mt-6 p-2 mb-3 mt-2">수정완료</button>
         </div>
 
     </form>

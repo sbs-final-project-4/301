@@ -28,7 +28,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/threezeroone?useUnicode=true&serverTimezone=Asia/Seoul
     username: root
-    password: 
+    password: qkqh134679258
   security:
     oauth2:
       client:
@@ -68,9 +68,9 @@ custom:
   genFile:
     dirPath: c:/temp/삼공일
   ffmpeg:
-    path: C:/temp/삼공일/bin/ffmpeg/bin/ffmpeg.exe
+    path: C:/temp/motivation/bin/ffmpeg/bin/ffmpeg.exe
   ffprobe:
-    path: C:/temp/삼공일/bin/ffmpeg/bin/ffprobe.exe
+    path: C:/temp/motivation/bin/ffmpeg/bin/ffprobe.exe
   lesson:
     dirPath: C:/temp/삼공일/lesson
 

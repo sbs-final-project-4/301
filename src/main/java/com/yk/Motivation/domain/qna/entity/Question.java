@@ -49,4 +49,6 @@ public class Question extends BaseEntity implements Document {
 
     // 조회 수
     private int viewCount = 0;
+    // 추천 수
+    private int voteCount = 0; // 초기 값 0
 }

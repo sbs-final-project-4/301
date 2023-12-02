@@ -4,7 +4,6 @@
   <title th:text="메인"></title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.0/flowbite.js" integrity="sha512-BJ/5sR2hFxQTKin/55JQCcMTObShDBAmVjL/3NR/MVcrhyOazJjAgvROem03+HYyGw16SVdSfoWCFGr9syxAKA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
-
 <body>
 
 <div class="-mt-4 w-full mx-auto h-full" layout:fragment="content">
@@ -98,7 +97,6 @@
         </a>
         <span class="inline-block text-md lg:text-lg font-bold p-2" th:text="${series.subject}">제목이 들어갈 자리입니다.</span>
         <span class="inline-block text-sm ml-3 mb-3" th:text="|#${series.postKeyword.content}|">내용이 들어갈 자리입니다.</span>
-<!--        <div th:utext="${series.getTagLinks('<a class=`hashtag inline-block ml-3 lg:ml-2` href=`%s`>#%s</a>', @rq.getSuitableListByTagPageBaseUrlByCurrentUrl('series') + '/%s')}"></div>-->
         <div class="flex mt-auto">
           <img class="w-10 h-10 ml-2 mt-1 rounded-full bg-gray-200" th:src="${@memberService.getProfileImgUrl(series.author)}">
           <div class="p-4 text-sm" th:text="${series.author.nickname}">닉네임</div>
