@@ -6,8 +6,7 @@
 
 <body>
 
-<div class="w-full lg:w-3/4  mx-auto block lg:flex" layout:fragment="content">
-
+<div class="w-full lg:w-3/4 mx-auto block lg:flex" layout:fragment="content">
     <div class="w-full lg:w-[20%] xl:w-[15%] p-3 -mt-3 lg:mt-6 flex lg:block border-b border-gray-300 lg:border-white">
         <img class="w-28 h-28 mt-3 lg:mt-0 bg-gray-200 rounded-full" th:src="${@rq.profileImgUrl}">
         <div class="ml-3">
@@ -16,7 +15,10 @@
                 <a href="/usr/member/me" class="text-md p-2 hover:underline "><i class="fa-regular fa-user p-1"></i>내정보</a>
             </div>
             <div class="mt-2">
-                <a href="/usr/post/myList" class="text-md p-2 hover:underline"><i class="fa-solid fa-book p-1"></i>내가 쓴 글</a>
+                <a href="/usr/member/myLectures" class="text-md p-2 hover:underline "><i class="fa-solid fa-graduation-cap"></i>내 강의장</a>
+            </div>
+            <div class="mt-2" th:if="${@rq.producer}">
+                <a href="/usr/member/myEnrolledLectures" class="text-md p-2 hover:underline "><i class="fa-solid fa-chalkboard-user"></i>내 등록강의</a>
             </div>
             <div class="mt-2">
                 <a href="/usr/member/checkPassword?redirectUrl=/usr/member/myPayments"

@@ -4,10 +4,7 @@ import com.yk.Motivation.base.app.AppConfig;
 import org.apache.tika.Tika;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.*;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
@@ -284,6 +281,7 @@ public class Ut {
                 file.delete();
             }
         }
+
     }
 
     public static class url {
