@@ -80,11 +80,11 @@ public class NotProd {
                 self.work5();
                 self.work6();
                 self.work7();
+                self.work3();
 
                 systemService.setNotProdInitDataConfigured(true);
             }
 
-            self.work3();
 
         };
     }

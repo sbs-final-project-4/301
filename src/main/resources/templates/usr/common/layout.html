@@ -84,12 +84,18 @@
                 </div>
             </a>
             <div>
-                <a class="btn btn-ghost btn-circle" href="/usr/member/me" th:if="${@rq.login}">
-                    <img alt="" class="w-[30px] h-[30px] rounded-full object-cover"
-                         th:src="${@rq.profileImgUrl}">
-                </a>
+                <div class="dropdown dropdown-bottom">
+                    <div class="btn btn-ghost btn-circle" tabindex="0" role="button" th:if="${@rq.login}">
+                        <img alt="" class="w-[30px] h-[30px] rounded-full object-cover"
+                             th:src="${@rq.profileImgUrl}">
+                    </div>
+                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-32">
+                        <li><a href="/usr/member/logout"><i class="fa-solid fa-right-from-bracket"></i>로그아웃</a></li>
+                        <li><a href="/usr/member/me"><i class="fa-solid fa-user"></i>계정관리</a></li>
+                    </ul>
+                </div>
                 <div>
-                    <a th:unless="${@rq.login}" class="py-1 px-2 text-sm border border-gray-300 bg-gray-200 rounded-lg hover:bg-gray-300"
+                    <a th:unless="${@rq.login}" class="py-1 px-2 text-sm"
                        href="/usr/member/login">로그인</a>
                 </div>
             </div>

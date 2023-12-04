@@ -22,7 +22,11 @@
             </div>
             <div class="mt-2">
                 <a href="/usr/member/checkPassword?redirectUrl=/usr/member/myPayments"
-                   class="text-md p-2 hover:underline"><i class="fa-regular fa-credit-card p-1"></i>결제 내역</a>
+                   class="text-md p-2 hover:underline"><i class="fa-regular fa-credit-card"></i>결제 내역</a>
+            </div>
+            <div class="mt-2" th:if="${@rq.admin}">
+                <a href="/adm/home/main"
+                   class="text-md p-2 hover:underline"><i class="fa-solid fa-user-tie"></i>관리자</a>
             </div>
         </div>
     </div>

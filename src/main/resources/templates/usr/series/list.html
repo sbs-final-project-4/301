@@ -23,9 +23,15 @@
             <button class="fa-solid fa-magnifying-glass my-auto ml-auto mr-5"></button>
         </div>
     </form>
-    <div class="flex mt-10">
-        <span class="inline-block title ml-4 lg:ml-0 text-xl lg:text-2xl font-bold">시리즈</span>
-        <span class="ml-3 mt-1 text-md lg:text-lg text-gray-500">Series</span>
+    <div class="flex mt-10 flex-row justify-between">
+        <div>
+            <span class="inline-block title ml-4 lg:ml-0 text-xl lg:text-2xl font-bold">시리즈</span>
+            <span class="ml-3 mt-1 text-md lg:text-lg text-gray-500">Series</span>
+            <a class="btn btn-sm ml-12" href="/usr/post/list">포스트 보기</a>
+        </div>
+        <div th:if="${@rq.login}">
+            <a class="btn btn-sm" href="/usr/series/write"><i class="fa-solid fa-pen"></i>시리즈 만들기</a>
+        </div>
     </div>
     <div th:each="series : ${seriesPage.content}">
         <div class="main-box w-full mt-4 lg:mt-12 ">
