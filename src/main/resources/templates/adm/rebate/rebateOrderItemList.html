@@ -51,6 +51,7 @@
                        class="btn btn-primary btn-xs">건별정산</a>
                     <form method="POST" th:action="@{|/adm/rebate/rebateOne/${item.orderItem.id}/${yearMonth}|}"
                           hidden></form>
+                    <span th:if="${item.refund}">결제취소</span>
                 </td>
             </tr>
             </tbody>

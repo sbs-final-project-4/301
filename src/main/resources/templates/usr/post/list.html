@@ -26,6 +26,7 @@
             <span class="inline-block title ml-4 lg:ml-0 text-xl lg:text-2xl font-bold">게시글</span>
             <span class="ml-3 mt-1 text-md lg:text-lg text-gray-500">Post</span>
         </div>
+        <a href="/usr/post/write    " class="btn btn-sm"><i class="fa-solid fa-pen"></i>글쓰기</a>
         <a th:if="${UtThy.hasText(param.kw)}" th:href="${@rq.currentUrlPath}"
            class="btn btn-sm btn-outline">
             전체보기

@@ -51,15 +51,15 @@ public class OrderController {
     ) {
         Order order = orderService.findForPrintById(id).get();
 
-        Member member = rq.getMember();
+        Member member = memberService.findById(rq.getMember().getId()).get();
 
         if (orderService.memberCanSee(member, order) == false) {
             throw new MemberCanNotSeeOrderException();
         }
 
-        model.addAttribute("order", order);
+        model.addAttribute("lectures", member.getLectures());
 
-        return "usr/order/detail";
+        return "usr/member/myLectures";
     }
 
     @PostConstruct

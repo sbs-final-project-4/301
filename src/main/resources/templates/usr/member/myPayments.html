@@ -33,8 +33,8 @@
                     <div th:if="${order.refunded}" class="text-red-600" th:text="'환불처리'">Refunded</div>
                     <div th:unless="${order.refunded}" th:text="'결제완료'">Not Refunded</div>
                 </td>
-                <td>자바 기초부터 심화까지 한번에 해결하기</td>
-                <td>28,900원</td>
+                <td th:text="${order.name}">자바 기초부터 심화까지 한번에 해결하기</td>
+                <td th:text="${#numbers.formatDecimal(order.calculatePayPrice, 0, 'COMMA', 0, 'POINT')} + ' 원'">28,900원</td>
                 <td>
                     <button class="btn btn-sm" th:if="${#temporals.createNow().minusHours(3).isBefore(order.createDate) and !order.refunded}"
                             th:onclick="'refundModal' + ${order.id} + '.showModal()'">결제취소</button>

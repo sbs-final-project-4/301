@@ -122,4 +122,8 @@ public class RebateOrderItem extends BaseEntity {
         this.rebateCashLog = cashLog;
     }
 
+    public boolean isRefund() {
+        return refundPrice > 0;
+    }
+
 }
